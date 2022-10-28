@@ -1,6 +1,10 @@
 MIT License
 
+<<<<<<< HEAD
 Copyright (c) 2022 NEU-Especial
+=======
+Copyright (c) 2017-present PanJiaChen
+>>>>>>> a67831f (chore:构建项目基本框架)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
