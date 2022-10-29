@@ -14,6 +14,7 @@
     "test:ci": "npm run lint && npm run test:unit"
   },
   "dependencies": {
+    "@femessage/el-data-table": "^1.23.2",
     "axios": "0.18.1",
     "core-js": "3.6.5",
     "element-ui": "2.13.2",
@@ -21,9 +22,12 @@
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
+    "survey-creator-knockout": "^1.9.55",
     "vue": "2.6.10",
     "vue-router": "3.0.6",
-    "vuex": "3.1.0"
+    "vuex": "3.1.0",
+    "vxe-table": "^3.6.6",
+    "xe-utils": "^3.5.7"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.4.4",
