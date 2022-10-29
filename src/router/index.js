@@ -34,7 +34,32 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
-    hidden: true
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'Login',
+        component: () => import('@/views/login/password')
+      },
+      {
+        // 注册界面
+        path: 'register',
+        name: 'Register',
+        component: () => import('@/views/login/register')
+      },
+      {
+        // 电话号码登陆
+        path: 'telephone',
+        name: 'Telephone',
+        component: () => import('@/views/login/telephone')
+      },
+      {
+        // 密保或者手机号找回
+        path: 'findBack',
+        name: 'findBack',
+        component: () => import('@/views/login/findback')
+      }
+    ]
   },
 
   {
@@ -165,7 +190,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

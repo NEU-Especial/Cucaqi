@@ -51,7 +51,6 @@ export default {
     }
   },
   data() {
-    // To fix https://github.com/PanJiaChen/cucaqi/issues/237
     // TODO: refactor with render function
     this.onlyOneChild = null
     return {}
