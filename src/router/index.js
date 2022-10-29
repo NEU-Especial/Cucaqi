@@ -8,7 +8,6 @@ import Layout from '@/layout'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
  *
  * hidden: true                   if set true, item will not show in the sidebar(default is false)
  * alwaysShow: true               if set true, will always show the root menu
@@ -96,7 +95,7 @@ export const constantRoutes = [
       {
         path: 'create',
         name: 'Create',
-        component: () => import('@/views/questionnaire/list'),
+        component: () => import('@/views/questionnaire/create'),
         meta: { title: '创建问卷', icon: 'table' }
       },
       {

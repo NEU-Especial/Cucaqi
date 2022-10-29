@@ -13,12 +13,12 @@ import router from './router'
 
 import 'survey-core/defaultV2.min.css'
 import 'survey-creator-core/survey-creator-core.min.css'
-
 import '@/icons' // icon
 import '@/permission' // permission control
 import 'xe-utils'
 import VXETable from 'vxe-table'
 import 'vxe-table/lib/style.css'
+import 'survey-creator-core/survey-creator-core.i18n'
 
 Vue.use(VXETable)
 Vue.use(ElementUI)
