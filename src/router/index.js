@@ -76,28 +76,42 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '数据大屏', icon: 'dashboard' }
     }]
   },
 
   {
-    path: '/example',
+    path: '/questionnaire',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    redirect: '/questionnaire/list',
+    name: 'Questionnaire',
+    meta: { title: '问卷', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'list',
+        name: 'List',
+        component: () => import('@/views/questionnaire/list'),
+        meta: { title: '问卷管理', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'create',
+        name: 'Create',
+        component: () => import('@/views/questionnaire/list'),
+        meta: { title: '创建问卷', icon: 'table' }
+      },
+      {
+        path: 'preview',
+        name: 'Preview',
+        component: () => import('@/views/questionnaire/preview'),
+        hidden: true,
+        meta: { title: '预览问卷', icon: 'tree' }
+      },
+      {
+        path: 'post',
+        name: 'Post',
+        component: () => import('@/views/questionnaire/post'),
+        hidden: true,
+        meta: { title: '发布问卷', icon: 'tree' }
       }
     ]
   },
