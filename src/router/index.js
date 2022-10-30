@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+/* Layout */
+import Layout from '@/layout'
 
 Vue.use(Router)
 
-/* Layout */
-import Layout from '@/layout'
 /**
  * Note: sub-menu only appear when route children.length >= 1
  *
@@ -75,9 +75,16 @@ export const constantRoutes = [
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '数据大屏', icon: 'dashboard' }
-    }]
+    },
+    {
+      path: 'profile',
+      name: 'Profile',
+      component: () => import('@/views/profile/profile'),
+      hidden: true,
+      meta: { title: '用户信息', icon: 'dashboard' }
+    }
+    ]
   },
-
   {
     path: '/questionnaire',
     component: Layout,
@@ -133,7 +140,6 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
     path: '/nested',
     component: Layout,

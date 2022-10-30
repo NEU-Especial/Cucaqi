@@ -7,23 +7,17 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img src="https://i0.hdslb.com/bfs/article/c510c6f5e8b1b6718226ae50b489c863fc312cdf.jpg" class="user-avatar">
+          <img src="./icon.png" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
+          <router-link to="/profile">
             <el-dropdown-item>
-              Home
+              修改个人信息
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/NEU-Especial/Cucaqi">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://github.com/NEU-Especial/Cucaqi">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+            <span style="display:block;">注销账户</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
