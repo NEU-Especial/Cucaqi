@@ -1,5 +1,5 @@
 <template>
-  <el-container style="margin-top: 2%;width: 95%;margin-left: 2%">
+  <el-container style="margin-top: 2%;width: 95%;margin-left: 2%;background-color: #99a9bf">
     <el-header>
       <!--      header中定义搜索框以及添加新问卷框-->
       <el-row>
@@ -11,9 +11,9 @@
           <div class="grid-content "/>
         </el-col>
         <el-col :span="8">
-          <vxe-button size="medium" status="primary" content="新增问卷"/>
+          <vxe-button size="medium" status="primary" content="创建问卷"/>
           <vxe-button size="medium" status="default" content="历史问卷"/>
-          <vxe-button size="medium" status="danger" content="删除选中"/>
+          <vxe-button size="medium" status="danger" content="删除选中" @click="deleteSurveys"/>
         </el-col>
       </el-row>
     </el-header>
@@ -66,6 +66,8 @@
 
 <script>
 
+import { VXETable } from 'vxe-table'
+
 export default {
   data() {
     return {
@@ -80,6 +82,11 @@ export default {
     }
   },
   methods: {
+    deleteSurveys() {
+      VXETable.modal.confirm('您确定要删除吗？').then(type => {
+        VXETable.modal.message({ content: `删除成功`, status: 'success' })
+      })
+    },
     findList() {
       // 这里发请求，处理数据
     },

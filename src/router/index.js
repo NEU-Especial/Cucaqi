@@ -5,7 +5,6 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-
 /**
  * Note: sub-menu only appear when route children.length >= 1
  *
@@ -102,7 +101,7 @@ export const constantRoutes = [
         path: 'preview',
         name: 'Preview',
         component: () => import('@/views/questionnaire/preview'),
-        hidden: true,
+        hidden: false,
         meta: { title: '预览问卷', icon: 'tree' }
       },
       {
@@ -111,6 +110,13 @@ export const constantRoutes = [
         component: () => import('@/views/questionnaire/post'),
         hidden: true,
         meta: { title: '发布问卷', icon: 'tree' }
+      },
+      {
+        path: 'edit',
+        name: 'Edit',
+        component: () => import('@/views/questionnaire/editor'),
+        hidden: false,
+        meta: { title: '编辑问卷', icon: 'tree' }
       }
     ]
   },

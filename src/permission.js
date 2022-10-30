@@ -14,6 +14,7 @@ router.beforeEach(async(to, from, next) => {
   next()
   return
   // start progress bar
+  // eslint-disable-next-line no-unreachable
   NProgress.start()
 
   // set page title
