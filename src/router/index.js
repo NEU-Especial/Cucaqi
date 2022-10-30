@@ -101,8 +101,8 @@ export const constantRoutes = [
         path: 'preview',
         name: 'Preview',
         component: () => import('@/views/questionnaire/preview'),
-        hidden: false,
-        meta: { title: '预览问卷', icon: 'tree' }
+        hidden: true,
+        meta: { title: '模拟答题', icon: 'tree' }
       },
       {
         path: 'post',
@@ -115,7 +115,7 @@ export const constantRoutes = [
         path: 'edit',
         name: 'Edit',
         component: () => import('@/views/questionnaire/editor'),
-        hidden: false,
+        hidden: true,
         meta: { title: '编辑问卷', icon: 'tree' }
       }
     ]

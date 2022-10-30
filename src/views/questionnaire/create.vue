@@ -2,34 +2,34 @@
   <!--  创建问卷表单-->
   <div>
     <transition name="fade">
-      <el-container v-show="!isEditing" style="height: 800px">
+      <el-container v-show="!isEditing" style="height: 1200px">
         <el-aside width="40%" style="height:800px;margin: 30px">
           <el-form ref="form" :model="form" label-width="80px">
             <el-form-item label="问卷标题" label-width="120px">
-              <el-input v-model="form.name" />
+              <el-input v-model="form.name"/>
             </el-form-item>
             <el-form-item label="开始时间" label-width="120px">
               <el-col :span="11">
-                <el-date-picker v-model="form.date1" type="date" placeholder="选择日期" style="width: 100%;" />
+                <el-date-picker v-model="form.date1" type="date" placeholder="选择日期" style="width: 100%;"/>
               </el-col>
               <el-col class="line" :span="2">-</el-col>
               <el-col :span="11">
-                <el-time-picker v-model="form.date2" placeholder="选择时间" style="width: 100%;" />
+                <el-time-picker v-model="form.date2" placeholder="选择时间" style="width: 100%;"/>
               </el-col>
             </el-form-item>
 
             <el-form-item label="结束时间(可选)" label-width="120px">
               <el-col :span="11">
-                <el-date-picker v-model="form.date1" type="date" placeholder="选择日期" style="width: 100%;" />
+                <el-date-picker v-model="form.date1" type="date" placeholder="选择日期" style="width: 100%;"/>
               </el-col>
               <el-col class="line" :span="2">-</el-col>
               <el-col :span="11">
-                <el-time-picker v-model="form.date2" placeholder="选择时间" style="width: 100%;" />
+                <el-time-picker v-model="form.date2" placeholder="选择时间" style="width: 100%;"/>
               </el-col>
             </el-form-item>
 
             <el-form-item label="公开问卷" label-width="120px">
-              <el-switch v-model="form.open" />
+              <el-switch v-model="form.open"/>
             </el-form-item>
 
             <el-form-item label="选择群组" label-width="120px" :disabled="form.open">
@@ -43,15 +43,15 @@
                   :autosize="{ minRows: 2, maxRows: 4}"
                   size="medium"
                 >
-                  <el-option label="群组一" value="shanghai" />
-                  <el-option label="群组二" value="beijing" />
+                  <el-option label="群组一" value="shanghai"/>
+                  <el-option label="群组二" value="beijing"/>
                 </el-select>
               </el-col>
             </el-form-item>
 
             <el-form-item label="限制回答人数" label-width="120px">
               <el-col :span="4">
-                <el-switch v-model="form.limited" style="right: 0px" />
+                <el-switch v-model="form.limited" style="right: 0px"/>
               </el-col>
 
               <el-col :span="20">
@@ -67,14 +67,14 @@
 
             <el-form-item label="问卷类型" label-width="120px">
               <el-radio-group v-model="form.resource">
-                <el-radio label="普通问卷" />
-                <el-radio label="优质问卷" />
+                <el-radio label="普通问卷"/>
+                <el-radio label="优质问卷"/>
               </el-radio-group>
             </el-form-item>
 
             <el-form-item label="问卷编辑" label-width="120px">
               <el-button type="primary" style="margin-right: 20px" @click="startEdit">编辑问卷</el-button>
-              <el-button type="primary" plain>模拟答题</el-button>
+              <el-button type="primary" plain @click="preview">模拟答题</el-button>
             </el-form-item>
 
             <el-form-item style="margin-top: 50px">
@@ -91,7 +91,7 @@
             </el-empty>
           </div>
           <div v-else>
-            <Survey :survey="surveyForm" />
+            <Survey :survey="surveyForm"/>
           </div>
         </el-main>
       </el-container>
@@ -102,7 +102,7 @@
         <el-button type="primary" style="margin: 5px" icon="el-icon-arrow-left" @click="isEditing=false">返回创建
         </el-button>
         <br>
-        <div id="surveyCreator" />
+        <div id="surveyCreator"/>
       </div>
     </transition>
   </div>
@@ -113,7 +113,7 @@ import 'survey-core/defaultV2.min.css'
 import 'survey-creator-core/survey-creator-core.min.css'
 import { localization } from 'survey-creator-core'
 import { SurveyCreator } from 'survey-creator-knockout'
-import { Survey, Model, StylesManager } from 'survey-vue'
+import { Model, StylesManager, Survey } from 'survey-vue'
 
 StylesManager.applyTheme('defaultV2')
 const creatorOptions = {
@@ -147,7 +147,6 @@ export default {
   },
   computed: {
     surveyForm: function() {
-      console.log(this.survey)
       return new Model(this.survey)
     }
   },
@@ -158,12 +157,16 @@ export default {
     creator.saveSurveyFunc = (saveNo, callback) => {
       this.survey = creator.JSON
       this.saveNo = saveNo
-      console.log(this.survey)
       callback(saveNo, true)// 将当前问卷保存到本地
     }
     creator.render('surveyCreator')
   },
   methods: {
+    preview() {
+      // 模拟答题
+      const next = this.$router.resolve({ path: '/questionnaire/preview', query: { survey: JSON.stringify(this.survey) }})
+      window.open(next.href, '_blank')
+    },
     onSubmit() {
       this.isEditing = false
       // 提交问卷给后台

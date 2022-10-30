@@ -3,23 +3,14 @@
 </template>
 
 <script>
+// 需要接收路由传参
 import 'survey-core/defaultV2.min.css'
 import { Survey, Model, StylesManager } from 'survey-vue'
 import 'survey-vue/defaultV2.css'
 
 StylesManager.applyTheme('defaultV2')
 
-const surveyJson = {
-  elements: [{
-    name: 'FirstName',
-    title: 'Enter your first name:',
-    type: 'text'
-  }, {
-    name: 'LastName',
-    title: 'Enter your last name:',
-    type: 'text'
-  }]
-}
+let surveyJson
 
 export default {
   name: 'MyFirstSurvey',
@@ -29,10 +20,13 @@ export default {
   data() {
     const survey = new Model(surveyJson)
     survey.onComplete.add(this.alertResults)
-
     return {
       survey
     }
+  },
+  beforeCreate() {
+    const jsontext = this.$route.query['survey']
+    surveyJson = JSON.parse(jsontext)
   },
   methods: {
     alertResults(sender) {

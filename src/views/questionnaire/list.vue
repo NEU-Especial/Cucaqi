@@ -1,162 +1,445 @@
 <template>
-  <el-container style="margin-top: 2%;width: 95%;margin-left: 2%;background-color: #99a9bf">
-    <el-header>
-      <!--      header中定义搜索框以及添加新问卷框-->
-      <el-row>
-        <el-col :span="8">
-          <el-button style="margin-right: 20px" type="primary" icon=" el-icon-refresh">刷新</el-button>
-          <vxe-input v-model="searchContent" style="width: 70%" placeholder="搜索问卷" type="search" clearable/>
-        </el-col>
-        <el-col :span="8">
-          <div class="grid-content "/>
-        </el-col>
-        <el-col :span="8">
-          <vxe-button size="medium" status="primary" content="创建问卷"/>
-          <vxe-button size="medium" status="default" content="历史问卷"/>
-          <vxe-button size="medium" status="danger" content="删除选中" @click="deleteSurveys"/>
-        </el-col>
-      </el-row>
-    </el-header>
-
-    <el-main>
-      <vxe-table
-        border
-        stripe
-        height="550"
-        :loading="loading"
-        :column-config="{resizable: true}"
-        :row-config="{isHover: true}"
-        :checkbox-config="{labelField: 'id', highlight: true, range: true}"
-        :data="tableData"
+  <div class="app-container">
+    <div class="filter-container">
+      <el-input
+        v-model="listQuery.title"
+        placeholder="问卷标题"
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
+      <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
+        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+      </el-select>
+      <el-select v-model="listQuery.type" placeholder="问卷类型" clearable class="filter-item" style="width: 130px">
+        <el-option
+          v-for="item in calendarTypeOptions"
+          :key="item.key"
+          :label="item.display_name+'('+item.key+')'"
+          :value="item.key"
+        />
+      </el-select>
+      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+      </el-select>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+        搜索
+      </el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
       >
-        <vxe-column type="checkbox" title="选择" width="80"/>
-        <vxe-column type="seq" title="序号" width="60"/>
-        <vxe-column field="title" title="标题" width="240" show-overflow="ellipsis"/>
-        <vxe-column field="title" title="创建人" width="120"/>
-        <vxe-column field="title" title="创建时间" width="120"/>
-        <vxe-column field="title" title="开始时间" width="140"/>
-        <vxe-column field="title" title="结束时间" width="140"/>
-        <vxe-column field="title" title="问卷类型" width="80"/>
-        <vxe-column field="title" title="限制人数" width="80"/>
-        <vxe-column field="title" title="答题人数" width="100" sortable/>
-        <vxe-column field="option" title="操作"/>
-      </vxe-table>
-    </el-main>
-    <el-footer>
+        添加问卷
+      </el-button>
 
-      <el-row>
-        <el-col :span="16">
-          <div class="grid-content "/>
-        </el-col>
-        <el-col :span="8">
-          <vxe-pager
-            :loading="loading1"
-            :current-page="tablePage.currentPage"
-            :page-size="tablePage.pageSize"
-            :total="tablePage.totalResult"
-            :layouts="['PrevPage', 'JumpNumber', 'NextPage', 'FullJump', 'Sizes', 'Total']"
-            @page-change="handlePageChange"
+    </div>
+
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      @sort-change="sortChange"
+    >
+      <el-table-column
+        label="ID"
+        prop="id"
+        sortable="custom"
+        align="center"
+        width="80"
+        :class-name="getSortClass('id')"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="问卷标题" min-width="150px" width="300px">
+        <template slot-scope="{row}">
+          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" width="130px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="开始时间" width="130px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.startedTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="结束时间" width="130px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.endTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="限制人数" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.limit }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="答题人数" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curCount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="问卷状态" class-name="status-col" width="100" align="center">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            {{ row.status }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否推荐" width="100px" align="center">
+        <template slot-scope="{row}">
+          {{ row.isRecommend }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作" align="center" width="500" class-name="small-padding fixed-width">
+        <template slot-scope="{row,$index}">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+            编辑问卷
+          </el-button>
+          <el-button
+            v-if="row.status!=='published'"
+            size="mini"
+            type="success"
+            @click="handleModifyStatus(row,'published')"
           >
-          </vxe-pager>
-        </el-col>
-      </el-row>
-    </el-footer>
-  </el-container>
+            发布问卷
+          </el-button>
+          <el-button v-if="row.status!=='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
+            恢复问卷
+          </el-button>
+          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+            删除问卷
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    />
+
+    <!--
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="temp"
+        label-position="left"
+        label-width="70px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-form-item label="Type" prop="type">
+          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
+            <el-option
+              v-for="item in calendarTypeOptions"
+              :key="item.key"
+              :label="item.display_name"
+              :value="item.key"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Date" prop="timestamp">
+          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        </el-form-item>
+        <el-form-item label="Title" prop="title">
+          <el-input v-model="temp.title" />
+        </el-form-item>
+        <el-form-item label="Status">
+          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Imp">
+          <el-rate
+            v-model="temp.importance"
+            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+            :max="3"
+            style="margin-top:8px;"
+          />
+        </el-form-item>
+        <el-form-item label="Remark">
+          <el-input
+            v-model="temp.remark"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            type="textarea"
+            placeholder="Please input"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">
+          Cancel
+        </el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
+-->
+
+    <!--    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
+        <el-table-column prop="key" label="Channel" />
+        <el-table-column prop="pv" label="Pv" />
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
+      </span>
+    </el-dialog>-->
+  </div>
 </template>
 
 <script>
+import { createArticle, fetchList, fetchPv, updateArticle } from '@/api/article'
+import waves from '@/directive/waves' // waves directive
+import { parseTime } from '@/utils'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
-import { VXETable } from 'vxe-table'
+const calendarTypeOptions = [
+  { key: 'CN', display_name: 'China' },
+  { key: 'US', display_name: 'USA' },
+  { key: 'JP', display_name: 'Japan' },
+  { key: 'EU', display_name: 'Eurozone' }
+]
+
+// arr to obj, such as { CN : "China", US : "USA" }
+const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
 
 export default {
-  data() {
-    return {
-      searchContent: '',
-      loading1: false,
-      tableData: [],
-      tablePage: {
-        currentPage: 1,
-        pageSize: 10,
-        totalResult: 0
+  name: 'ComplexTable',
+  components: { Pagination },
+  directives: { waves },
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        published: 'success',
+        draft: 'info',
+        deleted: 'danger'
       }
+      return statusMap[status]
+    },
+    typeFilter(type) {
+      return calendarTypeKeyValue[type]
     }
   },
+  data() {
+    return {
+      tableKey: 0,
+      list: [{
+        title: 'hello world',
+        createdTime: Date.parse(new Date()),
+        startedTime: Date.parse(new Date()),
+        endTime: Date.parse(new Date()),
+        status: 'info',
+        type: '优质问卷',
+        limit: 43,
+        curCount: 3,
+        isRecommend: '是',
+        id: 10
+      }],
+      total: 1,
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 20,
+        importance: undefined,
+        title: undefined,
+        type: undefined,
+        sort: '+id'
+      },
+      importanceOptions: [1, 2, 3],
+      calendarTypeOptions,
+      sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
+      statusOptions: ['published', 'draft', 'deleted'],
+      showReviewer: false,
+      temp: {
+        id: undefined,
+        importance: 1,
+        remark: '',
+        timestamp: new Date(),
+        title: '',
+        type: '',
+        status: 'published'
+      },
+      dialogFormVisible: false,
+      dialogStatus: '',
+      textMap: {
+        update: 'Edit',
+        create: 'Create'
+      },
+      dialogPvVisible: false,
+      pvData: [],
+      rules: {
+        type: [{ required: true, message: 'type is required', trigger: 'change' }],
+        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
+        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+      },
+      downloadLoading: false
+    }
+  },
+  created() {
+    this.getList()
+  },
   methods: {
-    deleteSurveys() {
-      VXETable.modal.confirm('您确定要删除吗？').then(type => {
-        VXETable.modal.message({ content: `删除成功`, status: 'success' })
+    getList() {
+      this.listLoading = false
+      return
+      // eslint-disable-next-line no-unreachable
+      fetchList(this.listQuery).then(response => {
+        this.list = response.data.items
+        this.total = response.data.total
+
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
       })
     },
-    findList() {
-      // 这里发请求，处理数据
+    handleFilter() {
+      this.listQuery.page = 1
+      this.getList()
     },
-    handlePageChange({ currentPage, pageSize }) {
-      this.tablePage.currentPage = currentPage
-      this.tablePage.pageSize = pageSize
-      this.findList()
+    handleModifyStatus(row, status) {
+      this.$message({
+        message: '操作Success',
+        type: 'success'
+      })
+      row.status = status
+    },
+    sortChange(data) {
+      const { prop, order } = data
+      if (prop === 'id') {
+        this.sortByID(order)
+      }
+    },
+    sortByID(order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = '+id'
+      } else {
+        this.listQuery.sort = '-id'
+      }
+      this.handleFilter()
+    },
+    resetTemp() {
+      this.temp = {
+        id: undefined,
+        importance: 1,
+        remark: '',
+        timestamp: new Date(),
+        title: '',
+        status: 'published',
+        type: ''
+      }
+    },
+    handleCreate() {
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    createData() {
+      return
+      // eslint-disable-next-line no-unreachable
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          this.temp.author = 'vue-element-admin'
+          createArticle(this.temp).then(() => {
+            this.list.unshift(this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Created Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    handleUpdate(row) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.temp.timestamp = new Date(this.temp.timestamp)
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    updateData() {
+      return
+      // eslint-disable-next-line no-unreachable
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp)
+          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          updateArticle(tempData).then(() => {
+            const index = this.list.findIndex(v => v.id === this.temp.id)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    handleDelete(row, index) {
+      this.$notify({
+        title: 'Success',
+        message: 'Delete Successfully',
+        type: 'success',
+        duration: 2000
+      })
+      this.list.splice(index, 1)
+    },
+    handleFetchPv(pv) {
+      fetchPv(pv).then(response => {
+        this.pvData = response.data.pvData
+        this.dialogPvVisible = true
+      })
+    },
+    handleDownload() {
+    },
+    formatJson(filterVal) {
+      return this.list.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
+    },
+    getSortClass: function(key) {
+      const sort = this.listQuery.sort
+      return sort === `+${key}` ? 'ascending' : 'descending'
     }
   }
 }
 </script>
-
-<style>
-.el-header, .el-footer {
-  background-color: white;
-  color: #333;
-  text-align: center;
-  line-height: 60px;
-}
-
-.el-aside {
-  background-color: #D3DCE6;
-  color: #333;
-  text-align: center;
-  line-height: 200px;
-}
-
-.el-main {
-  background-color: white;
-  color: #333;
-  text-align: center;
-  line-height: 160px;
-}
-
-body > .el-container {
-  margin-bottom: 40px;
-}
-
-.el-container:nth-child(5) .el-aside,
-.el-container:nth-child(6) .el-aside {
-  line-height: 260px;
-}
-
-.el-container:nth-child(7) .el-aside {
-  line-height: 320px;
-}
-
-.el-col {
-  border-radius: 4px;
-}
-
-.bg-purple-dark {
-  background: #99a9bf;
-}
-
-.bg-purple {
-  background: #d3dce6;
-}
-
-.bg-purple-light {
-  background: #e5e9f2;
-}
-
-.grid-content {
-  border-radius: 4px;
-  min-height: 36px;
-}
-
-.row-bg {
-  padding: 10px 0;
-  background-color: #f9fafc;
-}
-</style>

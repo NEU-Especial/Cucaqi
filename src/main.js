@@ -19,6 +19,8 @@ import 'xe-utils'
 import VXETable from 'vxe-table'
 import 'vxe-table/lib/style.css'
 import 'survey-creator-core/survey-creator-core.i18n'
+import '@/styles/buttons.css'
+
 Vue.use(VXETable)
 Vue.use(ElementUI)
 Vue.config.productionTip = false
