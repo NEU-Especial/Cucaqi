@@ -1,10 +1,11 @@
 package com.cucaqi.service.impl;
 
-import com.cucaqi.mapper.GroupMapper;
-import com.cucaqi.service.IGroupService;
+import com.cucaqi.entity.Survey;
+import com.cucaqi.mapper.SurveyMapper;
+import com.cucaqi.service.ISurveyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import com.cucaqi.entity.Group;
+import com.cucaqi.entity.Lessee;
 /**
  * <p>
  *  服务实现类
@@ -14,6 +15,6 @@ import com.cucaqi.entity.Group;
  * @since 2022-10-31
  */
 @Service
-public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements IGroupService {
+public class SurveyServiceImpl extends ServiceImpl<SurveyMapper, Survey> implements ISurveyService {
 
 }

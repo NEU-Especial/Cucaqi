@@ -1,7 +1,7 @@
 package com.cucaqi.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cucaqi.entity.Group;
+import com.cucaqi.entity.Lessee;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -12,8 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author GaoSong Xu
  * @since 2022-10-31
  */
-
 @Mapper
-public interface GroupMapper extends BaseMapper<Group> {
+public interface LesseeMapper extends BaseMapper<Lessee> {
 
 }

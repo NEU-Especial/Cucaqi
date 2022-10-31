@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2022-10-31
  */
 @RestController
-@RequestMapping("/cucaqi/group")
-public class GroupController {
+@RequestMapping("/cucaqi/lessee")
+public class LesseeController {
 
 }
