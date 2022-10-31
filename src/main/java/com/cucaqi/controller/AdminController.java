@@ -16,4 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/cucaqi/admin")
 public class AdminController {
 
+
+
+
 }
