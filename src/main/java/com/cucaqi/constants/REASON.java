@@ -9,4 +9,10 @@ public class REASON {
 
     public static final int NOT_FOUNT = -7;
 
+    public static final int WRONG_ANSWER = -6;
+
+    public static final int UPDATE_SUCCESS = 1;
+
+    public static final int Delete_SUCCESS = 1;
+
 }
