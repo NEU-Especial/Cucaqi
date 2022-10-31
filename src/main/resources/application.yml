@@ -2,13 +2,21 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/cucaqi?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://localhost:3306/cucaqi?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: root
-      password: root
+      password: 123456lzb
 
 mybatis:
   type-aliases-package: com.cucaqi.entity
-
+#在springboot的yml配置文件中配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+  global-config:
+    db-config:
+      logic-delete-field: deleted #默认deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
 server:
   port: 8085
 
