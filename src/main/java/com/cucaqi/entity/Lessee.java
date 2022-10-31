@@ -40,6 +40,15 @@ public class Lessee implements Serializable {
 
     private Integer createdBy;
 
+    private String InviteCode;
+
+    public String getInviteCode() {
+        return InviteCode;
+    }
+
+    public void setInviteCode(String inviteCode) {
+        InviteCode = inviteCode;
+    }
 
     public Integer getId() {
         return id;

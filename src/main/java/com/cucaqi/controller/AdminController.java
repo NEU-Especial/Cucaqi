@@ -25,7 +25,6 @@ public class AdminController {
     @GetMapping
     public Result test(){
         Result result = new Result();
-
         result.setData(adminService.list());
         return result;
     }

@@ -33,6 +33,15 @@ public class Admin implements Serializable {
 
     private Integer role;
 
+    private String InviteCode;
+
+    public String getInviteCode() {
+        return InviteCode;
+    }
+
+    public void setInviteCode(String inviteCode) {
+        InviteCode = inviteCode;
+    }
 
     public Integer getId() {
         return id;

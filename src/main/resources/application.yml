@@ -8,7 +8,8 @@ spring:
 
 mybatis:
   type-aliases-package: com.cucaqi.entity
-#在springboot的yml配置文件中配置
+  mapper-locations: classpath*:/mapper/*.xml
+  
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
@@ -17,6 +18,8 @@ mybatis-plus:
       logic-delete-field: deleted #默认deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
+ 
+
 server:
   port: 8085
 
