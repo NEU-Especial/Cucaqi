@@ -124,7 +124,20 @@ export const constantRoutes = [
         component: () => import('@/views/questionnaire/editor'),
         hidden: true,
         meta: { title: '编辑问卷', icon: 'tree' }
+      },
+      {
+        path: '/user',
+        component: Layout,
+        children: [
+          {
+            path: 'index',
+            name: 'Control',
+            component: () => import('@/views/user/user.vue'),
+            meta: { title: '用户管理', icon: 'form' }
+          }
+        ]
       }
+
     ]
   },
 
