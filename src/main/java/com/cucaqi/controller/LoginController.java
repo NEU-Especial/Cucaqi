@@ -30,9 +30,13 @@ public class LoginController {
     @Autowired
     private ISecurityQuesService securityQuesService;
 
-    @PostMapping("/")
+    @PostMapping("/password")
     @ResponseBody
-    public Result LoginByPassword(@RequestBody String userName, String password, int role) {
+    public Result LoginByPassword(@RequestBody BaseUser baseUser ) {
+        String userName=baseUser.getUsername();
+        String password=baseUser.getPassword();
+        int role=baseUser.getRole();
+
         //最终返回jwt字段，标识用户的身份
         Object o = loginService.LoginByPassword(userName, password, role);
         if (o == null) {
@@ -62,7 +66,12 @@ public class LoginController {
 
     @PostMapping("/register")
     @ResponseBody
-    public Result Register(@RequestBody String userName, String password, int role, String inviteCode) {
+    public Result Register(@RequestBody BaseUser user ) {
+        String userName=user.getUsername();
+        String password=user.getPassword();
+        int role=user.getRole();
+
+        String inviteCode=user.getInviteCode();
         int res = loginService.Register(userName, password, role, inviteCode);
         switch (res) {
             case 1:
@@ -88,7 +97,14 @@ public class LoginController {
     //密保找回密码，检查用户名密码
     @PostMapping("/findbackByQues")
     @ResponseBody
-    public Result findBackByQues(@RequestBody String username, String password, int questionId, String answer, int role) {
+    public Result findBackByQues(@RequestBody BaseUser baseUser ) {
+
+        String username=baseUser.getUsername();
+        String password=baseUser.getPassword();
+        int role=baseUser.getRole();
+        int questionId=baseUser.getSecurityQuestion();
+        String answer=baseUser.getSecurityAnswer();
+
         int i = loginService.FindBackByQuestion(username, password, role, questionId, answer);
         if (i == UPDATE_SUCCESS) {
             return new Result(HTTP.SUCCESS, "密码找回成功");
