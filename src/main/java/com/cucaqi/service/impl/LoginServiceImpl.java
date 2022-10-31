@@ -105,4 +105,49 @@ public class LoginServiceImpl implements ILoginService {
         }
         return REASON.UNKNOWN_ROLE;
     }
+
+
+    @Override
+    public int FindBackByQuestion(String userName, String password, int role, int questionId, String answer) {
+        switch (role) {
+            case ROLE.ADMIN:
+                Admin admin = adminMapper.selectOne(new QueryWrapper<Admin>().and(i -> {
+                    i.eq("username", userName).eq("securityQuestion", questionId).eq("securityAnswer", answer);
+                }));
+                if (admin == null) {
+                    return REASON.WRONG_ANSWER;
+                }
+                admin.setPassword(password);
+                return adminMapper.updateById(admin);
+
+            case ROLE.LESSEE:
+                Lessee lessee = lesseeMapper.selectOne(new QueryWrapper<Lessee>().and(i -> {
+                    i.eq("username", userName).eq("securityQuestion", questionId).eq("securityAnswer", answer);
+                }));
+                if (lessee == null) {
+                    return REASON.WRONG_ANSWER;
+                }
+                lessee.setPassword(password);
+                return lesseeMapper.updateById(lessee);
+
+            case ROLE.USER:
+                User user = userMapper.selectOne(new QueryWrapper<User>().and(i -> {
+                    i.eq("username", userName).eq("securityQuestion", questionId).eq("securityAnswer", answer);
+                }));
+                if (user == null) {
+                    return REASON.WRONG_ANSWER;
+                }
+                user.setPassword(password);
+                return userMapper.updateById(user);
+
+            case ROLE.ANSWERER:
+                Answerer answerer = answererMapper.selectOne(new QueryWrapper<Answerer>().and(i -> {
+                    i.eq("username", userName).eq("securityQuestion", questionId).eq("securityAnswer", answer);
+                }));
+                answerer.setPassword(password);
+                return answererMapper.updateById(answerer);
+            default:
+                return REASON.UNKNOWN_ROLE;
+        }
+    }
 }
