@@ -19,4 +19,18 @@ public interface ILesseeService extends IService<Lessee> {
      */
     public List<Lessee> getLesseeList();
 
+    /**
+     * 添加租户
+     * @param lessee
+     * @return
+     */
+    public Integer addLessee(Lessee lessee);
+
+    /**
+     * 删除租户
+     * @param lessee
+     * @return
+     */
+    public Integer deleteLessee(int id);
+
 }

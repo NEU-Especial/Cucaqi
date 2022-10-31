@@ -2,8 +2,10 @@ package com.cucaqi.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.Lessee;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -17,11 +19,22 @@ import java.util.List;
  */
 @Mapper
 public interface LesseeMapper extends BaseMapper<Lessee> {
-    @Select("select * from t_lessee")
+    @Select("select * from t_lessee where deleted = 0")
     /**
      * 获取所有租户信息
      */
     public List<Lessee> getLesseeList();
+
+    /**
+     * 添加租户
+     * @param lessee
+     * @return
+     */
+    @Insert("insert into t_lessee values(null,#{username},#{password},#{telephone},#{securityQuestion},#{securityAnswer},#{role},#{payment},#{deleted},#{createdBy},#{inviteCode})")
+    public Integer addLessee(Lessee lessee);
+
+    @Update("update t_lessee set deleted =1 where id=#{id} ")
+    public Integer deleteLessee(int id);
 
 
 }

@@ -1,5 +1,7 @@
 package com.cucaqi.controller;
 
+import com.cucaqi.constants.HTTP;
+import com.cucaqi.entity.Lessee;
 import com.cucaqi.entity.Result;
 import com.cucaqi.entity.User;
 import com.cucaqi.service.IUserService;
@@ -37,17 +39,15 @@ public class UserController {
         try {
             List<User> userlist = iUserService.getUserlist(id);
             result.setData(userlist);
-            result.setCode(200);
+            result.setCode(HTTP.SUCCESS);
             result.setMsg("查询成功");
         }
-catch (Exception e){
-            result.setCode(404);
-            result.setMsg("ERROR");
+        catch (Exception e){
+            result.setCode(HTTP.NOT_FOUND);
+            result.setMsg("查找用户失败");
 
 
 }
-
-        //System.out.println(userlist);
         return result;
     }
 

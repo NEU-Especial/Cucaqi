@@ -21,4 +21,7 @@ public class Result {
         this.code = code;
         this.data = data;
     }
+
+    public Result() {
+    }
 }

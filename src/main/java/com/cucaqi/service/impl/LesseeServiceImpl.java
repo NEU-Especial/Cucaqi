@@ -28,5 +28,12 @@ public class LesseeServiceImpl extends ServiceImpl<LesseeMapper, Lessee> impleme
     public List<Lessee> getLesseeList(){
         return lesseeMapper.getLesseeList();
     }
-
+@Override
+    public Integer addLessee(Lessee lessee){
+        return lesseeMapper.addLessee(lessee);
+    }
+    @Override
+    public Integer deleteLessee(int id){
+        return  lesseeMapper.deleteLessee(id);
+    }
 }

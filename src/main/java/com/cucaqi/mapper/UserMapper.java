@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
-    @Select("select t_user.* from t_user  join t_lessee on t_user.createdBy=t_lessee.id where t_lessee.id=#{id}")
+    @Select("select t_user.* from t_user  join t_lessee on t_user.createdBy=t_lessee.id where t_lessee.id=#{id} and deleted = 0")
     /**
      * 根据租户id查询用户
      */
