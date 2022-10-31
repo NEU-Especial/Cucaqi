@@ -10,8 +10,6 @@ public interface IInfoService {
     //绑定密保
     int BindSecurityQuestion(int id, int role, int questionId, String answer);
 
-    //获取所有密保
-    List<SecurityQuestion> GetAllSecurityQuestion();
 
     //更新用户信息，不允许更新用户名
     int UpdatePassword(int id, int role, String Password);
