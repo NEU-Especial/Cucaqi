@@ -4,6 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+src/main/java/com/cucaqi/**/.gitkeep
+
 ### STS ###
 .apt_generated
 .classpath
@@ -12,7 +14,8 @@ target/
 .settings
 .springBeans
 .sts4-cache
-.gitkeep
+
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
