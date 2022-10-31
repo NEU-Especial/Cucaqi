@@ -4,7 +4,7 @@ import com.cucaqi.mapper.AdminMapper;
 import com.cucaqi.service.IAdminService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-
+import com.cucaqi.entity.Admin;
 /**
  * <p>
  *  服务实现类

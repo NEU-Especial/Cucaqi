@@ -4,7 +4,7 @@ import com.cucaqi.mapper.GroupMapper;
 import com.cucaqi.service.IGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-
+import com.cucaqi.entity.Group;
 /**
  * <p>
  *  服务实现类

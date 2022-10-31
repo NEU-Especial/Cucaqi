@@ -1,5 +1,6 @@
 package com.cucaqi.service.impl;
 
+import com.cucaqi.entity.Lessee;
 import com.cucaqi.mapper.LesseeMapper;
 import com.cucaqi.service.ILesseeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
