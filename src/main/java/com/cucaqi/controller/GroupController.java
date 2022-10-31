@@ -16,4 +16,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/cucaqi/group")
 public class GroupController {
 
+
 }

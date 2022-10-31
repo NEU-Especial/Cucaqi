@@ -2,12 +2,17 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/cucaqi?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+#      url: jdbc:mysql://localhost:3306/cucaqi?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://localhost:3306/cucaqi
+#      ?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: root
-      password: root
+      password: "020127"
 
 mybatis:
   type-aliases-package: com.cucaqi.entity
+  configuration:
+   map-underscore-to-camel-case: true
+
 
 server:
   port: 8085

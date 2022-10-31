@@ -4,7 +4,10 @@ import com.cucaqi.entity.Lessee;
 import com.cucaqi.mapper.LesseeMapper;
 import com.cucaqi.service.ILesseeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,5 +19,14 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class LesseeServiceImpl extends ServiceImpl<LesseeMapper, Lessee> implements ILesseeService {
+    @Autowired
+    private LesseeMapper lesseeMapper;
+    @Override
+    /**
+     * 获取所有租户信息
+     */
+    public List<Lessee> getLesseeList(){
+        return lesseeMapper.getLesseeList();
+    }
 
 }

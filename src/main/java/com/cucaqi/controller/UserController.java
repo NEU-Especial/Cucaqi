@@ -1,8 +1,16 @@
 package com.cucaqi.controller;
 
+import com.cucaqi.entity.Result;
+import com.cucaqi.entity.User;
+import com.cucaqi.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,5 +23,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/cucaqi/user")
 public class UserController {
+    @Autowired
+    private IUserService iUserService;
+
+    /**
+     * 根据租户id获取该租户下所有的用户
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result listUser(@PathVariable int id){
+        Result result = new Result();
+        try {
+            List<User> userlist = iUserService.getUserlist(id);
+            result.setData(userlist);
+            result.setCode(200);
+            result.setMsg("查询成功");
+        }
+catch (Exception e){
+            result.setCode(404);
+            result.setMsg("ERROR");
+
+
+}
+
+        //System.out.println(userlist);
+        return result;
+    }
+
 
 }
