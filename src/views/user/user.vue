@@ -51,7 +51,7 @@
       border
       fit
       highlight-current-row
-      style="width: 39%;"
+      style="width: 1000px;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -59,14 +59,14 @@
         prop="id"
         sortable="custom"
         align="center"
-        width="80"
+        width="200"
         :class-name="getSortClass('id')"
       >
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户姓名" min-width="50px" width="80px">
+      <el-table-column label="用户姓名" min-width="50px" width="200px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
         </template>
@@ -271,7 +271,7 @@
           type: undefined,
           sort: '+id'
         },
-        importanceOptions: ['有群组', '无群组'],
+        importanceOptions: ['有租户', '无租户'],
         calendarTypeOptions,
         sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
         // statusOptions: ['有群组', '无群组'],
