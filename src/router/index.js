@@ -128,6 +128,22 @@ export const constantRoutes = [
     ]
   },
 
+
+  {
+    path: '/lessee',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Control',
+        component: () => import('@/views/lessee/lessee'),
+        meta: { title: '租户管理', icon: 'form' }
+      }
+    ]
+
+  },
+
+
   {
     path: '/form',
     component: Layout,
