@@ -12,5 +12,8 @@ public interface ILoginService {
 
 
 
+    int  Register(String userName, String Password, int role,String inviteCode);
+
+
 
 }

@@ -1,7 +1,8 @@
-package com.cucaqi.controller.login;
+package com.cucaqi.controller;
 
 
 import com.cucaqi.constants.HTTP;
+import com.cucaqi.constants.REASON;
 import com.cucaqi.constants.ROLE;
 import com.cucaqi.entity.*;
 import com.cucaqi.service.ILoginService;
@@ -19,7 +20,7 @@ public class LoginController {
     @Autowired
     private ILoginService loginService;
 
-    @PostMapping("/password")
+    @PostMapping("/byPassword")
     @ResponseBody
     public Result LoginByPassword(@RequestBody String userName, String password, int role) {
         //最终返回jwt字段，标识用户的身份
@@ -48,4 +49,24 @@ public class LoginController {
         }
         return null;
     }
+
+    @PostMapping("/register")
+    @ResponseBody
+    public Result Register(@RequestBody String userName, String password, int role, String inviteCode) {
+        int res = loginService.Register(userName, password, role, inviteCode);
+        switch (res) {
+            case 1:
+                return new Result(HTTP.SUCCESS, "注册成功");
+            case REASON.DUP_USERNAME:
+                return new Result(HTTP.BAD_REQ, "注册失败,用户名重复");
+            case REASON.WRONG_CODE:
+                return new Result(HTTP.BAD_REQ, "注册失败,邀请码无效");
+            case REASON.UNKNOWN_ROLE:
+                return new Result(HTTP.BAD_REQ, "注册失败,未知角色");
+        }
+        return new Result(HTTP.BAD_REQ, "注册失败,未知错误");
+    }
+
+
+
 }
