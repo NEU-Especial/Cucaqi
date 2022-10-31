@@ -1,21 +1,43 @@
 /*
- Navicat MySQL Data Transfer
+ Navicat Premium Data Transfer
 
  Source Server         : localhost_3306
  Source Server Type    : MySQL
- Source Server Version : 50719
+ Source Server Version : 50723
  Source Host           : localhost:3306
  Source Schema         : cucaqi
 
  Target Server Type    : MySQL
- Target Server Version : 50719
+ Target Server Version : 50723
  File Encoding         : 65001
 
- Date: 31/10/2022 12:28:45
+ Date: 31/10/2022 19:18:34
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for answerer_survey
+-- ----------------------------
+DROP TABLE IF EXISTS `answerer_survey`;
+CREATE TABLE `answerer_survey`  (
+  `questionId` int(11) NOT NULL,
+  `answererId` int(11) NOT NULL,
+  `createdTime` datetime(0) NULL DEFAULT NULL,
+  `answer` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  PRIMARY KEY (`questionId`, `answererId`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for group_user
+-- ----------------------------
+DROP TABLE IF EXISTS `group_user`;
+CREATE TABLE `group_user`  (
+  `groupId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  PRIMARY KEY (`groupId`, `userId`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for t_admin
@@ -29,10 +51,11 @@ CREATE TABLE `t_admin`  (
   `securityQuestion` int(11) NULL DEFAULT NULL,
   `securityAnswer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `role` int(11) NULL DEFAULT NULL,
+  `inviteCode` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
   CONSTRAINT `t_admin_ibfk_1` FOREIGN KEY (`securityQuestion`) REFERENCES `t_security_question` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for t_answerer
@@ -47,14 +70,14 @@ CREATE TABLE `t_answerer`  (
   `securityAnswer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `role` int(11) NULL DEFAULT NULL,
   `payment` float NULL DEFAULT NULL,
-  `deletedTime` datetime NULL DEFAULT NULL,
+  `deleted` int(11) UNSIGNED NULL DEFAULT 0,
   `createdBy` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `createdBy`(`createdBy`) USING BTREE,
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
   CONSTRAINT `t_answerer_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `t_answerer_ibfk_2` FOREIGN KEY (`securityQuestion`) REFERENCES `t_security_question` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for t_answerer_survey
@@ -63,7 +86,7 @@ DROP TABLE IF EXISTS `t_answerer_survey`;
 CREATE TABLE `t_answerer_survey`  (
   `surveyId` int(11) NOT NULL,
   `answererId` int(11) NOT NULL,
-  `createdTime` datetime NULL DEFAULT NULL,
+  `createdTime` datetime(0) NULL DEFAULT NULL,
   `answer` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
   PRIMARY KEY (`surveyId`, `answererId`) USING BTREE,
   INDEX `answerId`(`answererId`) USING BTREE,
@@ -79,7 +102,8 @@ CREATE TABLE `t_group`  (
   `id` int(11) NOT NULL,
   `groupName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `createdBy` int(11) NULL DEFAULT NULL,
-  `createdTime` datetime NULL DEFAULT NULL,
+  `createdTime` datetime(0) NULL DEFAULT NULL,
+  `deleted` int(11) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `createdBy`(`createdBy`) USING BTREE,
   CONSTRAINT `createdBy` FOREIGN KEY (`createdBy`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -111,8 +135,9 @@ CREATE TABLE `t_lessee`  (
   `securityAnswer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `role` int(11) NULL DEFAULT NULL,
   `payment` float NULL DEFAULT NULL,
-  `deletedTime` datetime NULL DEFAULT NULL,
+  `deleted` int(11) NULL DEFAULT 0,
   `createdBy` int(11) NULL DEFAULT NULL,
+  `inviteCode` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `createdBy`(`createdBy`) USING BTREE,
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
@@ -138,15 +163,16 @@ CREATE TABLE `t_survey`  (
   `id` int(11) NOT NULL,
   `content` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
   `createdBy` int(11) NULL DEFAULT NULL,
-  `startTime` datetime NULL DEFAULT NULL,
-  `endTime` datetime NULL DEFAULT NULL,
+  `startTime` datetime(0) NULL DEFAULT NULL,
+  `endTime` datetime(0) NULL DEFAULT NULL,
   `limitCount` int(11) NULL DEFAULT NULL,
   `curCount` int(11) NULL DEFAULT NULL,
   `isPublic` tinyint(1) NULL DEFAULT NULL,
   `style` int(11) NULL DEFAULT NULL,
   `isRecommon` tinyint(1) NULL DEFAULT NULL,
   `state` int(11) NULL DEFAULT NULL,
-  `createdTime` datetime NULL DEFAULT NULL,
+  `createdTime` datetime(0) NULL DEFAULT NULL,
+  `deleted` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `createdBy`(`createdBy`) USING BTREE,
   CONSTRAINT `t_survey_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -165,13 +191,13 @@ CREATE TABLE `t_user`  (
   `securityAnswer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `role` int(11) NULL DEFAULT NULL,
   `payment` float NULL DEFAULT NULL,
-  `deletedTime` datetime NULL DEFAULT NULL,
+  `deleted` int(11) NULL DEFAULT 0,
   `createdBy` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `createdBy`(`createdBy`) USING BTREE,
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
   CONSTRAINT `t_user_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_lessee` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `t_user_ibfk_2` FOREIGN KEY (`securityQuestion`) REFERENCES `t_security_question` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
