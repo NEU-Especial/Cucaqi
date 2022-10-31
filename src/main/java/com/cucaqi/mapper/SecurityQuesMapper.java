@@ -1,5 +1,7 @@
 package com.cucaqi.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cucaqi.entity.SecurityQuestion;
 import org.apache.ibatis.annotations.Mapper;
 /**
  * <p>
@@ -11,5 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 
 @Mapper
-public interface SecurityQuesMapper {
+public interface SecurityQuesMapper extends BaseMapper<SecurityQuestion> {
+
+
 }
