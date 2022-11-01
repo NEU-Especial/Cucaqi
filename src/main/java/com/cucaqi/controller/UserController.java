@@ -4,6 +4,7 @@ import com.cucaqi.constants.HTTP;
 import com.cucaqi.entity.Lessee;
 import com.cucaqi.entity.Result;
 import com.cucaqi.entity.User;
+import com.cucaqi.service.ILesseeService;
 import com.cucaqi.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,8 @@ import static com.cucaqi.controller.LesseeController.exist;
 public class UserController {
     @Autowired
     private IUserService iUserService;
+    @Autowired
+    private ILesseeService iLesseeService;
 
     /**
      * 根据租户id获取该租户下所有的用户
@@ -34,18 +37,23 @@ public class UserController {
     @GetMapping("/{id}")
     public Result listUser(@PathVariable int id){
         Result result = new Result();
-        try {
-            List<User> userlist = iUserService.getUserlist(id);
-            result.setData(userlist);
-            result.setCode(HTTP.SUCCESS);
-            result.setMsg("查询成功");
+        if(iLesseeService.getById(id)==null){
+            result.setMsg("查询失败--该租户不存在");
+            result.setCode(HTTP.SERVER_ERR);
         }
-        catch (Exception e){
-            result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("查找用户失败--"+e.getLocalizedMessage());
+        else {
+            try {
+                List<User> userlist = iUserService.getUserlist(id);
+                result.setData(userlist);
+                result.setCode(HTTP.SUCCESS);
+                result.setMsg("查询成功");
+            }
+            catch (Exception e){
+                result.setCode(HTTP.NOT_FOUND);
+                result.setMsg("查找用户失败--"+e.getLocalizedMessage());
+            }
+        }
 
-
-}
         return result;
     }
 
@@ -57,7 +65,10 @@ public class UserController {
     @PostMapping("/addUser")
     public Result addUser(@RequestBody User user){
         Result result =new Result();
-
+        if(user==null){
+            result.setCode(HTTP.SERVER_ERR);
+            result.setMsg("添加失败--添加的用户为空");
+        }
         try {
             boolean save = iUserService.save(user);
             result.setCode(HTTP.SUCCESS);
@@ -67,10 +78,7 @@ public class UserController {
             result.setCode(HTTP.NOT_FOUND);
             result.setMsg("添加用户失败--"+e.getLocalizedMessage());
         }
-
         return result;
-
-
     }
 
     /**
@@ -80,25 +88,55 @@ public class UserController {
      */
     @DeleteMapping("/deleteUser")
     public Result deleteUser(@RequestBody User user){
-        Result result=new Result();
-        try{
-            int id=user.getId();
-            Integer res = iUserService.deleteUser(id);
-            if (res==exist){
-                result.setMsg("删除失败--该用户不是无数据关联用户");
-                result.setCode(HTTP.SERVER_ERR);
-            }
-            else {
-                result.setCode(HTTP.SUCCESS);
-                result.setMsg("删除成功");
-            }
-        }
-        catch (Exception e){
-            result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("删除用户失败--"+e.getLocalizedMessage());
 
+        Result result=new Result();
+        int id=user.getId();
+        if(iUserService.getById(id)==null){
+            result.setMsg("删除失败--该用户不存在");
+            result.setCode(HTTP.SERVER_ERR);
         }
+        else {
+            try{
+
+                Integer res = iUserService.deleteUser(id);
+                if (res==exist){
+                    result.setMsg("删除失败--该用户不是无数据关联用户");
+                    result.setCode(HTTP.SERVER_ERR);
+                }
+                else {
+                    result.setCode(HTTP.SUCCESS);
+                    result.setMsg("删除成功");
+                }
+            }
+            catch (Exception e){
+                result.setCode(HTTP.NOT_FOUND);
+                result.setMsg("删除用户失败--"+e.getLocalizedMessage());
+
+            }
+        }
+
         return  result;
+    }
+    @PutMapping("/updateUser")
+    public Result updateUser(@RequestBody User user){
+        Result result=new Result();
+        int id=user.getId();
+        if(iUserService.getById(id)==null){
+            result.setMsg("修改失败--该用户不存在");
+            result.setCode(HTTP.SERVER_ERR);
+        }
+        else {
+            try {
+                iUserService.updateById(user);
+            }
+            catch (Exception e){
+                result.setCode(HTTP.NOT_FOUND);
+                result.setMsg("用户修改失败--"+e.getLocalizedMessage());
+            }
+        }
+
+        return  result;
+
     }
 
 }
