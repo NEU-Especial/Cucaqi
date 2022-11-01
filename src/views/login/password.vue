@@ -12,6 +12,17 @@
       <div class="title-container">
         <h3 class="title">Cucaqi</h3>
       </div>
+      <el-form-item prop="roles">
+        <el-select v-model="loginForm.role" :label="label" style="display: block;" placeholder="身份选择">
+          <el-option
+            v-for="item in roles"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            @click="loginForm.label=item.label"
+          />
+        </el-select>
+      </el-form-item>
 
       <el-form-item prop="username">
         <span class="svg-container">
@@ -20,7 +31,6 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          auto-complete="on"
           name="username"
           placeholder="Username"
           tabindex="1"
@@ -47,6 +57,7 @@
         </span>
       </el-form-item>
 
+      <br>
       <el-button
         :loading="loading"
         style="width:48%;margin-bottom:30px;"
@@ -60,7 +71,7 @@
         style="width:48%;margin-bottom:30px;float: right"
         type="default"
         @click.native.prevent="handleTelephoneLogin"
-      >短信登陆
+      >验证码登陆
       </el-button>
 
       <div class="tips" style="margin-left: 10px">
@@ -76,6 +87,8 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { loginByPassword } from '@/api/login'
+import { Message } from 'element-ui'
 
 export default {
   name: 'LoginByPassword',
@@ -97,7 +110,8 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '123456',
+        role: 1001
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -105,7 +119,23 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      label: '管理员',
+      roles: [
+        {
+          value: 1001,
+          label: '管理员'
+        }, {
+          value: 1002,
+          label: '租户'
+        }, {
+          value: 1003,
+          label: '用户'
+        }, {
+          value: 1004,
+          label: '答者'
+        }
+      ]
     }
   },
   watch: {
@@ -129,16 +159,25 @@ export default {
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
-        if (valid) {
+        if (valid) { // 校验成功登陆
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+          loginByPassword(this.loginForm).then(res => {
             this.loading = false
-          }).catch(() => {
+            // 需要把用户信息进行保存，之后随时取用
+            this.$store.commit('user/SetUser', res.data)
+            Message({
+              message: '登陆成功',
+              type: 'success',
+              duration: 2 * 1000
+            })
+            setTimeout(() => {
+              this.$router.push('/dashboard')
+            }, 1 * 1000)
+          }).catch(
             this.loading = false
-          })
+          )
         } else {
-          console.log('error submit!!')
+          console.log('请输入合法校验信息')
           return false
         }
       })
@@ -151,9 +190,6 @@ export default {
 </script>
 
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
 $bg: #2d3a4b;
 $light_gray: #fff;
 $cursor: #fff;
