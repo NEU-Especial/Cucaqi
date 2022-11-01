@@ -34,13 +34,13 @@ public class GroupController {
     @PostMapping
     public Result save(@RequestBody Group group){
         groupService.save(group);
-        return new Result(HTTP.SUCCESS,"保存成功");
+        return new Result(HTTP.SUCCESS,"现在保存成功");
     }
-    @DeleteMapping("/{id}")
-    public Result delete(@PathVariable Integer id){
+    @DeleteMapping("/deleteGroup")
+    public Result delete(@RequestBody Group group){
         //判断群组下是否有关联答者
-        if(!groupService.hasAnswerer(id)) {
-            groupService.removeById(id);
+        if(!groupService.hasAnswerer(group.getId())) {
+            groupService.removeById(group.getId());
             return new Result(HTTP.SUCCESS,"删除成功");
         }
         return new Result(HTTP.NOT_FOUND,"该群组不允许删除!");
