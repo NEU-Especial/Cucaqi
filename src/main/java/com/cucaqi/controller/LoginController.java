@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import static com.cucaqi.constants.REASON.UPDATE_SUCCESS;
+import static com.cucaqi.constants.REASON.*;
 
 
 /**
@@ -30,11 +33,15 @@ public class LoginController {
     @Autowired
     private ISecurityQuesService securityQuesService;
 
-    @PostMapping("/")
+    @PostMapping("/password")
     @ResponseBody
-    public Result LoginByPassword(@RequestBody String userName, String password, int role) {
+    public Result LoginByPassword(@RequestBody BaseUser baseUser) {
+        String userName = baseUser.getUsername();
+        String password = baseUser.getPassword();
+        int role = baseUser.getRole();
+
         //最终返回jwt字段，标识用户的身份
-        Object o = loginService.LoginByPassword(userName, password, role);
+        Object o = loginService.GetUserByUserNameAndPassword(userName, password, role);
         if (o == null) {
             //说明查不到
             return new Result(HTTP.NOT_FOUND, "登陆失败,用户名密码错误", null);
@@ -43,18 +50,22 @@ public class LoginController {
             case ROLE.ADMIN:
                 Admin admin = (Admin) o;
                 admin.setPassword("");
+                admin.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, admin);
             case ROLE.LESSEE:
                 Lessee lessee = (Lessee) o;
                 lessee.setPassword("");
+                lessee.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, lessee);
             case ROLE.USER:
                 User user = (User) o;
                 user.setPassword("");
+                user.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, user);
             case ROLE.ANSWERER:
                 Answerer answerer = (Answerer) o;
                 answerer.setPassword("");
+                answerer.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, answerer);
         }
         return null;
@@ -62,8 +73,13 @@ public class LoginController {
 
     @PostMapping("/register")
     @ResponseBody
-    public Result Register(@RequestBody String userName, String password, int role, String inviteCode) {
-        int res = loginService.Register(userName, password, role, inviteCode);
+    public Result Register(@RequestBody BaseUser user) {
+        String userName = user.getUsername();
+        String password = user.getPassword();
+        int role = user.getRole();
+
+        String inviteCode = user.getInviteCode();
+        int res = loginService.InsertUser(userName, password, role, inviteCode);
         switch (res) {
             case 1:
                 return new Result(HTTP.SUCCESS, "注册成功");
@@ -88,7 +104,14 @@ public class LoginController {
     //密保找回密码，检查用户名密码
     @PostMapping("/findbackByQues")
     @ResponseBody
-    public Result findBackByQues(@RequestBody String username, String password, int questionId, String answer, int role) {
+    public Result findBackByQues(@RequestBody BaseUser baseUser) {
+
+        String username = baseUser.getUsername();
+        String password = baseUser.getPassword();
+        int role = baseUser.getRole();
+        int questionId = baseUser.getSecurityQuestion();
+        String answer = baseUser.getSecurityAnswer();
+
         int i = loginService.FindBackByQuestion(username, password, role, questionId, answer);
         if (i == UPDATE_SUCCESS) {
             return new Result(HTTP.SUCCESS, "密码找回成功");
@@ -97,5 +120,72 @@ public class LoginController {
         }
     }
 
+    //获取邮箱验证码
+    @GetMapping("/authCode/{email}/{role}")
+    @ResponseBody
+    public Result getAuthCodeByEmail(@PathVariable String email, @PathVariable int role, HttpSession session) {
+        int code = loginService.askAuthCodeByEmail(email, role);
+        if (code != SEND_FAIL) {
+            //表示发送成功
+            session.setAttribute(email + role, code);
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    //删除email
+                    session.removeAttribute(email + role);
+                }
+            };
+            //实例化这个task任务
+            Timer timer = new Timer();
+            timer.schedule(task, 180000);//三分钟之后执行task任务
+            return new Result(HTTP.SUCCESS, "验证码发送成功");
+        }
+        return new Result(HTTP.SERVER_ERR, "发送失败");
+    }
 
+
+    //使用邮箱验证码登陆，只需要填写邮箱以及选择角色，找到以后会去找到对应的角色信息
+    @PostMapping("/email/{code}")
+    @ResponseBody
+    public Result LoginByEmail(@RequestBody BaseUser baseUser, @PathVariable String code, HttpSession session) {
+        //只提交role，以及email信息
+        Object o = session.getAttribute(baseUser.getEmail() + baseUser.getRole());
+        if (o == null) {
+            return new Result(HTTP.NOT_FOUND, "验证码已失效");
+        }
+        String rightCode = (String) o;
+        if (!rightCode.equals(code)) {
+            return new Result(HTTP.NOT_FOUND, "验证码错误");
+        }
+        //此时需要查询用户
+        o = loginService.GetUserByEmail(baseUser.getEmail(), baseUser.getRole());
+        if (o == null) {
+            //说明查不到
+            return new Result(HTTP.NOT_FOUND, "登陆失败,未知错误", null);
+        }
+        switch (baseUser.getRole()) {
+            case ROLE.ADMIN:
+                Admin admin = (Admin) o;
+                admin.setPassword("");
+                admin.setSecurityAnswer("");
+                return new Result(HTTP.SUCCESS, admin);
+            case ROLE.LESSEE:
+                Lessee lessee = (Lessee) o;
+                lessee.setPassword("");
+                lessee.setSecurityAnswer("");
+
+                return new Result(HTTP.SUCCESS, lessee);
+            case ROLE.USER:
+                User user = (User) o;
+                user.setPassword("");
+                user.setSecurityAnswer("");
+                return new Result(HTTP.SUCCESS, user);
+            case ROLE.ANSWERER:
+                Answerer answerer = (Answerer) o;
+                answerer.setPassword("");
+                answerer.setSecurityAnswer("");
+                return new Result(HTTP.SUCCESS, answerer);
+        }
+        return new Result(HTTP.BAD_REQ, "登陆失败，未知角色");
+    }
 }
