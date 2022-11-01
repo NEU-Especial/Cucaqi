@@ -22,7 +22,10 @@ public class Result {
         this.data = data;
     }
 
-    public Result() {
+
+    public Result(Integer code, String msg) {
+        this.code = code;
+        this.msg = msg;
     }
 
     public Result() {

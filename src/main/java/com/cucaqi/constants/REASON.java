@@ -11,8 +11,15 @@ public class REASON {
 
     public static final int WRONG_ANSWER = -6;
 
+    public static final int WRONG_EMAIL = -6;
+
     public static final int UPDATE_SUCCESS = 1;
 
     public static final int Delete_SUCCESS = 1;
+
+    public static final int SEND_SUCCESS = 1;
+
+    public static final int SEND_FAIL = -11;
+
 
 }
