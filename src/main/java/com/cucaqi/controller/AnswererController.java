@@ -1,16 +1,15 @@
 package com.cucaqi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cucaqi.constants.HTTP;
 import com.cucaqi.entity.Answerer;
 import com.cucaqi.entity.Group;
 import com.cucaqi.entity.Result;
 import com.cucaqi.service.IAnswererService;
 import com.cucaqi.service.IGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -27,16 +26,34 @@ import java.util.List;
 public class AnswererController {
     @Autowired
     private IAnswererService answererService;
-    @GetMapping()
-    public com.cucaqi.entity.Result getAllGroupById(){
-        com.cucaqi.entity.Result result = new Result();
-//        LambdaQueryWrapper<Group> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.eq(Group::getCreatedBy,id);
-//        queryWrapper.orderByDesc(Group::getCreatedTime);
-        List<Answerer> list = answererService.list();
-        System.out.println(list);
-        result.setCode(200);
-        result.setData("list"+list);
-        return result;
+    @GetMapping("/{id}")
+    public Result getAllAnswererByUserId( @PathVariable Integer id){
+        LambdaQueryWrapper<Answerer> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Answerer::getCreatedBy,id);
+        List<Answerer> list = answererService.list(queryWrapper);
+        return new Result(HTTP.SUCCESS,list);
+    }
+    @PostMapping
+    public Result save(@RequestBody Answerer answerer){
+        answererService.save(answerer);
+        return new Result(HTTP.SUCCESS,"保存成功");
+    }
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable Integer id){
+        Answerer answerer = answererService.getById(id);
+        if(answerer!=null) {
+            answererService.removeById(id);
+            return new Result(HTTP.SUCCESS,"删除成功");
+        }
+        return new Result(HTTP.NOT_FOUND,"删除出现错误");
+    }
+    @PutMapping
+    public Result update(@RequestBody Answerer answerer){
+        Answerer answerer1 = answererService.getById(answerer.getId());
+        if(answerer1 != null) {
+            answererService.updateById(answerer);
+            return new Result(HTTP.SUCCESS,"修改成功");
+        }
+        return new Result(HTTP.NOT_FOUND,"修改出现未知错误");
     }
 }
