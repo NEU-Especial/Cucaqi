@@ -11,14 +11,6 @@
       <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
       </el-select>
-      <!--      <el-select v-model="listQuery.type" placeholder="问卷类型" clearable class="filter-item" style="width: 130px">-->
-      <!--        <el-option-->
-      <!--          v-for="item in calendarTypeOptions"-->
-      <!--          :key="item.key"-->
-      <!--          :label="item.display_name+'('+item.key+')'"-->
-      <!--          :value="item.key"-->
-      <!--        />-->
-      <!--      </el-select>-->
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
@@ -71,63 +63,30 @@
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="200px" align="center">
+      <el-table-column label="电话号码" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.telephone }}</span>
         </template>
       </el-table-column>
-
-      <!--      <el-table-column label="开始时间" width="130px" align="center">-->
-      <!--        <template slot-scope="{row}">-->
-      <!--          <span>{{ row.startedTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-
-      <!--      <el-table-column label="结束时间" width="130px" align="center">-->
-      <!--        <template slot-scope="{row}">-->
-      <!--          <span>{{ row.endTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-
-      <!--      <el-table-column label="限制人数" width="110px" align="center">-->
-      <!--        <template slot-scope="{row}">-->
-      <!--          <span>{{ row.limit }}</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-      <!--      <el-table-column label="答题人数" width="110px" align="center">-->
-      <!--        <template slot-scope="{row}">-->
-      <!--          <span>{{ row.curCount }}</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-      <el-table-column label="用户状态" class-name="status-col" width="100" align="center">
+      <el-table-column label="用户是否有群组" class-name="status-col" width="100" align="center">
         <template slot-scope="{row}">
           <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
+            {{ row.status1 }}
           </el-tag>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="是否推荐" width="100px" align="center">-->
-      <!--        <template slot-scope="{row}">-->
-      <!--          {{ row.isRecommend }}-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-
+      <el-table-column label="用户是否有问卷" class-name="status-col" width="100" align="center">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            {{ row.status2 }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" >
-            查询用户账单
+            编辑用户
           </el-button>
-          <!--          <el-button-->
-          <!--            v-if="row.status!=='published'"-->
-          <!--            size="mini"-->
-          <!--            type="success"-->
-          <!--            @click="handleModifyStatus(row,'published')"-->
-          <!--          >-->
-          <!--            发布问卷-->
-          <!--          </el-button>-->
-          <!--          <el-button v-if="row.status!=='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
-          <!--            恢复问卷-->
-          <!--          </el-button>-->
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除用户
           </el-button>
@@ -154,14 +113,6 @@
       >
         <el-form-item label="用户姓名" prop="type">
           <el-input v-model="temp.type" />
-          <!--          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">-->
-          <!--            <el-option-->
-          <!--              v-for="item in calendarTypeOptions"-->
-          <!--              :key="item.key"-->
-          <!--              :label="item.display_name"-->
-          <!--              :value="item.key"-->
-          <!--            />-->
-          <!--          </el-select>-->
         </el-form-item>
         <el-form-item label="创建时间" prop="timestamp">
           <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
@@ -169,27 +120,6 @@
         <el-form-item label="初始密码" prop="title">
           <el-input v-model="temp.title" />
         </el-form-item>
-        <!--        <el-form-item label="Status">-->
-        <!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
-        <!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
-        <!--          </el-select>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="Imp">-->
-        <!--          <el-rate-->
-        <!--            v-model="temp.importance"-->
-        <!--            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-        <!--            :max="3"-->
-        <!--            style="margin-top:8px;"-->
-        <!--          />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="Remark">-->
-        <!--          <el-input-->
-        <!--            v-model="temp.remark"-->
-        <!--            :autosize="{ minRows: 2, maxRows: 4}"-->
-        <!--            type="textarea"-->
-        <!--            placeholder="Please input"-->
-        <!--          />-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -200,16 +130,6 @@
         </el-button>
       </div>
     </el-dialog>
-
-    <!--    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>-->
   </div>
 </template>
 
@@ -218,13 +138,13 @@
   import waves from '@/directive/waves' // waves directive
   import { parseTime } from '@/utils'
   import Pagination from '@/components/Pagination/index' // secondary package based on el-pagination
+  import {UMApi} from "@/util/request"
   const calendarTypeOptions = [
     { key: 'CN', display_name: 'China' },
     { key: 'US', display_name: 'USA' },
     { key: 'JP', display_name: 'Japan' },
     { key: 'EU', display_name: 'Eurozone' }
   ]
-  // arr to obj, such as { CN : "China", US : "USA" }
   const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
     acc[cur.key] = cur.display_name
     return acc
@@ -251,15 +171,13 @@
         tableKey: 0,
         list: [{
           title: '刘德华',
-          createdTime: Date.parse(new Date()),
-          startedTime: Date.parse(new Date()),
-          endTime: Date.parse(new Date()),
-          status: '',
+          telephone:"123456789",
+          status1: '',
+          status2:'',
           type: '',
           limit: 43,
           curCount: 3,
-          isRecommend: '是',
-          id: 10
+          id: 1
         }],
         total: 1,
         listLoading: true,
@@ -271,7 +189,7 @@
           type: undefined,
           sort: '+id'
         },
-        importanceOptions: ['有租户', '无租户'],
+        importanceOptions: ['有群组', '无群组'],
         calendarTypeOptions,
         sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
         // statusOptions: ['有群组', '无群组'],
@@ -443,5 +361,8 @@
         return sort === `+${key}` ? 'ascending' : 'descending'
       }
     }
+  }
+  const handleLogin=()=>{
+    UMApi(data.list)
   }
 </script>
