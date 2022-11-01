@@ -26,12 +26,18 @@ import java.util.List;
 public class AnswererController {
     @Autowired
     private IAnswererService answererService;
-    @GetMapping("/{id}")
-    public Result getAllAnswererByUserId( @PathVariable Integer id){
+    @GetMapping("/{userId}")
+    public Result getAllAnswererByUserId( @PathVariable Integer userId){
         LambdaQueryWrapper<Answerer> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Answerer::getCreatedBy,id);
+        queryWrapper.eq(Answerer::getCreatedBy,userId);
         List<Answerer> list = answererService.list(queryWrapper);
         return new Result(HTTP.SUCCESS,list);
+    }
+
+    @GetMapping("/details/{groupId}")
+    public Result getAllAnswererByGroupId( @PathVariable Integer groupId){
+        List<Answerer> answerers = answererService.listAnswererByGroupId(groupId);
+        return new Result(HTTP.SUCCESS,answerers);
     }
     @PostMapping
     public Result save(@RequestBody Answerer answerer){
@@ -40,8 +46,10 @@ public class AnswererController {
     }
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id){
+        //判断该id的答者是否存在
         Answerer answerer = answererService.getById(id);
         if(answerer!=null) {
+            //存在该id答者才能删除，否则返回错误信息
             answererService.removeById(id);
             return new Result(HTTP.SUCCESS,"删除成功");
         }

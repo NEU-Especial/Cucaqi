@@ -2,24 +2,12 @@ package com.cucaqi.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-
 /**
- * <p>
- * 
- * </p>
- *
- * @author GaoSong Xu
- * @since 2022-10-31
+ * 不是用户实体，只提供通用参数的传参封装
  */
-@TableName("t_answerer")
-public class Answerer implements Serializable {
-
+public class BaseUser {
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private String username;
@@ -34,13 +22,6 @@ public class Answerer implements Serializable {
 
     private Integer role;
 
-    private Float payment;
-
-    @TableLogic
-    private Integer deleted;
-
-    private Integer createdBy;
-
     private String email;
     public String getEmail() {
         return email;
@@ -51,6 +32,15 @@ public class Answerer implements Serializable {
     }
 
 
+    public String getInviteCode() {
+        return InviteCode;
+    }
+
+    public void setInviteCode(String inviteCode) {
+        InviteCode = inviteCode;
+    }
+
+    private String InviteCode;
 
     public Integer getId() {
         return id;
@@ -106,45 +96,5 @@ public class Answerer implements Serializable {
 
     public void setRole(Integer role) {
         this.role = role;
-    }
-
-    public Float getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Float payment) {
-        this.payment = payment;
-    }
-
-    public Integer getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Integer deleted) {
-        this.deleted = deleted;
-    }
-
-    public Integer getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Integer createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    @Override
-    public String toString() {
-        return "Answerer{" +
-        "id=" + id +
-        ", username=" + username +
-        ", password=" + password +
-        ", telephone=" + telephone +
-        ", securityQuestion=" + securityQuestion +
-        ", securityAnswer=" + securityAnswer +
-        ", role=" + role +
-        ", payment=" + payment +
-        ", deleted=" + deleted +
-        ", createdBy=" + createdBy +
-        "}";
     }
 }

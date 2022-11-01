@@ -8,8 +8,8 @@ import lombok.Data;
 @TableName("t_security_question")
 public class SecurityQuestion {
     @TableId("id")
-    int id;
+    public int id;
 
-    String content;
+    public String content;
 
 }
