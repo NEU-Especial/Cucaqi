@@ -60,7 +60,7 @@ public class InfoController {
     public Result getAuthCodeByEmail(@PathVariable String email, HttpSession session, @PathVariable String id) {
         int code = infoService.AskAuthCodeByEmail(email);
         if (code != SEND_FAIL) {
-            session.setAttribute(email+"-"+id, code);
+            session.setAttribute(email + "-" + id, code);
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
@@ -81,9 +81,9 @@ public class InfoController {
         //获取当前的角色信息
         int id = baseUser.getId();
         int role = baseUser.getRole();
-        String email=baseUser.getEmail();
+        String email = baseUser.getEmail();
 
-        Object o = session.getAttribute(email+"-"+id);
+        Object o = session.getAttribute(email + "-" + id);
         if (o == null) {
             return new Result(HTTP.NOT_FOUND, "验证码已失效");
         }
@@ -91,7 +91,7 @@ public class InfoController {
         if (!rightCode.equals(code)) {
             return new Result(HTTP.NOT_FOUND, "验证码错误");
         }
-        int res=infoService.BindEmail(id,role,baseUser.getEmail());
+        int res = infoService.BindEmail(id, role, baseUser.getEmail());
 
         if (res == REASON.UPDATE_SUCCESS) {
             return new Result(HTTP.SUCCESS, "更新新邮箱成功");

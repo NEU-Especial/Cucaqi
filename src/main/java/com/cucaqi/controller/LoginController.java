@@ -50,18 +50,22 @@ public class LoginController {
             case ROLE.ADMIN:
                 Admin admin = (Admin) o;
                 admin.setPassword("");
+                admin.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, admin);
             case ROLE.LESSEE:
                 Lessee lessee = (Lessee) o;
                 lessee.setPassword("");
+                lessee.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, lessee);
             case ROLE.USER:
                 User user = (User) o;
                 user.setPassword("");
+                user.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, user);
             case ROLE.ANSWERER:
                 Answerer answerer = (Answerer) o;
                 answerer.setPassword("");
+                answerer.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, answerer);
         }
         return null;
@@ -163,18 +167,23 @@ public class LoginController {
             case ROLE.ADMIN:
                 Admin admin = (Admin) o;
                 admin.setPassword("");
+                admin.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, admin);
             case ROLE.LESSEE:
                 Lessee lessee = (Lessee) o;
                 lessee.setPassword("");
+                lessee.setSecurityAnswer("");
+
                 return new Result(HTTP.SUCCESS, lessee);
             case ROLE.USER:
                 User user = (User) o;
                 user.setPassword("");
+                user.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, user);
             case ROLE.ANSWERER:
                 Answerer answerer = (Answerer) o;
                 answerer.setPassword("");
+                answerer.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, answerer);
         }
         return new Result(HTTP.BAD_REQ, "登陆失败，未知角色");
