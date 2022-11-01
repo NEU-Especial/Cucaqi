@@ -27,6 +27,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * 根据租户id查询用户
      */
     public List<User> getUserlist(int id) {
+
         return userMapper.getUserlist(id);
     }
 }
