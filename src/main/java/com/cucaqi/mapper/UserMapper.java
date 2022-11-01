@@ -22,4 +22,11 @@ public interface UserMapper extends BaseMapper<User> {
      * 根据租户id查询用户
      */
     public List<User> getUserlist(int id);
+    /**
+     * 判断用户表中是否有关联的租户
+     * @param id
+     * @return
+     */
+    @Select("select count(*) from t_user where createdBy =#{id} ")
+    public Integer tellLessee(int id);
 }

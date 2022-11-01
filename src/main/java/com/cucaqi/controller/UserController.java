@@ -6,12 +6,8 @@ import com.cucaqi.entity.Result;
 import com.cucaqi.entity.User;
 import com.cucaqi.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 /**
@@ -44,12 +40,57 @@ public class UserController {
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("查找用户失败");
+            result.setMsg("查找用户失败--"+e.getLocalizedMessage());
 
 
 }
         return result;
     }
 
+    /**
+     * 添加用户
+     * @param user
+     * @return
+     */
+    @PostMapping("/addUser")
+    public Result addUser(@RequestBody User user){
+        Result result =new Result();
+
+        try {
+            boolean save = iUserService.save(user);
+            result.setCode(HTTP.SUCCESS);
+            result.setMsg("添加成功");
+        }
+        catch (Exception e){
+            result.setCode(HTTP.NOT_FOUND);
+            result.setMsg("添加用户失败--"+e.getLocalizedMessage());
+        }
+
+        return result;
+
+
+    }
+
+    /**
+     * 删除用户
+     * @param user
+     * @return
+     */
+    @DeleteMapping("/deleteUser")
+    public Result deleteUser(@RequestBody User user){
+        Result result=new Result();
+        try{
+            int id=user.getId();
+            iUserService.removeById(id);
+            result.setCode(HTTP.SUCCESS);
+            result.setMsg("删除成功");
+        }
+        catch (Exception e){
+            result.setCode(HTTP.NOT_FOUND);
+            result.setMsg("删除用户失败--"+e.getLocalizedMessage());
+
+        }
+        return  result;
+    }
 
 }

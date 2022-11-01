@@ -33,8 +33,15 @@ public interface LesseeMapper extends BaseMapper<Lessee> {
     @Insert("insert into t_lessee values(null,#{username},#{password},#{telephone},#{securityQuestion},#{securityAnswer},#{role},#{payment},#{deleted},#{createdBy},#{inviteCode})")
     public Integer addLessee(Lessee lessee);
 
+    /**
+     * 删除租户
+     * @param id
+     * @return
+     */
     @Update("update t_lessee set deleted =1 where id=#{id} ")
     public Integer deleteLessee(int id);
+
+
 
 
 }

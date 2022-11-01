@@ -4,12 +4,11 @@ import com.cucaqi.constants.HTTP;
 import com.cucaqi.entity.Lessee;
 import com.cucaqi.entity.Result;
 import com.cucaqi.service.ILesseeService;
+import jdk.vm.ci.meta.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -22,9 +21,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/cucaqi/lessee")
 public class LesseeController {
+    public static final int exist =-100;
     @Autowired
     private ILesseeService iLesseeService;
-
     /**
      * 查询所有的租户
      * @return
@@ -41,7 +40,7 @@ public class LesseeController {
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("查询租户失败");
+            result.setMsg("查询租户失败--"+e.getLocalizedMessage());
         }
 
         return result;
@@ -56,32 +55,43 @@ public class LesseeController {
     public Result addLessee(@RequestBody Lessee lessee){
         Result result=new Result();
         try {
-            Integer number= iLesseeService.addLessee(lessee);
+            boolean number= iLesseeService.save(lessee);
             result.setCode(HTTP.SUCCESS);
             result.setMsg("添加成功！");
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("添加租户失败");
+            result.setMsg("添加租户失败--"+e.getLocalizedMessage());
         }
 
         return result;
     }
+
+    /**
+     * 删除租户
+     * @param lessee
+     * @return
+     */
     @DeleteMapping("/deleteLessee")
     public Result deleteLessee(@RequestBody Lessee lessee){
         Result result=new Result();
         try{
             int id=lessee.getId();
-            iLesseeService.deleteLessee(id);
-            result.setCode(HTTP.SUCCESS);
-            result.setMsg("删除成功");
+            Integer res = iLesseeService.deleteLessee(id);
+            if(res==exist){
+                result.setMsg("删除失败--该租户不是无数据关联租户");
+                result.setCode(HTTP.SERVER_ERR);
+            }
+            else {
+                result.setCode(HTTP.SUCCESS);
+                result.setMsg("删除成功");
+            }
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("删除租户失败");
+            result.setMsg("删除租户失败--"+e.getLocalizedMessage());
 
         }
-
        return result;
     }
 
