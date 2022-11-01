@@ -130,12 +130,19 @@ export const constantRoutes = [
   {
     path: '/user',
     component: Layout,
+    meta: { title: '用户', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'index',
-        name: 'Control',
-        component: () => import('@/views/user/user.vue'),
-        meta: { title: '用户管理', icon: 'form' }
+        path: '/userManage',
+        name: 'UserManage',
+        component: () => import('@/views/user/userManage'),
+        meta: { title: '用户管理', icon: 'table' }
+      },
+      {
+        path:'/createUser',
+        name:'CreateUser',
+        component: () => import('@/views/user/createUser'),
+        meta:{ title: '添加用户', icon: 'table' }
       }
     ]
   },
