@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -29,4 +30,12 @@ public interface UserMapper extends BaseMapper<User> {
      */
     @Select("select count(*) from t_user where createdBy =#{id} ")
     public Integer tellLessee(int id);
+
+    /**
+     * 删除用户
+     * @param id
+     * @return
+     */
+    @Update("update t_user set deleted =1 where id=#{id} ")
+    public Integer deleteUser(int id);
 }

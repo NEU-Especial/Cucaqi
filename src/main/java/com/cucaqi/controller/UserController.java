@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import java.util.List;
 
+import static com.cucaqi.controller.LesseeController.exist;
+
 /**
  * <p>
  *  前端控制器
@@ -81,9 +83,15 @@ public class UserController {
         Result result=new Result();
         try{
             int id=user.getId();
-            iUserService.removeById(id);
-            result.setCode(HTTP.SUCCESS);
-            result.setMsg("删除成功");
+            Integer res = iUserService.deleteUser(id);
+            if (res==exist){
+                result.setMsg("删除失败--该用户不是无数据关联用户");
+                result.setCode(HTTP.SERVER_ERR);
+            }
+            else {
+                result.setCode(HTTP.SUCCESS);
+                result.setMsg("删除成功");
+            }
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);

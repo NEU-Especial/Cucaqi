@@ -18,4 +18,11 @@ public interface IUserService extends IService<User> {
      * 根据租户id查询用户
      */
     public List<User> getUserlist(int id);
+
+    /**
+     * 删除用户
+     * @param id
+     * @return
+     */
+    public Integer deleteUser(int id);
 }
