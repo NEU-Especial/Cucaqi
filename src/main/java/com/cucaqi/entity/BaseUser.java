@@ -2,7 +2,9 @@ package com.cucaqi.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-
+/**
+ * 不是用户实体，只提供通用参数的传参封装
+ */
 public class BaseUser {
     private static final long serialVersionUID = 1L;
 
@@ -19,6 +21,16 @@ public class BaseUser {
     private String securityAnswer;
 
     private Integer role;
+
+    private String email;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 
     public String getInviteCode() {
         return InviteCode;

@@ -41,6 +41,16 @@ public class Answerer implements Serializable {
 
     private Integer createdBy;
 
+    private String email;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
 
     public Integer getId() {
         return id;
