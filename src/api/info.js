@@ -39,4 +39,3 @@ export function inviteCode(params) {
   })
 }
 
-inviteCode

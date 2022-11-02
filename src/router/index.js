@@ -124,7 +124,7 @@ export const constantRoutes = [
         component: () => import('@/views/questionnaire/editor'),
         hidden: true,
         meta: { title: '编辑问卷', icon: 'tree' }
-      },
+      }
     ]
   },
   {
@@ -133,20 +133,13 @@ export const constantRoutes = [
     meta: { title: '用户', icon: 'el-icon-s-help' },
     children: [
       {
-        path: '/userManage',
-        name: 'UserManage',
-        component: () => import('@/views/user/userManage'),
+        path: '',
+        name: 'User',
+        component: () => import('@/views/user/user'),
         meta: { title: '用户管理', icon: 'table' }
-      },
-      {
-        path:'/createUser',
-        name:'CreateUser',
-        component: () => import('@/views/user/createUser'),
-        meta:{ title: '添加用户', icon: 'table' }
       }
     ]
   },
-
   {
     path: '/lessee',
     component: Layout,
@@ -160,7 +153,6 @@ export const constantRoutes = [
     ]
 
   },
-
 
   {
     path: '/group',

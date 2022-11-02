@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.lessee_name"
-        placeholder="租户姓名"
+        placeholder="用户姓名"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -21,7 +21,7 @@
         icon="el-icon-edit"
         @click="handleCreate"
       >
-        添加租户
+        添加用户
       </el-button>
     </div>
     <br>
@@ -32,7 +32,7 @@
       border
       fit
       highlight-current-row
-      style="width: 80%;"
+      style="width: 90%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -47,38 +47,44 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="租户姓名" min-width="50px" width="80px">
+      <el-table-column label="用户姓名" min-width="50px" width="80px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="租户密码" width="200px" align="center">
+      <el-table-column label="用户密码" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.password }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="租户电话" min-width="150px" width="180px">
+      <el-table-column label="用户电话" min-width="150px" width="180px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.telephone }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="租户邮箱" min-width="150px" width="180px">
+      <el-table-column label="用户邮箱" min-width="150px" width="180px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.email }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="租户账单" min-width="150px" width="180px">
+      <el-table-column label="用户邀请码" min-width="150px" width="180px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.payment }}</span>
+          <span class="link-type">{{ row.inviteCode }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="租户邀请码" min-width="150px" width="180px">
+      <el-table-column label="限制数量" min-width="150px" width="180px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.inviteCode }}</span>
+          <span class="link-type">{{ row.limitCount }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="当前问卷发布数" min-width="150px" width="180px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.curCount }}</span>
         </template>
       </el-table-column>
 
@@ -90,10 +96,10 @@
             type="primary"
             @click="handleUpdate(row,$index)"
           >
-            编辑租户信息
+            编辑用户信息
           </el-button>
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除租户
+            删除用户
           </el-button>
 
         </template>
@@ -118,20 +124,23 @@
         label-width="120px"
         style="width: 400px; margin-left:50px;"
       >
-        <el-form-item label="租户姓名" prop="username">
+        <el-form-item label="用户姓名" prop="username">
           <el-input v-model="temp.username"/>
         </el-form-item>
-        <el-form-item label="租户密码" prop="password">
+        <el-form-item label="用户密码" prop="password">
           <el-input v-model="temp.password"/>
         </el-form-item>
-        <el-form-item label="租户电话号码" prop="title">
+        <el-form-item label="用户电话号码" prop="title">
           <el-input v-model="temp.telephone"/>
         </el-form-item>
-        <el-form-item label="租户邮箱号码" prop="title">
+        <el-form-item label="用户邮箱号码" prop="title">
           <el-input v-model="temp.email"/>
         </el-form-item>
-        <el-form-item label="租户邀请码" prop="title">
+        <el-form-item label="用户邀请码" prop="title">
           <el-input v-model="temp.inviteCode"/>
+        </el-form-item>
+        <el-form-item label="限制问卷发布数" prop="title">
+          <el-input v-model="temp.limitCount"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -150,21 +159,8 @@
 
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import { addLessee, deleteLessee, getLesseeList, updateLessee } from '@/api/lessee'
-import { Message } from 'element-ui' // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+import { Message } from 'element-ui'
+import { addUser, deleteUser, listUser, updateUser } from '@/api/user' // secondary package based on el-pagination
 
 export default {
   name: 'ComplexTable',
@@ -178,22 +174,12 @@ export default {
         deleted: 'danger'
       }
       return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
     }
   },
   data() {
     return {
       tableKey: 0,
-      list: [{
-        username: '刘德华',
-        createdTime: Date.parse(new Date()),
-        id: 10,
-        telephone: 11111111111,
-        email: '16381316928@qq.com',
-        payment: 20
-      }],
+      list: [],
       total: 1,
       listLoading: true,
       listQuery: {
@@ -203,7 +189,6 @@ export default {
         sort: '+id'
       },
       importanceOptions: ['有群组', '无群组'],
-      calendarTypeOptions,
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       showReviewer: false,
       temp: {
@@ -212,7 +197,8 @@ export default {
         inviteCode: '',
         telephone: '',
         email: '',
-        payment: 0
+        payment: 0,
+        limitCount: 0
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -237,7 +223,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getLesseeList().then(
+      listUser(this.$store.getters.user.id).then(
         res => {
           this.list = res.data
           this.totalList = res.data
@@ -252,8 +238,8 @@ export default {
       // 先找关键字
       this.list = this.totalList
       var word = this.listQuery.lessee_name
-      var filterList = this.list.filter(function(lessee) {
-        return lessee.username.includes(word)
+      var filterList = this.list.filter(function(user) {
+        return user.username.includes(word)
       })
       // 过滤完成之后需要进行排序
       filterList.sort((a, b) => {
@@ -268,9 +254,6 @@ export default {
 
       // 进行分页处理,找到对应的位置
       this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
-    },
-    handleModifyStatus(row) {
-
     },
     pagination() {
       this.list = this.totalList
@@ -309,7 +292,7 @@ export default {
       this.dialogFormVisible = true
     },
     createData() {
-      addLessee(this.temp).then(
+      addUser(this.temp).then(
         (res) => {
           Message({
             message: res.msg,
@@ -327,7 +310,7 @@ export default {
       this.dialogFormVisible = true
     },
     updateData() {
-      updateLessee(this.temp).then(
+      updateUser(this.temp).then(
         (res) => {
           Message({
             message: res.msg,
@@ -335,12 +318,11 @@ export default {
             duration: 1000
           })
           this.list[this.index] = { ...this.temp }
-          this.resetTemp()
         }
       )
     },
     handleDelete(row, index) {
-      deleteLessee(row).then(
+      deleteUser(row).then(
         (res) => {
           Message({
             message: res.msg,
