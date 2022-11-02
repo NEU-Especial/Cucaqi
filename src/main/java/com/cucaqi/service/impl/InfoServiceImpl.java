@@ -133,4 +133,37 @@ public class InfoServiceImpl implements IInfoService {
         return REASON.UNKNOWN_ROLE;
     }
 
+    @Override
+    public int updateInviteCode(int id, int role) {
+        Random random = new Random();
+        String inviteCode = String.valueOf(100001 + random.nextInt(888888));
+        switch (role) {
+            case ROLE.LESSEE:
+                Lessee lessee = lesseeMapper.selectById(id);
+                if (lessee == null) {
+                    return REASON.NOT_FOUNT;
+                }
+                lessee.setInviteCode(inviteCode);
+                lesseeMapper.update(lessee, new UpdateWrapper<Lessee>().set("inviteCode", inviteCode));
+                break;
+            case ROLE.USER:
+                User user = userMapper.selectById(id);
+                if (user == null) {
+                    return REASON.NOT_FOUNT;
+                }
+                user.setInviteCode(inviteCode);
+                userMapper.update(user, new UpdateWrapper<User>().set("inviteCode", inviteCode));
+                break;
+            case ROLE.ADMIN:
+                Admin admin = adminMapper.selectById(id);
+                if (admin == null) {
+                    return REASON.NOT_FOUNT;
+                }
+                admin.setInviteCode(inviteCode);
+                adminMapper.update(admin, new UpdateWrapper<Admin>().set("inviteCode", inviteCode));
+                break;
+        }
+        return Integer.parseInt(inviteCode);
+    }
+
 }
