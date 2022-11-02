@@ -54,8 +54,21 @@ public class LesseeServiceImpl extends ServiceImpl<LesseeMapper, Lessee> impleme
             //有关联租户，即不可删除该租户
             return -100;
         }
+    }
 
-
+    /**
+     * 查询是否有该用户名的租户，若有，返回true
+     * @param username
+     * @return
+     */
+    @Override
+    public boolean searchLessee(String username){
+        Lessee searchLessee = lesseeMapper.searchLessee(username);
+        if(searchLessee==null){
+            return  false;
+        }
+        return true;
 
     }
+
 }

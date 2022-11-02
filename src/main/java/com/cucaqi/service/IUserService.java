@@ -25,4 +25,12 @@ public interface IUserService extends IService<User> {
      * @return
      */
     public Integer deleteUser(int id);
+
+    /**
+     * 通过用户名查找用户
+     * @param username
+     * @return
+     */
+    public boolean searchUser(String username);
+
 }

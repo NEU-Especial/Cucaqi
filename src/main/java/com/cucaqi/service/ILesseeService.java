@@ -33,4 +33,11 @@ public interface ILesseeService extends IService<Lessee> {
      */
     public Integer deleteLessee(int id);
 
+    /**
+     * 通过用户名查找租户
+     * @param username
+     * @return
+     */
+    public boolean searchLessee(String username);
+
 }
