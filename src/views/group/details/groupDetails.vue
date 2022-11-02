@@ -59,7 +59,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="组员" min-width="50px" width="80px">
+      <el-table-column label="组员姓名" min-width="50px" width="80px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
         </template>
@@ -137,10 +137,11 @@
 </template>
 
 <script>
-import { createArticle, fetchList, fetchPv, updateArticle } from '@/api/article'
+
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import {getGroupAnswererPage, getGroupPage} from "@/api/group"; // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -174,6 +175,7 @@ export default {
   },
   data() {
     return {
+      groupId: 1,
       tableKey: 0,
       list:
        [
@@ -237,14 +239,10 @@ export default {
     this.getList()
   },
   methods: {
-    getList() {
-      this.listLoading = false
-      return
+    async getList() {
       // eslint-disable-next-line no-unreachable
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
+      await getGroupAnswererPage(this.groupId).then(res => {
+        this.list = res.data
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
