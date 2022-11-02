@@ -41,8 +41,6 @@ public class UserController {
             result.setMsg("查询失败--该租户不存在");
             result.setCode(HTTP.SERVER_ERR);
         }
-
-
         else {
             try {
                 List<User> userlist = iUserService.getUserlist(id);
@@ -141,6 +139,7 @@ public class UserController {
                 if(byId.getUsername().equals(user.getUsername()))  {
                     iUserService.updateById(user);
                     result.setCode(HTTP.SUCCESS);
+                    result.setMsg("修改成功");
                 }
                 else {
                     if(iUserService.searchUser(user.getUsername())) {
@@ -150,6 +149,7 @@ public class UserController {
                     else {
                         iUserService.updateById(user);
                         result.setCode(HTTP.SUCCESS);
+                        result.setMsg("修改成功");
                     }
                 }
 

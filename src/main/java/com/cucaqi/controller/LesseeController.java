@@ -129,6 +129,7 @@ public class LesseeController {
              if(byId.getUsername().equals(lessee.getUsername()))  {
                  iLesseeService.updateById(lessee);
                  result.setCode(HTTP.SUCCESS);
+                 result.setMsg("修改成功");
              }
              else {
                  if(iLesseeService.searchLessee(lessee.getUsername())) {
@@ -138,6 +139,7 @@ public class LesseeController {
                  else {
                      iLesseeService.updateById(lessee);
                      result.setCode(HTTP.SUCCESS);
+                     result.setMsg("修改成功");
                  }
              }
             }
