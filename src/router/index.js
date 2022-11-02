@@ -128,15 +128,31 @@ export const constantRoutes = [
     ]
   },
 
+
   {
-    path: '/form',
+    path: '/lessee',
     component: Layout,
     children: [
       {
         path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        name: 'Control',
+        component: () => import('@/views/lessee/lessee'),
+        meta: { title: '租户管理', icon: 'form' }
+      }
+    ]
+
+  },
+
+
+  {
+    path: '/group',
+    component: Layout,
+    children: [
+      {
+        path: 'group',
+        name: 'Group',
+        component: () => import('@/views/group/group'),
+        meta: { title: '群组管理', icon: 'form' }
       }
     ]
   },

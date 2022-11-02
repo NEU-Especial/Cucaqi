@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="Activity name">
+      <el-form-item label="用户姓名">
         <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="Activity zone">
