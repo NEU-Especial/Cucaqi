@@ -1,15 +1,12 @@
 package com.cucaqi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cucaqi.constants.HTTP;
 import com.cucaqi.entity.Group;
 import com.cucaqi.entity.Result;
 import com.cucaqi.service.IGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,16 +23,36 @@ import java.util.List;
 public class GroupController {
     @Autowired
     private IGroupService groupService;
-    @GetMapping("/{id}")
-    public Result getAllGroupById( @PathVariable Integer id){
-        Result result = new Result();
+    @GetMapping("/{userId}")
+    public Result getAllGroupByUserId( @PathVariable Integer userId){
         LambdaQueryWrapper<Group> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Group::getCreatedBy,id);
+        queryWrapper.eq(Group::getCreatedBy,userId);
         queryWrapper.orderByDesc(Group::getCreatedTime);
         List<Group> list = groupService.list(queryWrapper);
-        result.setCode(200);
-        result.setData(list);
-        return result;
+        return new Result(HTTP.SUCCESS,list);
+    }
+    @PostMapping
+    public Result save(@RequestBody Group group){
+        groupService.save(group);
+        return new Result(HTTP.SUCCESS,"保存成功");
+    }
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable Integer id){
+        //判断群组下是否有关联答者
+        if(!groupService.hasAnswerer(id)) {
+            groupService.removeById(id);
+            return new Result(HTTP.SUCCESS,"删除成功");
+        }
+        return new Result(HTTP.NOT_FOUND,"该群组不允许删除!");
+    }
+    @PutMapping
+    public Result update(@RequestBody Group group){
+        Group group1 = groupService.getById(group.getId());
+        if(group1 != null) {
+            groupService.updateById(group);
+            return new Result(HTTP.SUCCESS,"修改成功");
+        }
+        return new Result(HTTP.NOT_FOUND,"修改出现未知错误");
     }
 
 
