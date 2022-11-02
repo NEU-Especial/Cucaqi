@@ -2,4 +2,57 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cucaqi.mapper.SurveyMapper">
 
+    <!--    result map-->
+    <resultMap id="BaseResultMap" type="com.cucaqi.entity.Survey">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="createdBy" property="createdBy" jdbcType="INTEGER"/>
+        <result column="startTime" property="startTime" jdbcType="TIMESTAMP"/>
+        <result column="endTime" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="limitCount" property="limitCount" jdbcType="INTEGER"/>
+        <result column="curCount" property="curCount" jdbcType="INTEGER"/>
+        <result column="isPublic" property="isPublic" jdbcType="TINYINT"/>
+        <result column="style" property="style" jdbcType="INTEGER"/>
+        <result column="isRecommon" property="isRecommon" jdbcType="TINYINT"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+        <result column="createdTime" property="createdTime" jdbcType="TIMESTAMP"/>
+        <result column="deleted" property="deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--    创建问卷-->
+    <insert id="insert" parameterType="com.cucaqi.entity.Survey">
+        insert into t_survey (id,content,createdBy,startTime,endTime,limitCount,curCount,isPublic,style,isRecommon,state,createdTime,deleted)
+        values (#{id},#{content},#{createdBy},#{startTime},#{endTime},#{limitCount},#{curCount},#{isPublic},#{style},#{isRecommon},#{state},#{createdTime},#{deleted})
+    </insert>
+
+    <!--    删除问卷-->
+    <delete id="delete" parameterType="int">
+        delete from t_survey where id=#{id}
+    </delete>
+
+    <!--    软删除问卷-->
+    <update id="softDelete" parameterType="int">
+        update t_survey set deleted=1 where id=#{id}
+    </update>
+
+    <!--    更新问卷-->
+    <update id="update" parameterType="com.cucaqi.entity.Survey">
+        update t_survey set content=#{content},createdBy=#{createdBy},startTime=#{startTime},endTime=#{endTime},limitCount=#{limitCount},curCount=#{curCount},isPublic=#{isPublic},style=#{style},isRecommon=#{isRecommon},state=#{state},createdTime=#{createdTime},deleted=#{deleted} where id=#{id}
+    </update>
+
+    <!--    根据id查询问卷-->
+    <select id="select" parameterType="int" resultType="com.cucaqi.entity.Survey">
+        select * from t_survey where id=#{id}
+    </select>
+
+    <!--    查询所有问卷-->
+    <select id="selectAll" resultType="com.cucaqi.entity.Survey">
+        select * from t_survey
+    </select>
+
+    <!--    根据创建者id查询问卷-->
+    <select id="selectByCreatedBy" parameterType="int" resultType="com.cucaqi.entity.Survey">
+        select * from t_survey where createdBy=#{createdBy}
+    </select>
+
 </mapper>
