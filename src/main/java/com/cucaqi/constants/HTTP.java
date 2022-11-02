@@ -6,6 +6,8 @@ public class HTTP {
 
     public static final int SERVER_ERR = 500;
 
-    public static final int BAD_REQ =400;
+    public static final int BAD_REQ = 400;
+
+    public static final int NO_ACCESS = 50008;
 
 }

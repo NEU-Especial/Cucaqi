@@ -6,11 +6,14 @@ import com.cucaqi.constants.ROLE;
 import com.cucaqi.entity.*;
 import com.cucaqi.service.ILoginService;
 import com.cucaqi.service.ISecurityQuesService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -68,7 +71,7 @@ public class LoginController {
                 answerer.setSecurityAnswer("");
                 return new Result(HTTP.SUCCESS, answerer);
         }
-        return null;
+        return new Result(HTTP.NOT_FOUND, "登陆失败,未知身份", null);
     }
 
     @PostMapping("/register")
@@ -121,17 +124,20 @@ public class LoginController {
     }
 
     //获取邮箱验证码
-    @GetMapping("/authCode/{email}/{role}")
+    @GetMapping("/authCode/{role}")
     @ResponseBody
-    public Result getAuthCodeByEmail(@PathVariable String email, @PathVariable int role, HttpSession session) {
+    public Result getAuthCodeByEmail(@Param("email") String email, @PathVariable int role, HttpSession session) {
+
         int code = loginService.askAuthCodeByEmail(email, role);
-        if (code != SEND_FAIL) {
+        if (code != SEND_FAIL && code != WRONG_EMAIL) {
             //表示发送成功
             session.setAttribute(email + role, code);
+            System.out.println("set  " + email + role);
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
                     //删除email
+                    System.out.println("remove");
                     session.removeAttribute(email + role);
                 }
             };
@@ -139,6 +145,8 @@ public class LoginController {
             Timer timer = new Timer();
             timer.schedule(task, 180000);//三分钟之后执行task任务
             return new Result(HTTP.SUCCESS, "验证码发送成功");
+        } else if (code == WRONG_EMAIL) {
+            return new Result(HTTP.NOT_FOUND, "邮箱号码不存在");
         }
         return new Result(HTTP.SERVER_ERR, "发送失败");
     }
@@ -147,16 +155,20 @@ public class LoginController {
     //使用邮箱验证码登陆，只需要填写邮箱以及选择角色，找到以后会去找到对应的角色信息
     @PostMapping("/email/{code}")
     @ResponseBody
-    public Result LoginByEmail(@RequestBody BaseUser baseUser, @PathVariable String code, HttpSession session) {
-        //只提交role，以及email信息
+    public Result LoginByEmail(@RequestBody BaseUser baseUser, @PathVariable int code, HttpSession session) {
+
         Object o = session.getAttribute(baseUser.getEmail() + baseUser.getRole());
+
+
         if (o == null) {
-            return new Result(HTTP.NOT_FOUND, "验证码已失效");
+            return new Result(HTTP.NOT_FOUND, "验证码无效");
         }
-        String rightCode = (String) o;
-        if (!rightCode.equals(code)) {
-            return new Result(HTTP.NOT_FOUND, "验证码错误");
+        Integer rightCode = (Integer) o;
+
+        if (code!=rightCode) {
+            return new Result(HTTP.NOT_FOUND, "验证码无效");
         }
+        session.removeAttribute(baseUser.getEmail() + baseUser.getRole());
         //此时需要查询用户
         o = loginService.GetUserByEmail(baseUser.getEmail(), baseUser.getRole());
         if (o == null) {

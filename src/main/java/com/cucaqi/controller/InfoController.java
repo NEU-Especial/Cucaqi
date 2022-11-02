@@ -6,6 +6,7 @@ import com.cucaqi.constants.ROLE;
 import com.cucaqi.entity.*;
 import com.cucaqi.service.IInfoService;
 import com.cucaqi.service.impl.InfoServiceImpl;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -77,7 +78,7 @@ public class InfoController {
     }
 
     @PostMapping("/email/{code}")
-    public Result bindEmail(@RequestBody BaseUser baseUser, HttpSession session, @PathVariable String code) {
+    public Result bindEmail(@RequestBody BaseUser baseUser, HttpSession session, @PathVariable int code) {
         //获取当前的角色信息
         int id = baseUser.getId();
         int role = baseUser.getRole();
@@ -87,8 +88,8 @@ public class InfoController {
         if (o == null) {
             return new Result(HTTP.NOT_FOUND, "验证码已失效");
         }
-        String rightCode = (String) o;
-        if (!rightCode.equals(code)) {
+        Integer rightCode = (Integer) o;
+        if (rightCode != code) {
             return new Result(HTTP.NOT_FOUND, "验证码错误");
         }
         int res = infoService.BindEmail(id, role, baseUser.getEmail());
@@ -97,6 +98,18 @@ public class InfoController {
             return new Result(HTTP.SUCCESS, "更新新邮箱成功");
         } else {
             return new Result(HTTP.BAD_REQ, "更新新邮箱失败");
+        }
+    }
+
+    @PutMapping("/inviteCode")
+    public Result updateInviteCode(@Param("id") int id,@Param("role")  int role) {
+
+        int res = infoService.updateInviteCode(id, role);
+
+        if (res == REASON.NOT_FOUNT) {
+            return new Result(HTTP.NO_ACCESS, "生成邀请码失败");
+        } else {
+            return new Result(HTTP.SUCCESS, "生成邀请码成功",res);
         }
     }
 
