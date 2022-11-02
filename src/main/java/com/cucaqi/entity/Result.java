@@ -27,7 +27,4 @@ public class Result {
         this.code = code;
         this.msg = msg;
     }
-
-    public Result() {
-    }
 }
