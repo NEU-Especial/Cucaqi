@@ -131,7 +131,7 @@
 </template>
 
 <script>
-import { createArticle, fetchList, fetchPv, updateArticle } from '@/api/article'
+
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
