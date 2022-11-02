@@ -34,6 +34,15 @@ const mutations = {
   },
   SetUser: (state, user) => {
     state.user = user
+  },
+  UpdateInviteCode: (state, value) => {
+    state.user.inviteCode = value
+  },
+  UpdateEmail: (state, value) => {
+    state.user.email = value
+  },
+  UpdateQuestion: (state, ques) => {
+    state.user.securityQuestion = ques
   }
 }
 

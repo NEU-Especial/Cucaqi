@@ -22,3 +22,21 @@ export function bindEmail(code, data) {
     data
   })
 }
+
+export function BindSecurityQuestion(data) {
+  return request({
+    url: `/cucaqi/info/bindSecurityQuestion`,
+    method: 'post',
+    data
+  })
+}
+
+export function inviteCode(params) {
+  return request({
+    url: `/cucaqi/info/inviteCode`,
+    method: 'put',
+    params: params
+  })
+}
+
+inviteCode
