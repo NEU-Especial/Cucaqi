@@ -40,6 +40,16 @@ public class User implements Serializable {
 
     private Integer createdBy;
 
+    public String getInviteCode() {
+        return inviteCode;
+    }
+
+    public void setInviteCode(String inviteCode) {
+        this.inviteCode = inviteCode;
+    }
+
+    private String inviteCode;
+
 
     private String email;
     public String getEmail() {

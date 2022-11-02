@@ -158,6 +158,9 @@ public class LoginServiceImpl implements ILoginService {
                 Answerer answerer = answererMapper.selectOne(new QueryWrapper<Answerer>().and(i -> {
                     i.eq("username", userName).eq("securityQuestion", questionId).eq("securityAnswer", answer);
                 }));
+                if (answerer == null) {
+                    return REASON.WRONG_ANSWER;
+                }
                 answerer.setPassword(password);
                 return answererMapper.updateById(answerer);
             default:
