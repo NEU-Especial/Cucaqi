@@ -1,12 +1,19 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getInfo, loginByPassword, logout } from '@/api/login'
+import { getToken, removeToken, setToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
-    name: '',
-    avatar: ''
+    token: getToken(), // jwt令牌
+    userName: '', // 用户名
+    email: '', // 邮箱号码
+    telephone: '', // 电话号码
+    securityQuestion: '', // 密保问题选项
+    role: '', // 身份代码
+    avatar: '', // 头像
+    introduction: '',
+    user: {}, // 保存所有用户信息，直接来这里取就行，上面字段提醒用
+    roles: []
   }
 }
 
@@ -24,6 +31,18 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SetUser: (state, user) => {
+    state.user = user
+  },
+  UpdateInviteCode: (state, value) => {
+    state.user.inviteCode = value
+  },
+  UpdateEmail: (state, value) => {
+    state.user.email = value
+  },
+  UpdateQuestion: (state, ques) => {
+    state.user.securityQuestion = ques
   }
 }
 
@@ -32,7 +51,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      loginByPassword({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)

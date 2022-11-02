@@ -6,6 +6,7 @@ import settings from './modules/settings'
 import user from './modules/user'
 import survey from './modules/survey'
 
+import createPersistedState from 'vuex-persistedstate' // vuex持久化
 Vue.use(Vuex)
 const store = new Vuex.Store({
   modules: {
@@ -14,6 +15,7 @@ const store = new Vuex.Store({
     user,
     survey
   },
+  plugins: [createPersistedState()], // vuex持久化
   getters
 })
 

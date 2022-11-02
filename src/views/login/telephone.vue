@@ -1,29 +1,49 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="loginRules"
+      class="login-form"
+      auto-complete="on"
+      label-position="left"
+    >
 
       <div class="title-container">
         <h3 class="title">验证码登陆</h3>
       </div>
-
+      <el-form-item prop="roles">
+        <el-col :span="24">
+          <el-select v-model="loginForm.role" :label="label" style="display: block;margin-left: 20px"
+                     placeholder="身份选择"
+          >
+            <el-option
+              v-for="item in roles"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              @click="loginForm.role=item.value"
+            />
+          </el-select>
+        </el-col>
+      </el-form-item>
       <el-form-item prop="telephone">
         <span class="svg-container">
-          <i class="el-icon-phone"></i>
+          <i class="el-icon-phone"/>
         </span>
         <el-input
-          ref="telephone"
-          v-model="loginForm.telephone"
-          placeholder="Telephone Number"
-          name="telephone"
+          ref="email"
+          v-model="loginForm.email"
+          placeholder="Email Address"
+          name="email"
           type="text"
           tabindex="1"
           auto-complete="on"
         />
       </el-form-item>
-
       <el-form-item prop="authCode" style="width:65%;display: inline-block">
         <span class="svg-container">
-          <i class="el-icon-chat-square" />
+          <i class="el-icon-chat-square"/>
         </span>
         <el-input
           ref="authCode"
@@ -36,10 +56,30 @@
           @keyup.enter.native="handleLogin"
         />
       </el-form-item>
-      <el-button :loading="loading" type="primary" style="width:30%;float: right;margin-top: 10px" @click.native.prevent="sendAuthCode">发送验证码</el-button>
+
+      <el-button
+        :loading="loading"
+        type="primary"
+        :disabled=disable
+        style="width:30%;float: right;margin-top: 10px"
+        @click.native.prevent="sendAuthCode"
+      >{{ content }}
+      </el-button>
       <br>
-      <el-button :loading="loading" type="primary" style="width:48%;margin-bottom:30px;" @click.native.prevent="handleLogin">短信登陆</el-button>
-      <el-button :loading="loading" type="default" style="width:48%;margin-bottom:30px;float: right" @click.native.prevent="handleLoginBypassword">密码登陆</el-button>
+      <el-button
+        :loading="loading"
+        type="primary"
+        style="width:48%;margin-bottom:30px;"
+        @click.native.prevent="loginByEmail"
+      >验证码登陆
+      </el-button>
+      <el-button
+        :loading="loading"
+        type="default"
+        style="width:48%;margin-bottom:30px;float: right"
+        @click.native.prevent="handleLoginBypassword"
+      >密码登陆
+      </el-button>
       <div class="tips" style="margin-left: 10px">
         <router-link to="/login/register">注册</router-link>
       </div>
@@ -52,15 +92,17 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import { Message } from 'element-ui'
+import { getAuthCodeByEmail, LoginByEmail } from '@/api/login'
 
 export default {
   name: 'Login',
   data() {
     // 校验电话号码
-    const validateTelephone = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback()
+    const validateEmail = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('邮箱号为空'))
+        return false
       } else {
         callback()
       }
@@ -69,21 +111,43 @@ export default {
     const validateAuthCode = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error('验证码不应小于六位'))
+        return false
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        telephone: 'admin',
-        authCode: '111111'
+        telephone: '',
+        email: '',
+        authCode: '',
+        role: 1001
       },
+      content: '获取验证码',
+      count: 60,
+      disable: false,
       loginRules: {
-        telephone: [{ required: true, trigger: 'blur', validator: validateTelephone }],
+        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         authCode: [{ required: true, trigger: 'blur', validator: validateAuthCode }]
       },
       loading: false,
-      redirect: undefined
+      redirect: undefined,
+      label: '管理员',
+      roles: [
+        {
+          value: 1001,
+          label: '管理员'
+        }, {
+          value: 1002,
+          label: '租户'
+        }, {
+          value: 1003,
+          label: '用户'
+        }, {
+          value: 1004,
+          label: '答者'
+        }
+      ]
     }
   },
   methods: {
@@ -104,7 +168,67 @@ export default {
       })
     },
     handleLoginBypassword() {
-      this.$router.replace({ path: '/login/' })
+      this.$router.push('/login')
+    },
+    // 发送验证码
+    sendAuthCode() {
+      this.loading = true
+
+      getAuthCodeByEmail(this.loginForm.email, this.loginForm.role).then(
+        res => {
+          this.loading = false
+          Message({
+            message: res.msg,
+            type: 'info',
+            duration: 3 * 1000
+          })
+          var countDown = setInterval(() => {
+            if (this.count < 1) {
+              this.disable = false
+              this.content = '获取验证码'
+              this.count = 60
+              clearInterval(countDown)
+            } else {
+              this.disable = true
+              this.content = this.count-- + 's后重发'
+            }
+          }, 1000)
+        }
+      ).catch(() => {
+        this.loading = false
+        this.disable = false
+        this.count = 0
+        this.content = '获取验证码'
+      })
+    },
+    loginByEmail() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) { // 校验成功登陆
+          this.loading = true
+          LoginByEmail(this.loginForm.authCode, this.loginForm).then(res => {
+            this.loading = false
+            // 需要把用户信息进行保存，之后随时取用
+            this.$store.commit('user/SetUser', res.data)
+            Message({
+              message: '登陆成功',
+              type: 'success',
+              duration: 2 * 1000
+            })
+            setTimeout(() => {
+              this.$router.push('/dashboard')
+            }, 1000)
+          }).catch(
+            this.loading = false
+          )
+        } else {
+          Message({
+            message: '请输入合法信息',
+            type: 'warning',
+            duration: 2 * 1000
+          })
+          return false
+        }
+      })
     }
   }
 }
@@ -114,8 +238,8 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#2d3a4b;
-$light_gray:#fff;
+$bg: #2d3a4b;
+$light_gray: #fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -158,9 +282,9 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
 .login-container {
   min-height: 100%;
