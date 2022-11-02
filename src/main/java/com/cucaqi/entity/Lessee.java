@@ -43,6 +43,7 @@ public class Lessee implements Serializable {
     private String InviteCode;
 
     private String email;
+
     public String getEmail() {
         return email;
     }
