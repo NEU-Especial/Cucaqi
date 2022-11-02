@@ -5,7 +5,6 @@ import com.cucaqi.entity.Lessee;
 import com.cucaqi.entity.Result;
 import com.cucaqi.entity.User;
 import com.cucaqi.service.ILesseeService;
-import jdk.vm.ci.meta.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,6 +119,7 @@ public class LesseeController {
         else {
             try {
                 iLesseeService.updateById(lessee);
+                result.setCode(HTTP.SUCCESS);
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);

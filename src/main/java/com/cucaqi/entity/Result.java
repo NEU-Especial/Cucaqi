@@ -24,7 +24,4 @@ public class Result {
 
     public Result() {
     }
-
-    public Result() {
-    }
 }

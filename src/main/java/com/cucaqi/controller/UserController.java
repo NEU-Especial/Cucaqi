@@ -128,6 +128,7 @@ public class UserController {
         else {
             try {
                 iUserService.updateById(user);
+                result.setCode(HTTP.SUCCESS);
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
