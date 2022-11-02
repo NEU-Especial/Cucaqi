@@ -157,15 +157,36 @@ export const constantRoutes = [
   {
     path: '/group',
     component: Layout,
+    meta: { title: '群组', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'group',
-        name: 'Group',
+        path: 'controller',
+        name: 'Controller',
         component: () => import('@/views/group/group'),
         meta: { title: '群组管理', icon: 'form' }
+      },
+      {
+        path: 'details',
+        name: 'Details',
+        component: () => import('@/views/group/details/groupDetails'),
+        meta: { title: '群组详情', icon: 'form' }
       }
     ]
   },
+
+  {
+    path: '/answerer',
+    component: Layout,
+    children: [
+      {
+        path: 'controller',
+        name: 'Answerer',
+        component: () => import('@/views/answerer/answerer'),
+        meta: { title: '答者管理', icon: 'form' }
+      }
+    ]
+  },
+
   {
     path: '/nested',
     component: Layout,

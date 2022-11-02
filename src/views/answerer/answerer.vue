@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.title"
-        placeholder="组名"
+        placeholder="姓名"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -24,7 +24,15 @@
         icon="el-icon-edit"
         @click="handleCreate"
       >
-        添加群组
+        添加答者
+      </el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+      >
+        批量导入
       </el-button>
     </div>
     <br>
@@ -35,7 +43,7 @@
       border
       fit
       highlight-current-row
-      style="width: 60%;"
+      style="width: 70%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -51,9 +59,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="组名" min-width="50px" width="80px">
+      <el-table-column label="姓名" min-width="50px" width="80px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.groupName }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="联系电话" min-width="50px" width="120px">
+        <template slot-scope="{row}">
+          <span class="link-type" @click="handleUpdate(row)">{{ row.telephone }}</span>
         </template>
       </el-table-column>
 
@@ -65,16 +79,24 @@
 
       <el-table-column label="创建人" class-name="status-col" width="100" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.createdBy | statusFilter">
-            {{ row.createdBy }}
+          <el-tag :type="row.createBy | statusFilter">
+            {{ row.createBy }}
+          </el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="状态" class-name="status-col" width="100" align="center">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            {{ row.status }}
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleGroupDetails(row)">
-            群组详情
+          <el-button type="primary" size="mini" >
+            暂定
           </el-button>
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
@@ -85,12 +107,11 @@
 
     <pagination
       v-show="total>0"
-      :limit.sync="listQuery.limit"
-      :page.sync="listQuery.page"
       :total="total"
-      @pagination="pagination"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
     />
-
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
@@ -102,21 +123,21 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="组名" prop="type">
-          <el-input v-model="temp.groupName" />
+          <el-input v-model="temp.type" />
         </el-form-item>
         <el-form-item label="创建时间" prop="timestamp">
-          <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date" />
+          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
         </el-form-item>
-        <el-form-item label="创建人" prop="title">
-          <el-input v-model="temp.createdBy" />
+        <el-form-item label="初始密码" prop="title">
+          <el-input v-model="temp.title" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          取消
+          Cancel
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ dialogStatus === 'create' ? '确认创建' : '确认修改' }}
+          Confirm
         </el-button>
       </div>
     </el-dialog>
@@ -126,10 +147,8 @@
 <script>
 
 import waves from '@/directive/waves' // waves directive
-import Pagination from '@/components/Pagination'
-import {addGroup, deleteGroup, getGroupPage, updateGroup} from "@/api/group";
-import {Message} from "element-ui";
-import {getLesseeList} from "@/api/lessee"; // secondary package based on el-pagination
+import { parseTime } from '@/utils'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -163,23 +182,34 @@ export default {
   },
   data() {
     return {
-      userId: 1,
       tableKey: 0,
       list:
        [
           {
-          groupName: '秒天',
-          createdTime:new Date(),
-          createdBy: '太阳',
+          username: '张三',
+          telephone:13940131469,
+          createdTime: Date.parse(new Date()),
+          status: '有群组',
+          createBy: '太阳',
           id: 10
-          }
+          },
+         {
+           username: '李四',
+           telephone:17671211469,
+           createdTime: Date.parse(new Date()),
+           status: '无群组',
+           createBy: '月亮',
+           id: 11
+         }
       ],
       total: 1,
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 20,
-        group_name: '', // 过滤名称
+        importance: undefined,
+        title: undefined,
+        type: undefined,
         sort: '+id'
       },
       importanceOptions: ['有答者', '无答者'],
@@ -187,10 +217,13 @@ export default {
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       showReviewer: false,
       temp: {
-        groupName:'',
-        createdBy: '',
-        createdTime: new Date(),
-        // deleted:'',
+        id: undefined,
+        importance: 1,
+        remark: '',
+        timestamp: new Date(),
+        title: '',
+        type: '',
+        status: 'published'
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -201,13 +234,11 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        groupName: [{ required: true, message: '组名必填', trigger: 'blur' }],
-        createdTime: [{ type: 'date', required: true, message: '时间必填', trigger: 'change' }],
-        createdBy: [{ required: true, message: '创建人必填', trigger: 'blur' }]
+        type: [{ required: true, message: 'type is required', trigger: 'change' }],
+        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
+        title: [{ required: true, message: 'password is required', trigger: 'blur' }]
       },
-      downloadLoading: false,
-      idx: -1,
-      totalList: []
+      downloadLoading: false
     }
   },
   created() {
@@ -215,50 +246,29 @@ export default {
   },
   methods: {
     getList() {
-      this.listLoading = true
-      getGroupPage(this.userId).then(
-        res => {
-          this.list = res.data
-          this.totalList = res.data
+      this.listLoading = false
+      return
+      // eslint-disable-next-line no-unreachable
+      fetchList(this.listQuery).then(response => {
+        this.list = response.data.items
+        this.total = response.data.total
+
+        // Just to simulate the time of the request
+        setTimeout(() => {
           this.listLoading = false
-          this.total = res.data.length
-        }
-      )
-    },
-    handleGroupDetails(row) {
-      this.$router.replace({ path: '/group/details' })
+        }, 1.5 * 1000)
+      })
     },
     handleFilter() {
-      // 执行过滤，需要查询分页条件等信息
-      // 分别有关键字，id升降序，分页
-      // 先找关键字
-      this.list = this.totalList
-      var word = this.listQuery.group_name
-      var filterList = this.list.filter(function(group) {
-        return group.groupName.includes(word)
-      })
-      // 过滤完成之后需要进行排序
-      filterList.sort((a, b) => {
-        if (this.listQuery.sort === '+id') {
-          return a.id - b.id
-        } else {
-          return b.id - a.id
-        }
-      })
-      var page = this.listQuery.page
-      var limit = this.listQuery.limit
-
-      // 进行分页处理,找到对应的位置
-      this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
+      this.listQuery.page = 1
+      this.getList()
     },
-    handleModifyStatus(row) {
-
-    },
-    pagination() {
-      this.list = this.totalList
-      var page = this.listQuery.page
-      var limit = this.listQuery.limit
-      this.list = this.list.slice((page - 1) * limit, (page - 1) * limit + limit)
+    handleModifyStatus(row, status) {
+      this.$message({
+        message: '操作Success',
+        type: 'success'
+      })
+      row.status = status
     },
     sortChange(data) {
       const { prop, order } = data
@@ -276,57 +286,98 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        groupName: undefined,
-        createdBy: this.$store.getters.user.id,
-        createdTime: new Date()
+        id: undefined,
+        importance: 1,
+        remark: '',
+        timestamp: new Date(),
+        title: '',
+        // status: '有群组',
+        type: ''
       }
     },
     handleCreate() {
+      this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     createData() {
-      addGroup(this.temp).then(
-        (res) => {
-          Message({
-            message: res.msg,
-            type: 'success',
-            duration: 1000
+      return
+      // eslint-disable-next-line no-unreachable
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          this.temp.author = 'vue-element-admin'
+          createArticle(this.temp).then(() => {
+            this.list.unshift(this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Created Successfully',
+              type: 'success',
+              duration: 2000
+            })
           })
-          this.getList()
         }
-      )
+      })
     },
-    handleUpdate(row, index) {
-      this.temp = row
-      this.idx = index
+    handleUpdate(row) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     updateData() {
-      updateGroup(this.temp).then(
-        (res) => {
-          Message({
-            message: res.msg,
-            type: 'success',
-            duration: 1000
+      return
+      // eslint-disable-next-line no-unreachable
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp)
+          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          updateArticle(tempData).then(() => {
+            const index = this.list.findIndex(v => v.id === this.temp.id)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
           })
-          this.list[this.index] = { ...this.temp }
-          this.resetTemp()
         }
-      )
+      })
     },
     handleDelete(row, index) {
-      deleteGroup(row).then(
-        (res) => {
-          Message({
-            message: res.msg,
-            type: 'success',
-            duration: 1000
-          })
-          this.list.splice(index, 1)
+      this.$notify({
+        title: 'Success',
+        message: 'Delete Successfully',
+        type: 'success',
+        duration: 2000
+      })
+      this.list.splice(index, 1)
+    },
+    handleFetchPv(pv) {
+      fetchPv(pv).then(response => {
+        this.pvData = response.data.pvData
+        this.dialogPvVisible = true
+      })
+    },
+    handleDownload() {
+    },
+    formatJson(filterVal) {
+      return this.list.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
         }
-      )
+      }))
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort
