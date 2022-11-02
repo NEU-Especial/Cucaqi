@@ -13,6 +13,18 @@
         <h3 class="title">账号找回</h3>
       </div>
 
+      <el-form-item prop="roles">
+        <el-select v-model="loginForm.role" :label="label" style="display: block;" placeholder="身份选择">
+          <el-option
+            v-for="item in roles"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            @click="loginForm.label=item.label"
+          />
+        </el-select>
+      </el-form-item>
+
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -124,16 +136,19 @@
             <span class="svg-container">
               <i class="el-icon-question" />
             </span>
-            <el-select v-model="loginForm.question" placeholder="请选择密保问题" style="width: 90%">
-              <el-option label="问题1" value="1"></el-option>
-              <el-option label="问题2" value="2"></el-option>
-              <el-option label="问题3" value="3"></el-option>
+            <el-select v-model="loginForm.securityQuestion" :label="ques" placeholder="请选择密保问题" style="width: 90%">
+              <el-option
+                v-for="question in securityQuestions"
+                :key="question.id"
+                :label="question.content"
+                :value="question.id"
+              />
             </el-select>
           </el-form-item>
           <el-form-item prop="authCode">
             <el-input
               ref="authCode"
-              v-model="loginForm.answer"
+              v-model="loginForm.securityAnswer"
               placeholder="答案"
               name="answer"
               tabindex="2"
@@ -164,6 +179,8 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { findbackByQues, getAllSecurityQuestion } from '@/api/login'
+import { Message } from 'element-ui'
 
 export default {
   name: 'Login',
@@ -189,24 +206,59 @@ export default {
         callback()
       }
     }
+    const validateRole = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请选择身份'))
+        return false
+      } else {
+        callback()
+      }
+    }
     return {
       findByTelePhone: true,
       loginForm: {
-        username: 'admin',
-        password: '111111',
+        username: '',
+        password: '',
         telephone: '',
-        question: '',
-        answer: ''
+        securityQuestion: '',
+        securityAnswer: '',
+        role: ''
       },
       loginRules: {
+        role: [{ required: true, trigger: 'blur', validator: validateRole }],
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
         confirmPassword: [{ required: true, trigger: 'blur', validator: validateConfirmPassord }]
       },
+      ques: '',
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      label: '',
+      securityQuestions: [],
+      roles: [
+        {
+          value: 1001,
+          label: '管理员'
+        }, {
+          value: 1002,
+          label: '租户'
+        }, {
+          value: 1003,
+          label: '用户'
+        }, {
+          value: 1004,
+          label: '答者'
+        }
+      ]
     }
+  },
+  mounted() {
+    getAllSecurityQuestion().then(
+      res => {
+        this.securityQuestions = res.data
+      }
+    )
   },
   methods: {
     changeType(flag) {
@@ -230,14 +282,25 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+          findbackByQues(this.loginForm).then((res) => {
+            Message({
+              message: res.msg,
+              type: 'success',
+              duration: 2000
+            })
             this.loading = false
+            setTimeout(() => {
+              this.$router.push('/login')
+            }, 1000)
           }).catch(() => {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
+          Message({
+            message: '请检查数据格式',
+            type: 'warning',
+            duration: 2000
+          })
           return false
         }
       })

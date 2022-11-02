@@ -49,3 +49,17 @@ export function register(data) {
   })
 }
 
+export function getAllSecurityQuestion() {
+  return request({
+    url: `/cucaqi/login/securityQuestions`,
+    method: 'get'
+  })
+}
+
+export function findbackByQues(data) {
+  return request({
+    url: `/cucaqi/login/findbackByQues`,
+    method: 'post',
+    data
+  })
+}
