@@ -3,6 +3,7 @@ package com.cucaqi.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.Answerer;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -14,5 +15,12 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface AnswererMapper extends BaseMapper<Answerer> {
+    /**
+     * 判断答者表中是否有关联的用户
+     * @param id
+     * @return
+     */
+    @Select("select count(*) from t_answerer where createdBy =#{id} ")
+    public Integer tellAnswerer(int id);
 
 }
