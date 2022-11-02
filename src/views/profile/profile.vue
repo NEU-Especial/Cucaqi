@@ -5,7 +5,7 @@
     <transition name="fade">
 
       <el-container style="height: 1200px">
-        <el-aside width="40%" style="height:100%;margin: 40px">
+        <el-aside width="50%" style="height:100%;margin: 40px">
 
           <el-form ref="form" :model="form" label-width="80px">
             <el-form-item label="头像" label-width="120px">
@@ -25,12 +25,15 @@
             margin-left: 40px;box-shadow: 5px 5px 5px rgba(0.1,0.1,0.1,0.1)">
               <el-form-item label="新密码" label-width="120px">
                 <el-input placeholder="请输入8-16位，且由数字，字母构成的密码"
-                 v-model="form.password" show-password  type="password" />
+                          v-model="form.password" show-password
+                          prefix-icon="el-icon-key"
+                          type="password"/>
               </el-form-item>
 
               <el-form-item label="确认密码" label-width="120px">
                 <el-input placeholder="确认密码与上述一致"
-                 v-model="form.confirmPassword" show-password type="password"/>
+                          v-model="form.confirmPassword" show-password type="password"
+                          prefix-icon="el-icon-key"/>
               </el-form-item>
 
               <el-form-item style="margin-top: 20px">
@@ -43,7 +46,10 @@
             margin-left: 40px;box-shadow: 5px 5px 5px rgba(0,0,0,0.1)">
             <el-form-item label="邮箱地址" label-width="120px">
               <el-col :span="16" align="center">
-                <el-input v-model="form.email" placeholder="输入新的邮箱地址"/>
+                <el-input v-model="form.email"
+                          placeholder="输入新的邮箱地址"
+                          prefix-icon="el-icon-s-promotion"
+                          clearable/>
               </el-col>
               <el-col :span="8" align="right">
                 <el-button type="primary" @click="getAuthCodeByEmail">发送验证码</el-button>
@@ -51,7 +57,10 @@
             </el-form-item>
             <el-form-item label="邮箱验证码" label-width="120px">
               <el-col :span="8" align="center">
-                <el-input v-model="authCode" placeholder="验证码"/>
+                <el-input v-model="authCode"
+                          placeholder="验证码"
+                          prefix-icon="el-icon-s-help"
+                          clearable/>
               </el-col>
               <el-button type="primary" style="margin-left: 30px;float: right" @click="updateEmail">更新邮箱地址</el-button>
             </el-form-item>
@@ -62,7 +71,10 @@
             margin-left: 40px;box-shadow: 5px 5px 5px rgba(0.1,0.1,0.1,0.1)">
             <el-form-item label="绑定手机号码" label-width="120px" >
               <el-col :span="16" align="center">
-                <el-input v-model="form.telephone" placeholder="输入电话号码"/>
+                <el-input v-model="form.telephone"
+                          placeholder="输入电话号码"
+                          prefix-icon="el-icon-phone"
+                          clearable/>
               </el-col>
               <el-col :span="8" align="right">
                 <el-button type="primary">发送验证码</el-button>
@@ -70,7 +82,10 @@
             </el-form-item>
             <el-form-item label="短信验证码" label-width="120px">
               <el-col :span="8" align="center">
-                <el-input v-model="authCode" placeholder="短信验证码"/>
+                <el-input v-model="authCode"
+                          placeholder="短信验证码"
+                          prefix-icon="el-icon-s-comment"
+                          clearable/>
               </el-col>
               <el-button type="primary" style="margin-left: 30px;float: right">更新电话号码</el-button>
             </el-form-item>
@@ -94,7 +109,9 @@
 
             <el-form-item label="答案" label-width="120px">
               <el-col :span="10">
-                <el-input v-model="form.securityAnswer" :disabled="''==form.securityQuestion"/>
+                <el-input v-model="form.securityAnswer" :disabled="''==form.securityQuestion"
+                          prefix-icon="el-icon-s-opportunity"
+                          clearable/>
               </el-col>
               <el-button type="primary" style="margin-left: 30px;float: right" @click="bindSecurityQuestion">更新密保
               </el-button>
