@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author GaoSong Xu
@@ -35,10 +36,32 @@ public class User implements Serializable {
     private Integer role;
 
     private Float payment;
+
+
+    private Integer limit;
+
+    public Integer getCurCount() {
+        return curCount;
+    }
+
+    public void setCurCount(Integer curCount) {
+        this.curCount = curCount;
+    }
+
+    private Integer curCount;
     @TableLogic
     private Integer deleted;
 
     private Integer createdBy;
+
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
 
     public String getInviteCode() {
         return inviteCode;
@@ -52,6 +75,7 @@ public class User implements Serializable {
 
 
     private String email;
+
     public String getEmail() {
         return email;
     }
@@ -59,7 +83,6 @@ public class User implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-
 
 
     public Integer getId() {
@@ -145,16 +168,16 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-        "id=" + id +
-        ", username=" + username +
-        ", password=" + password +
-        ", telephone=" + telephone +
-        ", securityQuestion=" + securityQuestion +
-        ", securityAnswer=" + securityAnswer +
-        ", role=" + role +
-        ", payment=" + payment +
-        ", deleted=" + deleted +
-        ", createdBy=" + createdBy +
-        "}";
+                "id=" + id +
+                ", username=" + username +
+                ", password=" + password +
+                ", telephone=" + telephone +
+                ", securityQuestion=" + securityQuestion +
+                ", securityAnswer=" + securityAnswer +
+                ", role=" + role +
+                ", payment=" + payment +
+                ", deleted=" + deleted +
+                ", createdBy=" + createdBy +
+                "}";
     }
 }
