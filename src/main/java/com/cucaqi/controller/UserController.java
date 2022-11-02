@@ -70,9 +70,16 @@ public class UserController {
             result.setMsg("添加失败--添加的用户为空");
         }
         try {
-            boolean save = iUserService.save(user);
-            result.setCode(HTTP.SUCCESS);
-            result.setMsg("添加成功");
+            if(iUserService.searchUser(user.getUsername())) {
+                result.setCode(HTTP.SERVER_ERR);
+                result.setMsg("用户添加失败--该用户名已存在");
+            }
+            else {
+                boolean save = iUserService.save(user);
+                result.setCode(HTTP.SUCCESS);
+                result.setMsg("添加成功");
+            }
+
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);
@@ -127,8 +134,15 @@ public class UserController {
         }
         else {
             try {
-                iUserService.updateById(user);
-                result.setCode(HTTP.SUCCESS);
+               if(iUserService.searchUser(user.getUsername())) {
+                   result.setCode(HTTP.SERVER_ERR);
+                   result.setMsg("用户修改失败--该用户名已存在");
+               }
+               else {
+                   iUserService.updateById(user);
+                   result.setCode(HTTP.SUCCESS);
+               }
+
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);

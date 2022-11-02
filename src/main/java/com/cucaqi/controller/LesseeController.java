@@ -60,9 +60,16 @@ public class LesseeController {
         }
         else {
             try {
-                boolean number= iLesseeService.save(lessee);
-                result.setCode(HTTP.SUCCESS);
-                result.setMsg("添加成功！");
+                if(iLesseeService.searchLessee(lessee.getUsername())) {
+                    result.setCode(HTTP.SERVER_ERR);
+                    result.setMsg("租户添加失败--该用户名已存在");
+                }
+                else {
+                    boolean number= iLesseeService.save(lessee);
+                    result.setCode(HTTP.SUCCESS);
+                    result.setMsg("添加成功！");
+                }
+
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
@@ -118,8 +125,15 @@ public class LesseeController {
         }
         else {
             try {
-                iLesseeService.updateById(lessee);
-                result.setCode(HTTP.SUCCESS);
+               if(iLesseeService.searchLessee(lessee.getUsername())) {
+                   result.setCode(HTTP.SERVER_ERR);
+                   result.setMsg("租户修改失败--该用户名已存在");
+               }
+               else {
+                   iLesseeService.updateById(lessee);
+                   result.setCode(HTTP.SUCCESS);
+               }
+
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);

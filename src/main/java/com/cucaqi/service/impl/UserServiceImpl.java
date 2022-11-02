@@ -45,4 +45,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
     }
+
+    /**
+     * 通过用户名查询用户,当查询到时返回true
+     * @param username
+     * @return
+     */
+    @Override
+    public boolean searchUser(String username){
+        User searchUser = userMapper.searchUser(username);
+        if (searchUser==null){
+            return  false;
+        }
+            return true;
+    }
 }
