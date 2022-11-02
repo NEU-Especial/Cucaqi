@@ -2,15 +2,15 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.lessee_name"
         placeholder="租户姓名"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
+<!--      <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">-->
+<!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+<!--      </el-select>-->
 <!--      <el-select v-model="listQuery.type" placeholder="问卷类型" clearable class="filter-item" style="width: 130px">-->
 <!--        <el-option-->
 <!--          v-for="item in calendarTypeOptions"-->
@@ -34,14 +34,6 @@
       >
         添加租户
       </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-      >
-        批量导入
-      </el-button>
     </div>
     <br>
     <el-table
@@ -51,7 +43,7 @@
       border
       fit
       highlight-current-row
-      style="width: 50%;"
+      style="width: 58%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -63,12 +55,12 @@
         :class-name="getSortClass('id')"
       >
         <template slot-scope="{row}">
-          <span>{{ row.id +"我是你爷爷"}}</span>
+          <span>{{ row.id}}</span>
         </template>
       </el-table-column>
       <el-table-column label="租户姓名" min-width="50px" width="80px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="200px" align="center">
@@ -99,11 +91,9 @@
 <!--          <span>{{ row.curCount }}</span>-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-      <el-table-column label="租户状态" class-name="status-col" width="100" align="center">
+      <el-table-column label="租户电话" min-width="150px" width="180px">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.telephone }}</span>
         </template>
       </el-table-column>
 <!--      <el-table-column label="是否推荐" width="100px" align="center">-->
@@ -112,11 +102,20 @@
 <!--        </template>-->
 <!--      </el-table-column>-->
 
-      <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="400" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" >
             查询租户账单
           </el-button>
+          <el-button
+              class="filter-item"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(row)"
+            >
+              编辑租户信息
+          </el-button>
+
 <!--          <el-button-->
 <!--            v-if="row.status!=='published'"-->
 <!--            size="mini"-->
@@ -166,8 +165,11 @@
         <el-form-item label="创建时间" prop="timestamp">
           <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
         </el-form-item>
-        <el-form-item label="初始密码" prop="title">
-          <el-input v-model="temp.title" />
+        <el-form-item label="租户密码" prop="title">
+          <el-input v-model="temp.password" />
+        </el-form-item>
+        <el-form-item label="租户电话" prop="title">
+          <el-input v-model="temp.telephone" />
         </el-form-item>
 <!--        <el-form-item label="Status">-->
 <!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
@@ -253,16 +255,17 @@ export default {
     return {
       tableKey: 0,
       list: [{
-        title: '刘德华',
+        name: '刘德华',
         createdTime: Date.parse(new Date()),
-        startedTime: Date.parse(new Date()),
-        endTime: Date.parse(new Date()),
-        status: '',
-        type: '',
+        // startedTime: Date.parse(new Date()),
+        // endTime: Date.parse(new Date()),
+        // status: '',
+        // type: '',
         limit: 43,
         curCount: 3,
         isRecommend: '是',
-        id: 10
+        id: 10,
+        telephone: 11111111111
       }],
       total: 1,
       listLoading: true,
@@ -270,7 +273,7 @@ export default {
         page: 1,
         limit: 20,
         importance: undefined,
-        title: undefined,
+        lessee_name: undefined,
         type: undefined,
         sort: '+id'
       },
@@ -284,9 +287,10 @@ export default {
         importance: 1,
         remark: '',
         timestamp: new Date(),
-        title: '',
+        name: '',
         type: '',
-        status: 'published'
+        status: 'published',
+        telephone:''
       },
       dialogFormVisible: false,
       dialogStatus: '',
