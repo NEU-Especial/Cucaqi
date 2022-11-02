@@ -40,7 +40,7 @@ public class LesseeController {
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("查询租户失败--"+e.getLocalizedMessage());
+            result.setMsg("查询租户失败--");
         }
 
         return result;
@@ -73,7 +73,7 @@ public class LesseeController {
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("添加租户失败--"+e.getLocalizedMessage());
+                result.setMsg("添加租户失败--");
             }
         }
 
@@ -108,7 +108,7 @@ public class LesseeController {
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("删除租户失败--"+e.getLocalizedMessage());
+                result.setMsg("删除租户失败--");
 
             }
         }
@@ -125,19 +125,25 @@ public class LesseeController {
         }
         else {
             try {
-               if(iLesseeService.searchLessee(lessee.getUsername())) {
-                   result.setCode(HTTP.SERVER_ERR);
-                   result.setMsg("租户修改失败--该用户名已存在");
-               }
-               else {
-                   iLesseeService.updateById(lessee);
-                   result.setCode(HTTP.SUCCESS);
-               }
-
+                Lessee byId = iLesseeService.getById(id);
+             if(byId.getUsername().equals(lessee.getUsername()))  {
+                 iLesseeService.updateById(lessee);
+                 result.setCode(HTTP.SUCCESS);
+             }
+             else {
+                 if(iLesseeService.searchLessee(lessee.getUsername())) {
+                     result.setCode(HTTP.SERVER_ERR);
+                     result.setMsg("租户修改失败--该用户名已存在");
+                 }
+                 else {
+                     iLesseeService.updateById(lessee);
+                     result.setCode(HTTP.SUCCESS);
+                 }
+             }
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("租户修改失败--"+e.getLocalizedMessage());
+                result.setMsg("租户修改失败--");
             }
         }
 

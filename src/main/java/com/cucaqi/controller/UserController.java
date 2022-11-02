@@ -41,6 +41,8 @@ public class UserController {
             result.setMsg("查询失败--该租户不存在");
             result.setCode(HTTP.SERVER_ERR);
         }
+
+
         else {
             try {
                 List<User> userlist = iUserService.getUserlist(id);
@@ -50,7 +52,7 @@ public class UserController {
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("查找用户失败--"+e.getLocalizedMessage());
+                result.setMsg("查找用户失败--");
             }
         }
 
@@ -83,7 +85,7 @@ public class UserController {
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("添加用户失败--"+e.getLocalizedMessage());
+            result.setMsg("添加用户失败--");
         }
         return result;
     }
@@ -117,7 +119,7 @@ public class UserController {
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("删除用户失败--"+e.getLocalizedMessage());
+                result.setMsg("删除用户失败--");
 
             }
         }
@@ -132,21 +134,30 @@ public class UserController {
             result.setMsg("修改失败--该用户不存在");
             result.setCode(HTTP.SERVER_ERR);
         }
+
         else {
             try {
-               if(iUserService.searchUser(user.getUsername())) {
-                   result.setCode(HTTP.SERVER_ERR);
-                   result.setMsg("用户修改失败--该用户名已存在");
-               }
-               else {
-                   iUserService.updateById(user);
-                   result.setCode(HTTP.SUCCESS);
-               }
+                User byId = iUserService.getById(id);
+                if(byId.getUsername().equals(user.getUsername()))  {
+                    iUserService.updateById(user);
+                    result.setCode(HTTP.SUCCESS);
+                }
+                else {
+                    if(iUserService.searchUser(user.getUsername())) {
+                        result.setCode(HTTP.SERVER_ERR);
+                        result.setMsg("用户修改失败--该用户名已存在");
+                    }
+                    else {
+                        iUserService.updateById(user);
+                        result.setCode(HTTP.SUCCESS);
+                    }
+                }
+
 
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("用户修改失败--"+e.getLocalizedMessage());
+                result.setMsg("用户修改失败--");
             }
         }
 
