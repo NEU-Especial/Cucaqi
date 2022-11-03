@@ -13,4 +13,6 @@ public interface IGroupService extends IService<Group> {
     public boolean deleteRelation(Integer groupId,Integer answererId);
 
     boolean addRelation(Integer groupId, Integer answererId);
+
+    public boolean hasRelationBetweenGroupAnswerer(Integer groupId, Integer answererId);
 }

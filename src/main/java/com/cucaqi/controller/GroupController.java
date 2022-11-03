@@ -65,6 +65,9 @@ public class GroupController {
     }
     @PostMapping("/addRelation/{groupId}/{answererId}")
     public Result addRelation(@PathVariable Integer groupId,@PathVariable Integer answererId){
+        if(groupService.hasRelationBetweenGroupAnswerer(groupId,answererId)){
+            return new Result(HTTP.BAD_REQ,"答者已在群组中，请勿重复添加");
+        }
         if(groupService.addRelation(groupId,answererId)){
             return new Result(HTTP.SUCCESS,"添加关系成功");
         }
@@ -85,6 +88,4 @@ public class GroupController {
         }
         return new Result(HTTP.NOT_FOUND,"修改出现未知错误");
     }
-
-
 }

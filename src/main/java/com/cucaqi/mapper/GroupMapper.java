@@ -31,4 +31,6 @@ public interface GroupMapper extends BaseMapper<Group> {
     public Integer deleteRelationFromGroupAnswerer(Integer groupId,Integer answererId);
     @Insert("insert into t_group_answerer values(#{groupId},#{answererId})")
     public Integer addRelationFromGroupAnswerer(Integer groupId, Integer answererId);
+    @Select("select count(*) from t_group_answerer where groupId = #{groupId} and answererId = #{answererId}")
+    public Integer hasRelation(Integer groupId,Integer answererId);
 }
