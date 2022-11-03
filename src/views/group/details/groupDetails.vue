@@ -110,9 +110,6 @@
         <el-form-item label="答者邮箱号码" prop="title">
           <el-input class="answerer" v-model="temp.email"/>
         </el-form-item>
-        <el-form-item label="创建人" prop="title">
-          <el-input class="answerer" v-model="temp.createdBy"/>
-        </el-form-item>
       </el-form>
 
 

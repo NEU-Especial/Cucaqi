@@ -113,11 +113,11 @@
         <el-form-item label="描述" prop="type">
           <el-input v-model="temp.description" />
         </el-form-item>
-        <el-form-item label="创建时间" prop="timestamp">
+        <el-form-item label="创建时间" prop="timestamp" v-if="dialogStatus === 'create'">
           <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date" />
         </el-form-item>
-        <el-form-item label="创建人" prop="title">
-          <el-input v-model="temp.createdBy" />
+        <el-form-item label="创建人" prop="title" aria-readonly="true">
+          <el-input v-model="temp.createdBy" readonly/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -299,7 +299,6 @@ export default {
       this.dialogFormVisible = true
     },
     createData() {
-
       addGroup(this.temp).then(
         (res) => {
           Message({
