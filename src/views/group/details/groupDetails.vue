@@ -2,17 +2,18 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.answerer_name"
         placeholder="姓名"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
-      </el-select>
+<!--      <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">-->
+<!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+<!--      </el-select>-->
+
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -25,14 +26,6 @@
         @click="handleCreate"
       >
         添加答者
-      </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-      >
-        批量导入
       </el-button>
     </div>
     <br>
@@ -71,27 +64,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="创建时间" width="200px" align="center">
+      <el-table-column label="邮箱" min-width="50px" width="120px">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="所属群组" class-name="status-col" width="100" align="center">
-        <template slot-scope="{row}">
-          <el-tag :type="row.createBy | statusFilter">
-            {{ row.createBy }}
-          </el-tag>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.email }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini">
-            暂定
-          </el-button>
-          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
+<!--          第一个id为groupId，第二个id为answererId-->
+          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row.id,$index)">
+            删除组员
           </el-button>
         </template>
       </el-table-column>
@@ -99,10 +82,10 @@
 
     <pagination
       v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.page"
       :limit.sync="listQuery.limit"
-      @pagination="getList"
+      :page.sync="listQuery.page"
+      :total="total"
+      @pagination="pagination"
     />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -110,26 +93,35 @@
         ref="dataForm"
         :rules="rules"
         :model="temp"
+        :data="allAnswerers"
         label-position="left"
         label-width="90px"
         style="width: 400px; margin-left:50px;"
       >
-        <el-form-item label="组名" prop="type">
-          <el-input v-model="temp.type"/>
+        <el-form-item label="答者姓名">
+          <el-select v-model="temp.username" style="width: 140px" clearable="" @change="answererChange" >
+            <el-option v-for="item in allAnswerers" :key="item.id" :label="item.username" :value="item.id" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="创建时间" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date"/>
+
+        <el-form-item label="答者电话号码" prop="title">
+          <el-input class="answerer" v-model="temp.telephone" value=""/>
         </el-form-item>
-        <el-form-item label="初始密码" prop="title">
-          <el-input v-model="temp.title"/>
+        <el-form-item label="答者邮箱号码" prop="title">
+          <el-input class="answerer" v-model="temp.email"/>
+        </el-form-item>
+        <el-form-item label="创建人" prop="title">
+          <el-input class="answerer" v-model="temp.createdBy"/>
         </el-form-item>
       </el-form>
+
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          Cancel
+          取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
+          确认添加
         </el-button>
       </div>
     </el-dialog>
@@ -141,7 +133,13 @@
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getGroupAnswererPage } from '@/api/group' // secondary package based on el-pagination
+import {
+  addGroup, addToGroupAnswererRelation,
+  deleteFromGroupAnswererRelation,
+  updateGroup
+} from "@/api/group";
+import {Message} from "element-ui";
+import {getAllAnswerer, getAllAnswererByGroupId} from "@/api/answerer"; // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -175,35 +173,26 @@ export default {
   },
   data() {
     return {
-      groupId: 1,
+      groupId: '',
       tableKey: 0,
+      allAnswerers:[],
+      selectAnswerer:'请选择答者',
       list:
-        [
+       [
           {
-            username: '张三',
-            telephone: 13940131469,
-            createdTime: Date.parse(new Date()),
-            status: '有群组',
-            createBy: '地球组',
-            id: 10
+          username: '张三',
+          telephone:13940131469,
+          email:'',
+          createBy: '地球组',
+          id: 10
           },
-          {
-            username: '李四',
-            telephone: 17671211469,
-            createdTime: Date.parse(new Date()),
-            status: '无群组',
-            createBy: '地球组',
-            id: 11
-          }
-        ],
+      ],
       total: 1,
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
+        answerer_name: '', // 过滤名称
         sort: '+id'
       },
       importanceOptions: ['有答者', '无答者'],
@@ -211,13 +200,13 @@ export default {
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       showReviewer: false,
       temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
+        id:'',
+        username:'',
+        password:'',
+        telephone:'',
+        payment:0,
+        createdBy:'',
+        email:'',
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -228,9 +217,10 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'password is required', trigger: 'blur' }]
+        username: [{ required: true, message: 'username is required', trigger: 'change' }],
+        password: [{ required: true, message: 'password is required', trigger: 'blur' }],
+        telephone: [{ required: true, message: 'telephone is required', trigger: 'blur' }],
+        email: [{ required: true, message: 'email is required', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -239,32 +229,71 @@ export default {
     this.getList()
   },
   methods: {
-    async getList() {
-      // eslint-disable-next-line no-unreachable
-      await getGroupAnswererPage(this.groupId).then(res => {
-        this.list = res.data
-        // Just to simulate the time of the request
-        setTimeout(() => {
+    getList() {
+      this.groupId = this.$route.query.id
+      this.listLoading = true
+      getAllAnswererByGroupId(this.$route.query.id).then(
+        res => {
+          this.list = res.data
+          this.totalList = res.data
           this.listLoading = false
-        }, 1.5 * 1000)
-      })
+          this.total = res.data.length
+        }
+      )
+      getAllAnswerer().then(
+        res => {
+          this.allAnswerers = res.data
+        }
+      )
     },
     handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
+      // 执行过滤，需要查询分页条件等信息
+      // 分别有关键字，id升降序，分页
+      // 先找关键字
+      this.list = this.totalList
+      var word = this.listQuery.answerer_name
+      var filterList = this.list.filter(function(answerer) {
+        return answerer.username.includes(word)
       })
-      row.status = status
+      // 过滤完成之后需要进行排序
+      filterList.sort((a, b) => {
+        if (this.listQuery.sort === '+id') {
+          return a.id - b.id
+        } else {
+          return b.id - a.id
+        }
+      })
+      var page = this.listQuery.page
+      var limit = this.listQuery.limit
+
+      // 进行分页处理,找到对应的位置
+      this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
+    },
+    handleModifyStatus(row) {
+
+    },
+    pagination() {
+      this.list = this.totalList
+      var page = this.listQuery.page
+      var limit = this.listQuery.limit
+      this.list = this.list.slice((page - 1) * limit, (page - 1) * limit + limit)
     },
     sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
+    },
+    answererChange(val){
+        this.allAnswerers.forEach((v) => {
+          if (v.username == val) {
+            this.temp.id = v.id;
+            this.temp.telephone = v.telephone;
+            this.temp.email = v.email;
+            this.temp.createdBy = v.createBy;
+          }
+          return false;
+        });
     },
     sortByID(order) {
       if (order === 'ascending') {
@@ -276,98 +305,60 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        // status: '有群组',
-        type: ''
+        groupName: undefined,
+        createdBy: this.$store.getters.user.id,
+        createdTime: new Date()
       }
     },
     handleCreate() {
-      this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
     },
     createData() {
-      return
-      // eslint-disable-next-line no-unreachable
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
+      var groupId = this.groupId
+      var answererId = this.temp.id
+      addToGroupAnswererRelation(groupId,answererId).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
           })
+          this.getList()
         }
-      })
+      )
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+    handleUpdate(row, index) {
+      this.temp = row
+      this.idx = index
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
     },
     updateData() {
-      return
-      // eslint-disable-next-line no-unreachable
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
+      updateGroup(this.temp).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
           })
+          this.list[this.index] = { ...this.temp }
+          this.resetTemp()
         }
-      })
+      )
     },
-    handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    handleDownload() {
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
+    handleDelete(answererId,index) {
+      var groupId =this.groupId
+      deleteFromGroupAnswererRelation(groupId,answererId).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
+          })
+          this.list.splice(index, 1)
         }
-      }))
+      )
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort

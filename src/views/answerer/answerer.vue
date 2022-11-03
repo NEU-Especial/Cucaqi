@@ -87,6 +87,14 @@
           >
             编辑答者信息
           </el-button>
+          <el-button
+            class="filter-item"
+            size="mini"
+            type="primary"
+            @click="handleBelongGroup(row)"
+          >
+            答者所属群组
+          </el-button>
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除答者
           </el-button>
@@ -237,6 +245,9 @@ export default {
 
       // 进行分页处理,找到对应的位置
       this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
+    },
+    handleBelongGroup(row) {
+      this.$router.replace({ path: '/answerer/belongs', query:{id:row.id}})
     },
     pagination() {
       this.list = this.totalList

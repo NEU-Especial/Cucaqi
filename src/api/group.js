@@ -8,10 +8,11 @@ export function getGroupPage(userId) {
     method: 'get',
   })
 }
-export function getGroupAnswererPage(groupId) {
+
+export function getAllGroupByAnswererId(answererId) {
   return request({
-    url: `/cucaqi/answerer/details/${groupId}`,
-    method: 'get',
+    url: `/cucaqi/group/belongs/${answererId}`,
+    method: 'get'
   })
 }
 
@@ -35,6 +36,20 @@ export function deleteGroup(data) {
     url: `/cucaqi/group/deleteGroup`,
     method: 'delete',
     data
+  })
+}
+
+export function deleteFromGroupAnswererRelation(groupId,answererId) {
+  return request({
+    url: `/cucaqi/group/deleteRelation/${groupId}/${answererId}`,
+    method: 'delete',
+  })
+}
+
+export function addToGroupAnswererRelation(groupId,answererId) {
+  return request({
+    url: `/cucaqi/group/addRelation/${groupId}/${answererId}`,
+    method: 'post',
   })
 }
 

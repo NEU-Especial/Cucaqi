@@ -7,9 +7,16 @@ export function getAllAnswererByUserId(id) {
   })
 }
 
-export function getAllAnswererByGroupId(id) {
+export function getAllAnswererByGroupId(groupId) {
   return request({
-    url: `/cucaqi/answerer/details/${id}`,
+    url: `/cucaqi/answerer/details/${groupId}`,
+    method: 'get'
+  })
+}
+
+export function getAllAnswerer() {
+  return request({
+    url: `/cucaqi/answerer`,
     method: 'get'
   })
 }

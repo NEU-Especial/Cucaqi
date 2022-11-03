@@ -14,15 +14,6 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
-        添加群组
-      </el-button>
     </div>
     <br>
     <el-table
@@ -48,7 +39,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="组名" min-width="50px" width="80px">
+      <el-table-column label="所属群组" min-width="50px" width="80px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.groupName }}</span>
         </template>
@@ -62,11 +53,11 @@
 
       <el-table-column label="创建时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime  }}</span>
+          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="创建人" class-name="status-col" width="100" align="center">
+      <el-table-column label="群组创建人" class-name="status-col" width="100" align="center">
         <template slot-scope="{row}">
           <el-tag :type="row.createdBy | statusFilter">
             {{ row.createdBy }}
@@ -76,14 +67,8 @@
 
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row,$index)">
-            编辑
-          </el-button>
-          <el-button type="primary" size="mini" @click="handleGroupDetails(row)">
-            群组详情
-          </el-button>
-          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
+          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row.id,$index)">
+            移出群组
           </el-button>
         </template>
       </el-table-column>
@@ -136,7 +121,14 @@
 
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import {addGroup, deleteGroup, getGroupPage, updateGroup} from "@/api/group";
+import {
+  addGroup,
+  deleteFromGroupAnswererRelation,
+  deleteGroup,
+  getAllGroupByAnswererId,
+  getGroupPage,
+  updateGroup
+} from "@/api/group";
 import {Message} from "element-ui";
 import {getLesseeList} from "@/api/lessee"; // secondary package based on el-pagination
 
@@ -172,7 +164,7 @@ export default {
   },
   data() {
     return {
-      userId: 1,
+      answererId:1,
       tableKey: 0,
       list:
        [
@@ -227,8 +219,9 @@ export default {
   },
   methods: {
     getList() {
+      this.answererId = this.$route.query.id
       this.listLoading = true
-      getGroupPage(this.$store.getters.user.id).then(
+      getAllGroupByAnswererId(this.$route.query.id).then(
         res => {
           this.list = res.data
           this.totalList = res.data
@@ -238,7 +231,7 @@ export default {
       )
     },
     handleGroupDetails(row) {
-      this.$router.push({ path: '/group/details', query:{id:row.id}})
+      this.$router.replace({ path: '/group/details', query:{id:row.id}})
     },
     handleFilter() {
       // 执行过滤，需要查询分页条件等信息
@@ -330,8 +323,9 @@ export default {
         }
       )
     },
-    handleDelete(row, index) {
-      deleteGroup(row).then(
+    handleDelete(groupId,index) {
+      var answererId =this.answererId
+      deleteFromGroupAnswererRelation(groupId,answererId).then(
         (res) => {
           Message({
             message: res.msg,
