@@ -38,6 +38,12 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
 
     @Override
     public boolean addRelation(Integer groupId, Integer answererId) {
+
         return groupMapper.addRelationFromGroupAnswerer(groupId,answererId) > 0;
+    }
+
+    @Override
+    public boolean hasRelationBetweenGroupAnswerer(Integer groupId, Integer answererId) {
+        return groupMapper.hasRelation(groupId,answererId) > 0;
     }
 }
