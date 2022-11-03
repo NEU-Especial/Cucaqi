@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.Answerer;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Select;
@@ -30,4 +34,5 @@ public interface AnswererMapper extends BaseMapper<Answerer> {
             "t_answerer.id = t_group_answerer.answererId join t_group on " +
             "t_group_answerer.groupId = t_group.id where t_group.id = #{groupId}")
     public List<Answerer> getByGroupId(Integer groupId);
+
 }
