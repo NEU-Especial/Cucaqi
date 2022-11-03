@@ -214,6 +214,7 @@ export default {
               type: 'success',
               duration: 2 * 1000
             })
+            this.$store.commit('user/SetRoles', [res.data.role])
             setTimeout(() => {
               this.$router.push('/dashboard')
             }, 1000)
