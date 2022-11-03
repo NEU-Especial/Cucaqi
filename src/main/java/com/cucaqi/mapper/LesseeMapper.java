@@ -41,6 +41,14 @@ public interface LesseeMapper extends BaseMapper<Lessee> {
     @Update("update t_lessee set deleted =1 where id=#{id} ")
     public Integer deleteLessee(int id);
 
+    /**
+     * 通过同户名查找租户
+     * @param username
+     * @return
+     */
+    @Select("select * from t_lessee where username = #{username}")
+    public Lessee searchLessee(String username);
+
 
 
 

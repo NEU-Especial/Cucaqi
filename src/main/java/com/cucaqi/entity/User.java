@@ -38,7 +38,7 @@ public class User implements Serializable {
     private Float payment;
 
 
-    private Integer limit;
+    private Integer limitCount;
 
     public Integer getCurCount() {
         return curCount;
@@ -55,12 +55,12 @@ public class User implements Serializable {
     private Integer createdBy;
 
 
-    public Integer getLimit() {
-        return limit;
+    public Integer getLimitCount() {
+        return limitCount;
     }
 
-    public void setLimit(Integer limit) {
-        this.limit = limit;
+    public void setLimitCount(Integer limitCount) {
+        this.limitCount = limitCount;
     }
 
     public String getInviteCode() {
