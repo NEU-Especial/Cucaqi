@@ -24,6 +24,10 @@ public class Group implements Serializable {
 
     private String groupName;
 
+    private String description;
+
+
+
     private Integer createdBy;
 
     private LocalDateTime createdTime;
@@ -46,7 +50,13 @@ public class Group implements Serializable {
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
     public Integer getCreatedBy() {
         return createdBy;
     }
@@ -74,11 +84,12 @@ public class Group implements Serializable {
     @Override
     public String toString() {
         return "Group{" +
-        "id=" + id +
-        ", groupName=" + groupName +
-        ", createdBy=" + createdBy +
-        ", createdTime=" + createdTime +
-        ", deleted=" + deleted +
-        "}";
+                "id=" + id +
+                ", groupName='" + groupName + '\'' +
+                ", description='" + description + '\'' +
+                ", createdBy=" + createdBy +
+                ", createdTime=" + createdTime +
+                ", deleted=" + deleted +
+                '}';
     }
 }

@@ -26,6 +26,11 @@ import java.util.List;
 public class AnswererController {
     @Autowired
     private IAnswererService answererService;
+    @GetMapping()
+    public Result getAllAnswerer(){
+        List<Answerer> list = answererService.list();
+        return new Result(HTTP.SUCCESS,list);
+    }
     @GetMapping("/{userId}")
     public Result getAllAnswererByUserId( @PathVariable Integer userId){
         LambdaQueryWrapper<Answerer> queryWrapper = new LambdaQueryWrapper<>();

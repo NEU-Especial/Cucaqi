@@ -31,10 +31,21 @@ public class GroupController {
         List<Group> list = groupService.list(queryWrapper);
         return new Result(HTTP.SUCCESS,list);
     }
+    @GetMapping("/belongs/{answererId}")
+    public Result getAllGroupByAnswererId( @PathVariable Integer answererId){
+        List<Group> list = groupService.listGroupByAnswererId(answererId);
+        return new Result(HTTP.SUCCESS,list);
+    }
     @PostMapping
     public Result save(@RequestBody Group group){
+        List<Group> groupList = groupService.list();
+        for (Group group2 : groupList) {
+            if(group2.getGroupName().equals(group.getGroupName())){
+                return new Result(HTTP.BAD_REQ,"组名重复");
+            }
+        }
         groupService.save(group);
-        return new Result(HTTP.SUCCESS,"现在保存成功");
+        return new Result(HTTP.SUCCESS,"保存成功");
     }
     @DeleteMapping("/deleteGroup")
     public Result delete(@RequestBody Group group){
@@ -43,12 +54,32 @@ public class GroupController {
             groupService.removeById(group.getId());
             return new Result(HTTP.SUCCESS,"删除成功");
         }
-        return new Result(HTTP.NOT_FOUND,"该群组不允许删除!");
+        return new Result(HTTP.BAD_REQ,"该群组有关联数据不允许删除!");
+    }
+    @DeleteMapping("/deleteRelation/{groupId}/{answererId}")
+    public Result deleteRelation(@PathVariable Integer groupId,@PathVariable Integer answererId){
+        if(groupService.deleteRelation(groupId,answererId)){
+            return new Result(HTTP.SUCCESS,"删除关系成功");
+        }
+        return new Result(HTTP.BAD_REQ,"删除关系失败");
+    }
+    @PostMapping("/addRelation/{groupId}/{answererId}")
+    public Result addRelation(@PathVariable Integer groupId,@PathVariable Integer answererId){
+        if(groupService.addRelation(groupId,answererId)){
+            return new Result(HTTP.SUCCESS,"添加关系成功");
+        }
+        return new Result(HTTP.BAD_REQ,"添加关系失败");
     }
     @PutMapping
     public Result update(@RequestBody Group group){
         Group group1 = groupService.getById(group.getId());
         if(group1 != null) {
+            List<Group> groupList = groupService.list();
+            for (Group group2 : groupList) {
+                if(group2.getGroupName().equals(group.getGroupName())){
+                    return new Result(HTTP.BAD_REQ,"组名重复");
+                }
+            }
             groupService.updateById(group);
             return new Result(HTTP.SUCCESS,"修改成功");
         }
