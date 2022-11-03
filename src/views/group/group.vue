@@ -2,17 +2,17 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.group_name"
         placeholder="组名"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -59,7 +59,7 @@
 
       <el-table-column label="创建时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.createdTime}}</span>
         </template>
       </el-table-column>
 
@@ -91,7 +91,6 @@
       @pagination="pagination"
     />
 
-
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
@@ -102,13 +101,13 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="组名" prop="type">
-          <el-input v-model="temp.groupName" />
+          <el-input v-model="temp.groupName"/>
         </el-form-item>
         <el-form-item label="创建时间" prop="timestamp">
-          <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date" />
+          <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date"/>
         </el-form-item>
         <el-form-item label="创建人" prop="title">
-          <el-input v-model="temp.createdBy" />
+          <el-input v-model="temp.createdBy"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -127,9 +126,9 @@
 
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import {addGroup, deleteGroup, getGroupPage, updateGroup} from "@/api/group";
-import {Message} from "element-ui";
-import {getLesseeList} from "@/api/lessee"; // secondary package based on el-pagination
+import { addGroup, deleteGroup, getGroupPage, updateGroup } from '@/api/group'
+import { Message } from 'element-ui'
+// secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -166,14 +165,14 @@ export default {
       userId: 1,
       tableKey: 0,
       list:
-       [
+        [
           {
-          groupName: '秒天',
-          createdTime:new Date(),
-          createdBy: '太阳',
-          id: 10
+            groupName: '秒天',
+            createdTime: new Date(),
+            createdBy: '太阳',
+            id: 10
           }
-      ],
+        ],
       total: 1,
       listLoading: true,
       listQuery: {
@@ -187,9 +186,9 @@ export default {
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       showReviewer: false,
       temp: {
-        groupName:'',
+        groupName: '',
         createdBy: '',
-        createdTime: new Date(),
+        createdTime: new Date()
         // deleted:'',
       },
       dialogFormVisible: false,
@@ -226,7 +225,7 @@ export default {
       )
     },
     handleGroupDetails(row) {
-      this.$router.replace({ path: '/group/details' })
+      this.$router.replace({ path: '/group/details', params: { id: row.id }})
     },
     handleFilter() {
       // 执行过滤，需要查询分页条件等信息
@@ -237,6 +236,7 @@ export default {
       var filterList = this.list.filter(function(group) {
         return group.groupName.includes(word)
       })
+
       // 过滤完成之后需要进行排序
       filterList.sort((a, b) => {
         if (this.listQuery.sort === '+id') {

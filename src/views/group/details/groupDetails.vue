@@ -9,10 +9,10 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -87,7 +87,7 @@
 
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" >
+          <el-button type="primary" size="mini">
             暂定
           </el-button>
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
@@ -115,13 +115,13 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="组名" prop="type">
-          <el-input v-model="temp.type" />
+          <el-input v-model="temp.type"/>
         </el-form-item>
         <el-form-item label="创建时间" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date"/>
         </el-form-item>
         <el-form-item label="初始密码" prop="title">
-          <el-input v-model="temp.title" />
+          <el-input v-model="temp.title"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -141,7 +141,7 @@
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import {getGroupAnswererPage, getGroupPage} from "@/api/group"; // secondary package based on el-pagination
+import { getGroupAnswererPage } from '@/api/group' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -178,24 +178,24 @@ export default {
       groupId: 1,
       tableKey: 0,
       list:
-       [
+        [
           {
-          username: '张三',
-          telephone:13940131469,
-          createdTime: Date.parse(new Date()),
-          status: '有群组',
-          createBy: '地球组',
-          id: 10
+            username: '张三',
+            telephone: 13940131469,
+            createdTime: Date.parse(new Date()),
+            status: '有群组',
+            createBy: '地球组',
+            id: 10
           },
-         {
-           username: '李四',
-           telephone:17671211469,
-           createdTime: Date.parse(new Date()),
-           status: '无群组',
-           createBy: '地球组',
-           id: 11
-         }
-      ],
+          {
+            username: '李四',
+            telephone: 17671211469,
+            createdTime: Date.parse(new Date()),
+            status: '无群组',
+            createBy: '地球组',
+            id: 11
+          }
+        ],
       total: 1,
       listLoading: true,
       listQuery: {
