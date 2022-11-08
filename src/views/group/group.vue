@@ -79,15 +79,19 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row,$index)">
             编辑
           </el-button>
+
           <el-button type="primary" size="mini" @click="handleGroupDetails(row)">
             群组详情
           </el-button>
+
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+    <!--使用群组详情组件-->
+    <groupDetails title="群组详情" v-if="openDetailsDialog" ref="groupDetails" />
 
     <pagination
       v-show="total>0"
@@ -138,7 +142,8 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import {addGroup, deleteGroup, getGroupPage, updateGroup} from "@/api/group";
 import {Message} from "element-ui";
-import {getLesseeList} from "@/api/lessee"; // secondary package based on el-pagination
+import groupDetails from "@/views/group/details/groupDetails";
+
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -155,7 +160,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination,groupDetails },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -203,6 +208,7 @@ export default {
         createdTime: new Date(),
         // deleted:'',
       },
+      openDetailsDialog:false,
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -219,7 +225,8 @@ export default {
       },
       downloadLoading: false,
       idx: -1,
-      totalList: []
+      totalList: [],
+
     }
   },
   created() {
@@ -238,7 +245,12 @@ export default {
       )
     },
     handleGroupDetails(row) {
-      this.$router.push({ path: '/group/details', query:{id:row.id}})
+      this.openDetailsDialog = true;
+
+      this.$nextTick(() => {
+        this.$refs.groupDetails.getList(row.id);
+      });
+      // this.$router.push({ path: '/group/details', query:{id:row.id}})
     },
     handleFilter() {
       // 执行过滤，需要查询分页条件等信息
@@ -307,7 +319,9 @@ export default {
             duration: 1000
           })
           this.getList()
-        }
+          this.dialogFormVisible=false
+        },
+
       )
     },
     handleUpdate(row, index) {
@@ -326,6 +340,7 @@ export default {
           })
           this.list[this.index] = { ...this.temp }
           this.resetTemp()
+          this.dialogFormVisible=false
         }
       )
     },

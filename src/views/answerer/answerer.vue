@@ -102,6 +102,8 @@
         </template>
       </el-table-column>
     </el-table>
+    <!--使用所属群组组件-->
+    <belongGroup title="所属群组" v-if="openBelongDialog" ref="belongGroup" />
 
     <pagination
       v-show="total>0"
@@ -152,10 +154,11 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { Message } from 'element-ui'
 import { Delete, getAllAnswererByUserId, save, update } from '@/api/answerer' // secondary package based on el-pagination
+import belongGroup from "@/views/answerer/belongs/belongGroup";
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination,belongGroup },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -191,6 +194,7 @@ export default {
         payment: 0,
         limitCount: 0
       },
+      openBelongDialog:false,
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -247,7 +251,11 @@ export default {
       this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
     },
     handleBelongGroup(row) {
-      this.$router.replace({ path: '/answerer/belongs', query:{id:row.id}})
+      this.openBelongDialog = true;
+      this.$nextTick(() => {
+        this.$refs.belongGroup.getList(row.id);
+      });
+      // this.$router.replace({ path: '/answerer/belongs', query:{id:row.id}})
     },
     pagination() {
       this.list = this.totalList
@@ -294,6 +302,7 @@ export default {
             duration: 1000
           })
           this.getList()
+          this.dialogFormVisible = false
         }
       )
     },
@@ -312,6 +321,7 @@ export default {
             duration: 1000
           })
           this.list[this.index] = { ...this.temp }
+          this.dialogFormVisible = false
         }
       )
     },
