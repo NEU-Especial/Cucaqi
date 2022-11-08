@@ -2,15 +2,12 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.group_name"
         placeholder="组名"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
@@ -26,14 +23,6 @@
       >
         添加群组
       </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-      >
-        批量导入
-      </el-button>
     </div>
     <br>
     <el-table
@@ -43,7 +32,7 @@
       border
       fit
       highlight-current-row
-      style="width: 50%;"
+      style="width: 80%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -61,36 +50,37 @@
 
       <el-table-column label="组名" min-width="50px" width="80px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.groupName }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="描述" min-width="50px" width="80px">
+        <template slot-scope="{row}">
+          <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="创建时间" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.createdTime  }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="创建人" class-name="status-col" width="100" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.createBy | statusFilter">
-            {{ row.createBy }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="状态" class-name="status-col" width="100" align="center">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
+          <el-tag :type="row.createdBy | statusFilter">
+            {{ row.createdBy }}
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" >
-            预览群组
+          <el-button type="primary" size="mini" @click="handleUpdate(row,$index)">
+            编辑
+          </el-button>
+          <el-button type="primary" size="mini" @click="handleGroupDetails(row)">
+            群组详情
           </el-button>
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
@@ -101,11 +91,12 @@
 
     <pagination
       v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.page"
       :limit.sync="listQuery.limit"
-      @pagination="getList"
+      :page.sync="listQuery.page"
+      :total="total"
+      @pagination="pagination"
     />
+
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
@@ -117,21 +108,24 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="组名" prop="type">
-          <el-input v-model="temp.type" />
+          <el-input v-model="temp.groupName" />
         </el-form-item>
-        <el-form-item label="创建时间" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        <el-form-item label="描述" prop="type">
+          <el-input v-model="temp.description" />
         </el-form-item>
-        <el-form-item label="初始密码" prop="title">
-          <el-input v-model="temp.title" />
+        <el-form-item label="创建时间" prop="timestamp" v-if="dialogStatus === 'create'">
+          <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date" />
+        </el-form-item>
+        <el-form-item label="创建人" prop="title" aria-readonly="true">
+          <el-input v-model="temp.createdBy" readonly/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          Cancel
+          取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
+          {{ dialogStatus === 'create' ? '确认创建' : '确认修改' }}
         </el-button>
       </div>
     </el-dialog>
@@ -141,8 +135,10 @@
 <script>
 
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import {addGroup, deleteGroup, getGroupPage, updateGroup} from "@/api/group";
+import {Message} from "element-ui";
+import {getLesseeList} from "@/api/lessee"; // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -176,32 +172,24 @@ export default {
   },
   data() {
     return {
+      userId: 1,
       tableKey: 0,
       list:
        [
           {
-          title: '秒天',
-          createdTime: Date.parse(new Date()),
-          status: '有答者',
-          createBy: '太阳',
+          groupName: '秒天',
+          description: '',
+          createdTime:new Date(),
+          createdBy: '太阳',
           id: 10
-          },
-         {
-           title: '秒地',
-           createdTime: Date.parse(new Date()),
-           status: '无答者',
-           createBy: '月亮',
-           id: 11
-         }
+          }
       ],
       total: 1,
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
+        group_name: '', // 过滤名称
         sort: '+id'
       },
       importanceOptions: ['有答者', '无答者'],
@@ -209,13 +197,11 @@ export default {
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       showReviewer: false,
       temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
+        groupName:'',
+        description:'',
+        createdBy: '',
+        createdTime: new Date(),
+        // deleted:'',
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -226,11 +212,14 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'password is required', trigger: 'blur' }]
+        groupName: [{ required: true, message: '组名必填', trigger: 'blur' }],
+        description: [{ required: true, message: '描述必填', trigger: 'blur' }],
+        createdTime: [{ type: 'date', required: true, message: '时间必填', trigger: 'change' }],
+        createdBy: [{ required: true, message: '创建人必填', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      idx: -1,
+      totalList: []
     }
   },
   created() {
@@ -238,29 +227,50 @@ export default {
   },
   methods: {
     getList() {
-      this.listLoading = false
-      return
-      // eslint-disable-next-line no-unreachable
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
+      this.listLoading = true
+      getGroupPage(this.$store.getters.user.id).then(
+        res => {
+          this.list = res.data
+          this.totalList = res.data
           this.listLoading = false
-        }, 1.5 * 1000)
-      })
+          this.total = res.data.length
+        }
+      )
+    },
+    handleGroupDetails(row) {
+      this.$router.push({ path: '/group/details', query:{id:row.id}})
     },
     handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
+      // 执行过滤，需要查询分页条件等信息
+      // 分别有关键字，id升降序，分页
+      // 先找关键字
+      this.list = this.totalList
+      var word = this.listQuery.group_name
+      var filterList = this.list.filter(function(group) {
+        return group.groupName.includes(word)
       })
-      row.status = status
+      // 过滤完成之后需要进行排序
+      filterList.sort((a, b) => {
+        if (this.listQuery.sort === '+id') {
+          return a.id - b.id
+        } else {
+          return b.id - a.id
+        }
+      })
+      var page = this.listQuery.page
+      var limit = this.listQuery.limit
+
+      // 进行分页处理,找到对应的位置
+      this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
+    },
+    handleModifyStatus(row) {
+
+    },
+    pagination() {
+      this.list = this.totalList
+      var page = this.listQuery.page
+      var limit = this.listQuery.limit
+      this.list = this.list.slice((page - 1) * limit, (page - 1) * limit + limit)
     },
     sortChange(data) {
       const { prop, order } = data
@@ -278,98 +288,58 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        // status: '有群组',
-        type: ''
+        groupName: undefined,
+        createdBy: this.$store.getters.user.id,
+        createdTime: new Date()
       }
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
     },
     createData() {
-      return
-      // eslint-disable-next-line no-unreachable
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
+      addGroup(this.temp).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
           })
+          this.getList()
         }
-      })
+      )
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+    handleUpdate(row, index) {
+      this.temp = row
+      this.idx = index
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
     },
     updateData() {
-      return
-      // eslint-disable-next-line no-unreachable
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
+      updateGroup(this.temp).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
           })
+          this.list[this.index] = { ...this.temp }
+          this.resetTemp()
         }
-      })
+      )
     },
     handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    handleDownload() {
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
+      deleteGroup(row).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
+          })
+          this.list.splice(index, 1)
         }
-      }))
+      )
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort

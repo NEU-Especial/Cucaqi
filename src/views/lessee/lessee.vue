@@ -8,19 +8,8 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-<!--      <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">-->
-<!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
-<!--      </el-select>-->
-<!--      <el-select v-model="listQuery.type" placeholder="问卷类型" clearable class="filter-item" style="width: 130px">-->
-<!--        <el-option-->
-<!--          v-for="item in calendarTypeOptions"-->
-<!--          :key="item.key"-->
-<!--          :label="item.display_name+'('+item.key+')'"-->
-<!--          :value="item.key"-->
-<!--        />-->
-<!--      </el-select>-->
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -43,7 +32,7 @@
       border
       fit
       highlight-current-row
-      style="width: 58%;"
+      style="width: 80%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -55,170 +44,114 @@
         :class-name="getSortClass('id')"
       >
         <template slot-scope="{row}">
-          <span>{{ row.id}}</span>
+          <span>{{ row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="租户姓名" min-width="50px" width="80px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="200px" align="center">
+      <el-table-column label="租户密码" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.password }}</span>
         </template>
       </el-table-column>
 
-<!--      <el-table-column label="开始时间" width="130px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span>{{ row.startedTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-
-<!--      <el-table-column label="结束时间" width="130px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span>{{ row.endTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-
-<!--      <el-table-column label="限制人数" width="110px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span>{{ row.limit }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="答题人数" width="110px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span>{{ row.curCount }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
       <el-table-column label="租户电话" min-width="150px" width="180px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.telephone }}</span>
+          <span class="link-type">{{ row.telephone }}</span>
         </template>
       </el-table-column>
-<!--      <el-table-column label="是否推荐" width="100px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          {{ row.isRecommend }}-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+
+      <el-table-column label="租户邮箱" min-width="150px" width="180px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.email }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="租户账单" min-width="150px" width="180px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.payment }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="租户邀请码" min-width="150px" width="180px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.inviteCode }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column label="操作" align="center" width="400" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" >
-            查询租户账单
-          </el-button>
           <el-button
-              class="filter-item"
-              size="mini"
-              type="primary"
-              @click="handleUpdate(row)"
-            >
-              编辑租户信息
+            class="filter-item"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(row,$index)"
+          >
+            编辑租户信息
           </el-button>
-
-<!--          <el-button-->
-<!--            v-if="row.status!=='published'"-->
-<!--            size="mini"-->
-<!--            type="success"-->
-<!--            @click="handleModifyStatus(row,'published')"-->
-<!--          >-->
-<!--            发布问卷-->
-<!--          </el-button>-->
-<!--          <el-button v-if="row.status!=='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
-<!--            恢复问卷-->
-<!--          </el-button>-->
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除租户
           </el-button>
+
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
       v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.page"
       :limit.sync="listQuery.limit"
-      @pagination="getList"
+      :page.sync="listQuery.page"
+      :total="total"
+      @pagination="pagination"
     />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+
       <el-form
         ref="dataForm"
-        :rules="rules"
         :model="temp"
+        :rules="rules"
         label-position="left"
-        label-width="90px"
+        label-width="120px"
         style="width: 400px; margin-left:50px;"
       >
-        <el-form-item label="租户姓名" prop="type">
-          <el-input v-model="temp.type" />
-<!--          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">-->
-<!--            <el-option-->
-<!--              v-for="item in calendarTypeOptions"-->
-<!--              :key="item.key"-->
-<!--              :label="item.display_name"-->
-<!--              :value="item.key"-->
-<!--            />-->
-<!--          </el-select>-->
+        <el-form-item label="租户姓名" prop="username">
+          <el-input v-model="temp.username"/>
         </el-form-item>
-        <el-form-item label="创建时间" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        <el-form-item label="租户密码" prop="password">
+          <el-input v-model="temp.password"/>
         </el-form-item>
-        <el-form-item label="租户密码" prop="title">
-          <el-input v-model="temp.password" />
+        <el-form-item label="租户电话号码" prop="title">
+          <el-input v-model="temp.telephone"/>
         </el-form-item>
-        <el-form-item label="租户电话" prop="title">
-          <el-input v-model="temp.telephone" />
+        <el-form-item label="租户邮箱号码" prop="title">
+          <el-input v-model="temp.email"/>
         </el-form-item>
-<!--        <el-form-item label="Status">-->
-<!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
-<!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Imp">-->
-<!--          <el-rate-->
-<!--            v-model="temp.importance"-->
-<!--            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-<!--            :max="3"-->
-<!--            style="margin-top:8px;"-->
-<!--          />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Remark">-->
-<!--          <el-input-->
-<!--            v-model="temp.remark"-->
-<!--            :autosize="{ minRows: 2, maxRows: 4}"-->
-<!--            type="textarea"-->
-<!--            placeholder="Please input"-->
-<!--          />-->
-<!--        </el-form-item>-->
+        <el-form-item label="租户邀请码" prop="title">
+          <el-input v-model="temp.inviteCode"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          Cancel
+          取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
+          {{ dialogStatus === 'create' ? '确认创建' : '确认修改' }}
         </el-button>
       </div>
     </el-dialog>
-
-    <!--    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>-->
   </div>
 </template>
 
 <script>
+
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import { addLessee, deleteLessee, getLesseeList, updateLessee } from '@/api/lessee'
+import { Message } from 'element-ui' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -254,57 +187,48 @@ export default {
     return {
       tableKey: 0,
       list: [{
-        name: '刘德华',
+        username: '刘德华',
         createdTime: Date.parse(new Date()),
-        // startedTime: Date.parse(new Date()),
-        // endTime: Date.parse(new Date()),
-        // status: '',
-        // type: '',
-        limit: 43,
-        curCount: 3,
-        isRecommend: '是',
         id: 10,
-        telephone: 11111111111
+        telephone: 11111111111,
+        email: '16381316928@qq.com',
+        payment: 20
       }],
       total: 1,
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 20,
-        importance: undefined,
-        lessee_name: undefined,
-        type: undefined,
+        lessee_name: '', // 过滤名称
         sort: '+id'
       },
       importanceOptions: ['有群组', '无群组'],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
-      // statusOptions: ['有群组', '无群组'],
       showReviewer: false,
       temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        name: '',
-        type: '',
-        status: 'published',
-        telephone:''
+        username: undefined,
+        password: undefined,
+        inviteCode: '',
+        telephone: '',
+        email: '',
+        payment: 0
       },
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: '编辑',
+        create: '创建'
       },
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'password is required', trigger: 'blur' }]
+        username: [{ required: true, message: '用户名必填', trigger: 'blur' }],
+        password: [{ required: true, message: '密码必填', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      idx: -1,
+      totalList: []
     }
   },
   created() {
@@ -312,29 +236,47 @@ export default {
   },
   methods: {
     getList() {
-      this.listLoading = false
-      return
-      // eslint-disable-next-line no-unreachable
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
+      this.listLoading = true
+      getLesseeList().then(
+        res => {
+          this.list = res.data
+          this.totalList = res.data
           this.listLoading = false
-        }, 1.5 * 1000)
-      })
+          this.total = res.data.length
+        }
+      )
     },
     handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
+      // 执行过滤，需要查询分页条件等信息
+      // 分别有关键字，id升降序，分页
+      // 先找关键字
+      this.list = this.totalList
+      var word = this.listQuery.lessee_name
+      var filterList = this.list.filter(function(lessee) {
+        return lessee.username.includes(word)
       })
-      row.status = status
+      // 过滤完成之后需要进行排序
+      filterList.sort((a, b) => {
+        if (this.listQuery.sort === '+id') {
+          return a.id - b.id
+        } else {
+          return b.id - a.id
+        }
+      })
+      var page = this.listQuery.page
+      var limit = this.listQuery.limit
+
+      // 进行分页处理,找到对应的位置
+      this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
+    },
+    handleModifyStatus(row) {
+
+    },
+    pagination() {
+      this.list = this.totalList
+      var page = this.listQuery.page
+      var limit = this.listQuery.limit
+      this.list = this.list.slice((page - 1) * limit, (page - 1) * limit + limit)
     },
     sortChange(data) {
       const { prop, order } = data
@@ -352,98 +294,62 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        // status: '有群组',
-        type: ''
+        username: undefined,
+        password: undefined,
+        inviteCode: '',
+        telephone: '',
+        email: '',
+        payment: 0,
+        createdBy: this.$store.getters.user.id
       }
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
     },
     createData() {
-      return
-      // eslint-disable-next-line no-unreachable
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
+      addLessee(this.temp).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
           })
+          this.getList()
         }
-      })
+      )
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+    handleUpdate(row, index) {
+      this.temp = row
+      this.idx = index
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
     },
     updateData() {
-      return
-      // eslint-disable-next-line no-unreachable
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
+      updateLessee(this.temp).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
           })
+          this.list[this.index] = { ...this.temp }
+          this.resetTemp()
         }
-      })
+      )
     },
     handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    handleDownload() {
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
+      deleteLessee(row).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
+          })
+          this.list.splice(index, 1)
         }
-      }))
+      )
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort

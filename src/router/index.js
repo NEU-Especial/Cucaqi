@@ -23,12 +23,7 @@ Vue.use(Router)
   }
  */
 
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
-export const constantRoutes = [
+export const asyncRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
@@ -74,7 +69,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '数据大屏', icon: 'dashboard' }
+      meta: { title: '数据大屏', icon: 'dashboard', roles: [1001] }
     },
     {
       path: 'profile',
@@ -90,7 +85,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/questionnaire/list',
     name: 'Questionnaire',
-    meta: { title: '问卷', icon: 'el-icon-s-help' },
+    meta: { title: '问卷', icon: 'el-icon-s-help', roles: [1003] },
     children: [
       {
         path: 'list',
@@ -127,8 +122,19 @@ export const constantRoutes = [
       }
     ]
   },
-
-
+  {
+    path: '/user',
+    component: Layout,
+    meta: { title: '用户管理', icon: 'el-icon-s-help', roles: [1002] },
+    children: [
+      {
+        path: '',
+        name: 'User',
+        component: () => import('@/views/user/user'),
+        meta: { title: '用户管理', icon: 'table', roles: [1002] }
+      }
+    ]
+  },
   {
     path: '/lessee',
     component: Layout,
@@ -137,80 +143,49 @@ export const constantRoutes = [
         path: 'index',
         name: 'Control',
         component: () => import('@/views/lessee/lessee'),
-        meta: { title: '租户管理', icon: 'form' }
+        meta: { title: '租户管理', icon: 'form', roles: [1001] }
       }
     ]
 
   },
-
 
   {
     path: '/group',
     component: Layout,
+    meta: { title: '群组', icon: 'el-icon-s-help', roles: [1003] },
     children: [
       {
-        path: 'group',
-        name: 'Group',
+        path: 'controller',
+        name: 'Controller',
         component: () => import('@/views/group/group'),
-        meta: { title: '群组管理', icon: 'form' }
+        meta: { title: '群组管理', icon: 'form', roles: [1003] }
+      },
+      {
+        path: 'details',
+        name: 'Details',
+        hidden: true,
+        component: () => import('@/views/group/details/groupDetails'),
+        meta: { title: '群组详情', icon: 'form', roles: [1003] }
       }
     ]
   },
+
   {
-    path: '/nested',
+    path: '/answerer',
     component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: 'controller',
+        name: 'Answerer',
+        component: () => import('@/views/answerer/answerer'),
+        meta: { title: '答者管理', icon: 'form', roles: [1003] }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
+        path: 'belongs',
+        name: 'Belongs',
+        hidden: true,
+        component: () => import('@/views/answerer/belongs/belongGroup'),
+        meta: { title: '所属群组', icon: 'form', roles: [1003] }
       }
     ]
   },
@@ -221,7 +196,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'https://github.com/NEU-Especial/Cucaqi',
-        meta: { title: 'External Link', icon: 'link' }
+        meta: { title: '代码仓库', icon: 'link' }
       }
     ]
   },
@@ -233,7 +208,7 @@ export const constantRoutes = [
 const createRouter = () => new Router({
   mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: asyncRoutes
 })
 
 const router = createRouter()

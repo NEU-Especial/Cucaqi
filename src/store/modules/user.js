@@ -13,7 +13,7 @@ const getDefaultState = () => {
     avatar: '', // 头像
     introduction: '',
     user: {}, // 保存所有用户信息，直接来这里取就行，上面字段提醒用
-    roles: []
+    roles: [] // 用户权限，生成动态路由
   }
 }
 
@@ -34,6 +34,9 @@ const mutations = {
   },
   SetUser: (state, user) => {
     state.user = user
+  },
+  SetRoles: (state, roles) => {
+    state.roles = roles
   },
   UpdateInviteCode: (state, value) => {
     state.user.inviteCode = value
@@ -71,9 +74,7 @@ const actions = {
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
-
         const { name, avatar } = data
-
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         resolve(data)
