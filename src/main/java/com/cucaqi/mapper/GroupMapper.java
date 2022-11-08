@@ -3,10 +3,7 @@ package com.cucaqi.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.Answerer;
 import com.cucaqi.entity.Group;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -33,4 +30,8 @@ public interface GroupMapper extends BaseMapper<Group> {
     public Integer addRelationFromGroupAnswerer(Integer groupId, Integer answererId);
     @Select("select count(*) from t_group_answerer where groupId = #{groupId} and answererId = #{answererId}")
     public Integer hasRelation(Integer groupId,Integer answererId);
+    @Select("select * from t_group where createdBy = #{userId} and deleted = 1")
+    List<Group> getDeleted(Integer userId);
+    @Update("update t_group set deleted = 0 where id = #{groupId}")
+    Integer updateDeletedStatus(Integer groupId);
 }

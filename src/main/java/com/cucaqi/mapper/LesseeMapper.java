@@ -49,7 +49,6 @@ public interface LesseeMapper extends BaseMapper<Lessee> {
     @Select("select * from t_lessee where username = #{username}")
     public Lessee searchLessee(String username);
 
-
-
-
+    @Select("select * from t_lessee where deleted = 1")
+    List<Lessee> getDeletedLesseeList();
 }

@@ -2,8 +2,7 @@ package com.cucaqi.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.Answerer;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -34,5 +33,8 @@ public interface AnswererMapper extends BaseMapper<Answerer> {
             "t_answerer.id = t_group_answerer.answererId join t_group on " +
             "t_group_answerer.groupId = t_group.id where t_group.id = #{groupId}")
     public List<Answerer> getByGroupId(Integer groupId);
-
+    @Select("select * from t_answerer where createdBy =#{userId} and deleted = 1 ")
+    List<Answerer> getDeleted(Integer userId);
+    @Update("update t_answerer set deleted = 0 where id = #{answererId}")
+    Integer updateDeletedStatus(Integer answererId);
 }

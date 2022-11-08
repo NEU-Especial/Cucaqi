@@ -31,6 +31,17 @@ public class GroupController {
         List<Group> list = groupService.list(queryWrapper);
         return new Result(HTTP.SUCCESS,list);
     }
+
+    /**
+     * 找到登录用户的所有已删除群组
+     * @param userId
+     * @return
+     */
+    @GetMapping("/deleted/{userId}")
+    public Result getAllDeletedGroupByUserId( @PathVariable Integer userId){
+        List<Group> list = groupService.listDeleted(userId);
+        return new Result(HTTP.SUCCESS,list);
+    }
     @GetMapping("/belongs/{answererId}")
     public Result getAllGroupByAnswererId( @PathVariable Integer answererId){
         List<Group> list = groupService.listGroupByAnswererId(answererId);
@@ -87,5 +98,12 @@ public class GroupController {
             return new Result(HTTP.SUCCESS,"修改成功");
         }
         return new Result(HTTP.NOT_FOUND,"修改出现未知错误");
+    }
+    @PutMapping("/recover/{groupId}")
+    public Result updateDeletedStatus(@PathVariable Integer groupId){
+        if(groupService.updateDeletedStatus(groupId)) {
+            return new Result(HTTP.SUCCESS, "恢复成功");
+        }
+        return new Result(HTTP.BAD_REQ,"恢复出错");
     }
 }

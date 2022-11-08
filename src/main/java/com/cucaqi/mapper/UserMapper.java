@@ -47,4 +47,6 @@ public interface UserMapper extends BaseMapper<User> {
      */
     @Select("select * from t_user where username = #{username}")
     public User searchUser(String username);
+    @Select("select t_user.* from t_user  join t_lessee on t_user.createdBy=t_lessee.id where t_lessee.id=#{id} and t_user.deleted = 1")
+    List<User> getDeletedUserlist(int id);
 }

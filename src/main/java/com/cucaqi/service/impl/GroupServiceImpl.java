@@ -46,4 +46,14 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, Group> implements
     public boolean hasRelationBetweenGroupAnswerer(Integer groupId, Integer answererId) {
         return groupMapper.hasRelation(groupId,answererId) > 0;
     }
+
+    @Override
+    public List<Group> listDeleted(Integer userId) {
+        return groupMapper.getDeleted(userId);
+    }
+
+    @Override
+    public boolean updateDeletedStatus(Integer groupId) {
+        return groupMapper.updateDeletedStatus(groupId) > 0;
+    }
 }

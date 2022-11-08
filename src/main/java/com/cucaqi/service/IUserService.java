@@ -33,4 +33,5 @@ public interface IUserService extends IService<User> {
      */
     public boolean searchUser(String username);
 
+    List<User> getDeletedUserlist(int id);
 }

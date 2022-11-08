@@ -28,7 +28,7 @@ public interface ILesseeService extends IService<Lessee> {
 
     /**
      * 删除租户
-     * @param lessee
+     * @param
      * @return
      */
     public Integer deleteLessee(int id);
@@ -40,4 +40,5 @@ public interface ILesseeService extends IService<Lessee> {
      */
     public boolean searchLessee(String username);
 
+    public List<Lessee> getDeletedLesseeList();
 }
