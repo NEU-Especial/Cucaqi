@@ -33,7 +33,7 @@
         border
         fit
         highlight-current-row
-        style="width: 100%;"
+        style="width: 77%;"
         @sort-change="sortChange"
       >
         <el-table-column

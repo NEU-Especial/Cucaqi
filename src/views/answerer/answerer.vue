@@ -14,14 +14,11 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加答者
+      </el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleRecover">
+        恢复历史记录
       </el-button>
     </div>
     <br>
@@ -70,7 +67,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="创建人ID" min-width="150px" width="180px">
+      <el-table-column label="创建人ID" min-width="120px" width="120px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.createdBy }}</span>
         </template>
@@ -104,6 +101,8 @@
     </el-table>
     <!--使用所属群组组件-->
     <belongGroup title="所属群组" v-if="openBelongDialog" ref="belongGroup" />
+
+    <recover ref="recover" v-if="openRecoverDialog" @refresh="getList"/>
 
     <pagination
       v-show="total>0"
@@ -155,10 +154,11 @@ import Pagination from '@/components/Pagination'
 import { Message } from 'element-ui'
 import { Delete, getAllAnswererByUserId, save, update } from '@/api/answerer' // secondary package based on el-pagination
 import belongGroup from "@/views/answerer/belongs/belongGroup";
+import recover from "@/views/answerer/recover";
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,belongGroup },
+  components: { Pagination,belongGroup,recover },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -178,7 +178,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         lessee_name: '', // 过滤名称
         sort: '+id'
       },
@@ -209,7 +209,8 @@ export default {
       },
       downloadLoading: false,
       idx: -1,
-      totalList: []
+      totalList: [],
+      openRecoverDialog:false
     }
   },
   created() {
@@ -340,6 +341,13 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    handleRecover(){
+      this.openRecoverDialog = true;
+      this.$nextTick(() => {
+        this.$refs.recover.getList();
+      });
+      this.getList()
     }
   }
 }

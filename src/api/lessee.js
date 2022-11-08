@@ -7,6 +7,13 @@ export function getLesseeList() {
   })
 }
 
+export function getDeletedLesseeList() {
+  return request({
+    url: '/cucaqi/lessee/deleted',
+    method: 'get'
+  })
+}
+
 export function addLessee(data) {
   return request({
     url: '/cucaqi/lessee/addLessee',
