@@ -8,8 +8,13 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+<!--      id排序-->
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+      </el-select>
+<!--      账单排序-->
+      <el-select v-model="paymentListQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+        <el-option v-for="item in paymentSortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -50,6 +55,11 @@
       <el-table-column label="租户姓名" min-width="50px" width="80px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="租户性别" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.gender }}</span>
         </template>
       </el-table-column>
       <el-table-column label="租户密码" width="200px" align="center">
@@ -121,6 +131,9 @@
         <el-form-item label="租户姓名" prop="username">
           <el-input v-model="temp.username"/>
         </el-form-item>
+<!--        <el-form-item label="租户性别" prop="username">-->
+<!--          <el-input v-model="temp.gender"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="租户密码" prop="password">
           <el-input v-model="temp.password"/>
         </el-form-item>
@@ -202,13 +215,21 @@ export default {
         lessee_name: '', // 过滤名称
         sort: '+id'
       },
+      paymentListQuery: {
+        page: 1,
+        limit: 20,
+        lessee_name: '', // 过滤名称
+        sort: '+payment'
+      },
       importanceOptions: ['有群组', '无群组'],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
+      paymentSortOptions: [{ label: '账单额升序', key: '+payment' }, { label: '账单额降序', key: '-payment' }],
       showReviewer: false,
       temp: {
         username: undefined,
         password: undefined,
+        gender:'',
         inviteCode: '',
         telephone: '',
         email: '',

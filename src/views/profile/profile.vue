@@ -1,13 +1,14 @@
 
 <!--  创建问卷表单-->
 <template>
+
   <div>
     <transition name="fade">
 
       <el-container style="height: 1200px">
         <el-aside width="50%" style="height:100%;margin: 40px">
 
-          <el-form ref="form" :model="form" label-width="80px">
+          <el-form ref="form" :model="form" label-width="80px" >
             <el-form-item label="头像" label-width="120px">
               <el-col :span="16" align="left">
                 <el-image
@@ -20,7 +21,41 @@
             <el-form-item label="用户名" label-width="120px">
               <el-input :disabled="true" :value="form.username"/>
             </el-form-item>
+<!--            性别-->
+            <el-form-item label="性别" label-width="120px"  align="left">
+              <el-select v-model="genderType" placeholder="请选择" >
+                <el-option v-for="item in genderTypes" :key="item.id" :label="item.value" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+<!--职业-->
+            <el-form-item label="职业" label-width="120px">
+              <el-col :span="8" align="center">
+                <el-input placeholder="请输入您的职业"
+                          clearable
+                          v-model="form.j"
+                          prefix-icon="el-icon-user-solid"
+                          type="primary"/>
+              </el-col>
+            </el-form-item>
+<!--            年龄-->
+            <el-form-item label="年龄" label-width="120px">
+              <el-col :span="8" align="center">
+              <el-input placeholder="请输入年龄"
+                        clearable
+                        v-model="form.age"
+                        prefix-icon="el-icon-position"
+                        type="primary"/>
+              </el-col>
+            </el-form-item>
+<!--            下面利用折叠面板进行页面简化-->
+            <el-collapse v-model="activeName" accordion>
           <!--修改密码区域-->
+              <el-collapse-item name="1" >
+                <template slot="title">
+                  <i class="icon el-icon-lock"></i>
+                  <span class="title">密码修改</span>
+                </template>
             <div style="border: solid 1px #e3e3e9;border-radius: 10px;
             margin-left: 40px;box-shadow: 5px 5px 5px rgba(0.1,0.1,0.1,0.1)">
               <el-form-item label="新密码" label-width="120px">
@@ -40,8 +75,13 @@
                 <el-button type="primary" style="margin-left: 30px" @click="updatePassword">更新密码</el-button>
               </el-form-item>
             </div>
-            <el-divider></el-divider>
+              </el-collapse-item>
 <!--            邮箱区域-->
+              <el-collapse-item name="2">
+                <template slot="title">
+                  <i class="icon el-icon-message"></i>
+                  <span class="title">邮箱修改</span>
+                </template>
             <div style="border: solid 1px #e3e3e9;border-radius: 10px;
             margin-left: 40px;box-shadow: 5px 5px 5px rgba(0,0,0,0.1)">
             <el-form-item label="邮箱地址" label-width="120px">
@@ -65,8 +105,13 @@
               <el-button type="primary" style="margin-left: 30px;float: right" @click="updateEmail">更新邮箱地址</el-button>
             </el-form-item>
             </div>
-            <el-divider></el-divider>
+              </el-collapse-item>
 <!--            更改手机号-->
+              <el-collapse-item  name="3">
+                <template slot="title">
+                  <i class="icon el-icon-mobile-phone"></i>
+                  <span class="title">手机号修改</span>
+                </template>
             <div style="border: solid 1px #e3e3e9;border-radius: 10px;
             margin-left: 40px;box-shadow: 5px 5px 5px rgba(0.1,0.1,0.1,0.1)">
             <el-form-item label="绑定手机号码" label-width="120px" >
@@ -90,8 +135,13 @@
               <el-button type="primary" style="margin-left: 30px;float: right">更新电话号码</el-button>
             </el-form-item>
             </div>
-            <el-divider></el-divider>
+              </el-collapse-item>
             <!--            密保区域-->
+              <el-collapse-item  name="4">
+                <template slot="title">
+                  <i class="icon el-icon-copy-document"></i>
+                  <span class="title">密保修改</span>
+                </template>
             <div style="border: solid 1px #e3e3e9;border-radius: 10px;
             margin-left: 40px;box-shadow: 5px 5px 5px rgba(0.1,0.1,0.1,0.1)">
             <el-form-item label="选择密保问题" label-width="120px"  align="left">
@@ -109,7 +159,7 @@
 
             <el-form-item label="答案" label-width="120px">
               <el-col :span="10">
-                <el-input v-model="form.securityAnswer" :disabled="''==form.securityQuestion"
+                <el-input v-model="form.securityAnswer"  :disabled="''==form.securityQuestion"
                           prefix-icon="el-icon-s-opportunity"
                           clearable/>
               </el-col>
@@ -117,8 +167,9 @@
               </el-button>
             </el-form-item>
             </div>
-            <el-divider></el-divider>
-
+              </el-collapse-item>
+            </el-collapse>
+            <!--            折叠面板末尾-->
             <el-form-item v-show="show" label="邀请码" label-width="120px">
               <span style="font-size: 14px">{{ form.inviteCode }}</span>
             </el-form-item>
@@ -169,8 +220,21 @@ export default {
         telephone: '',
         email: '',
         role: '',
-        inviteCode: ''
+        inviteCode: '',
+        age:'',
+
       },
+      activeName: '1',
+      genderType: '',
+      genderTypes: [{
+        value: '男',
+        id: '1',
+        // icon:'el-icon-male'
+      }, {
+        value: '女',
+        id: '2',
+        // icon:'el-icon-male'
+      }],
       authCode: '',
       teleCode: '',
       loginRules: {
@@ -178,7 +242,14 @@ export default {
         confirmPassword: [{ required: true, trigger: 'blur', validator: validateConfirmPassord }]
       },
       securityQuestions: '',
-      ques: ''
+      ques: '',
+      note: {
+        backgroundImage: "url(" + require("../background/个人信息修改背景.jpg") + ")",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "contain",
+        marginTop: "5px",
+      },
+
     }
   },
   computed: {
@@ -249,6 +320,19 @@ export default {
 </script>
 
 <style scoped>
+.title {
+  font-size: 17px;
+  /*font-weight: bold;*/
+  color: #000000;
+  padding-bottom: 17px;
+  padding-top: 17px;
+}
+.icon{
+  /*font-weight: bold;*/
+  font-size: 19px;
+  padding-bottom: 17px;
+  padding-top: 17px;
+}
 .el-header, .el-footer {
   background-color: white;
   color: #333;

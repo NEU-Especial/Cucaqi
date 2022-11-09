@@ -1,4 +1,5 @@
 <template>
+<!--  <div class="note" :style="note">-->
   <div class="login-container">
     <el-form
       ref="loginForm"
@@ -83,6 +84,7 @@
 
     </el-form>
   </div>
+
 </template>
 
 <script>
@@ -136,6 +138,7 @@ export default {
           label: '答者'
         }
       ]
+
     }
   },
   watch: {
@@ -203,6 +206,9 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background-image: url("../background/登录背景.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
   .el-input {
     display: inline-block;
     height: 47px;
