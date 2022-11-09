@@ -144,6 +144,9 @@
 
     <!--答卷列表弹出框-->
     <el-dialog title="答卷列表" :visible.sync="answerListTableVisible" style="background:linear-gradient(#2196f3,rgba(19,242,7,0.83));">
+      <el-row>
+        <el-button type="primary" round @click="jump">查看整体情况</el-button>
+      </el-row>
       <el-table :data="answerListData">
         <el-table-column property="answererName" label="答卷人姓名"></el-table-column>
         <el-table-column property="answerTime" label="交卷时间"></el-table-column>
@@ -216,16 +219,7 @@
         </el-button>
       </div>
     </el-dialog>
-
-    <!--    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>-->
+    <!--答卷整体情况弹出框-->
   </div>
 </template>
 
@@ -338,6 +332,9 @@ export default {
         "Row 2": "Column 3"
       }
     }
+
+
+
     const survey = new Model(surveyJson);
     survey.data = answerJson
     survey.mode = 'display';
@@ -381,6 +378,7 @@ export default {
         type: '',
         status: 'published'
       },
+      dialogFormVisible2:false,
       dialogFormVisible: false,
       answerListTableVisible: false,
       answerDetailTableVisible: false,
@@ -407,6 +405,9 @@ export default {
     this.getList()
   },
   methods: {
+    jump(){
+      this.$router.push('/questionnaire/jump')
+    },
     getList() {
       this.listLoading = false
       return
@@ -486,8 +487,11 @@ export default {
     handleAnswerDetail() {
       this.answerListTableVisible = false
       this.answerDetailTableVisible = true
-
-
+    },
+    handleAnswersDetail(){
+      this.answerListTableVisible = false
+      // this.answerDetailTableVisible = true
+      this.dialogFormVisible2 = true;
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
