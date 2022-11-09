@@ -105,7 +105,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" width="500" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑问卷
@@ -124,6 +124,12 @@
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除问卷
           </el-button>
+
+<!--          答卷列表-->
+          <el-button type="primary" size="mini" @click="handleAnswerList(row)">
+            答卷列表
+          </el-button>
+
         </template>
       </el-table-column>
     </el-table>
@@ -135,6 +141,24 @@
       :limit.sync="listQuery.limit"
       @pagination="getList"
     />
+
+    <!--答卷列表弹出框-->
+    <el-dialog title="答卷列表" :visible.sync="answerListTableVisible">
+      <el-table :data="answerListData">
+        <el-table-column property="answererName" label="答卷人姓名"></el-table-column>
+        <el-table-column property="answerTime" label="交卷时间"></el-table-column>
+        <el-table-column property="operation" label="操作">
+          <template slot-scope="scope">
+            <el-button @click="handleAnswerDetail(scope.row)" type="text" size="small">查看</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
+    <!--答卷细节弹出框-->
+    <el-dialog title="答卷详情" :visible.sync="answerDetailTableVisible">
+      <survey :survey="survey" />
+    </el-dialog>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
@@ -209,7 +233,9 @@
 
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import { StylesManager, Model } from "survey-vue";
+import "survey-vue/defaultV2.css";
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -218,6 +244,7 @@ const calendarTypeOptions = [
   { key: 'EU', display_name: 'Eurozone' }
 ]
 
+StylesManager.applyTheme("defaultV2");
 // arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -242,6 +269,80 @@ export default {
     }
   },
   data() {
+    const answerListData = [{
+      answererName: '徐高高',
+      answerTime: '2022-05-02',
+    }, {
+      answererName: '徐矮矮',
+      answerTime: '2016-05-06',
+    }, {
+      answererName: '徐好好',
+      answerTime: '2018-08-17',
+    }]
+    const surveyJson =  {
+      "title": "计算机专业调查问卷",
+      "description": "调查计算机专业学生信息",
+      "logoPosition": "right",
+      "pages": [
+        {
+          "name": "页面1",
+          "elements": [
+            {
+              "type": "text",
+              "name": "问题1",
+              "title": "你的学校"
+            },
+            {
+              "type": "boolean",
+              "name": "问题2",
+              "title": "你是否喜欢计算机"
+            },
+            {
+              "type": "matrix",
+              "name": "问题3",
+              "title": "你对编程语言的熟悉程度",
+              "columns": [
+                {
+                  "value": "Column 1",
+                  "text": "了解"
+                },
+                {
+                  "value": "Column 2",
+                  "text": "熟练"
+                },
+                {
+                  "value": "Column 3",
+                  "text": "擅长"
+                }
+              ],
+              "rows": [
+                {
+                  "value": "Row 1",
+                  "text": "Java"
+                },
+                {
+                  "value": "Row 2",
+                  "text": "C++"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const answerJson =  {
+      "问题1": "东北大学",
+      "问题2": true,
+      "问题3": {
+        "Row 1": "Column 1",
+        "Row 2": "Column 3"
+      }
+    }
+    const survey = new Model(surveyJson);
+    survey.data = answerJson
+    survey.mode = 'display';
+
+
     return {
       tableKey: 0,
       list: [{
@@ -281,6 +382,8 @@ export default {
         status: 'published'
       },
       dialogFormVisible: false,
+      answerListTableVisible: false,
+      answerDetailTableVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -293,7 +396,11 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      answerListData: answerListData,
+      surveyJson: surveyJson,
+      answerJson: answerJson,
+      survey: survey,
     }
   },
   created() {
@@ -371,6 +478,16 @@ export default {
         duration: 2000
       })
       this.list.splice(index, 1)
+    },
+    handleAnswerList(row) {
+      this.answerListTableVisible = true
+
+    },
+    handleAnswerDetail() {
+      this.answerListTableVisible = false
+      this.answerDetailTableVisible = true
+
+
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
