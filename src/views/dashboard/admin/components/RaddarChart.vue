@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
 
@@ -54,8 +54,8 @@ export default {
           }
         },
         radar: {
-          radius: '66%',
-          center: ['50%', '42%'],
+          radius: '90%',
+          center: ['50%', '60%'],
           splitNumber: 8,
           splitArea: {
             areaStyle: {
@@ -68,18 +68,15 @@ export default {
             }
           },
           indicator: [
-            { name: 'Sales', max: 10000 },
-            { name: 'Administration', max: 20000 },
-            { name: 'Information Technology', max: 20000 },
-            { name: 'Customer Support', max: 20000 },
-            { name: 'Development', max: 20000 },
-            { name: 'Marketing', max: 20000 }
+            { name: '群组费用', max: 10000 },
+            { name: '创建问卷费用', max: 20000 },
+            { name: '答卷费用', max: 20000 },
           ]
         },
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['Allocated Budget', 'Expected Spending', 'Actual Spending']
+          data: ['允许的消费额度', '预期消费', '实际消费']
         },
         series: [{
           type: 'radar',
@@ -90,21 +87,21 @@ export default {
               shadowColor: 'rgba(0,0,0,.2)',
               shadowOffsetX: 0,
               shadowOffsetY: 10,
-              opacity: 1
+              opacity: 0.8
             }
           },
           data: [
             {
-              value: [5000, 7000, 12000, 11000, 15000, 14000],
-              name: 'Allocated Budget'
+              value: [6500, 4000, 12000],
+              name: '允许的消费额度'
             },
             {
-              value: [4000, 9000, 15000, 15000, 13000, 11000],
-              name: 'Expected Spending'
+              value: [4000, 9000, 15000],
+              name: '预期消费'
             },
             {
-              value: [5500, 11000, 12000, 15000, 12000, 12000],
-              name: 'Actual Spending'
+              value: [5500, 11000, 12000],
+              name: '实际消费'
             }
           ],
           animationDuration: animationDuration

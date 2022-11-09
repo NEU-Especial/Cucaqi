@@ -69,7 +69,7 @@ export const asyncRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '数据大屏', icon: 'dashboard', roles: [1001] }
+      meta: { title: '数据大屏', icon: 'dashboard', roles: [1001, 1003] }
     },
     {
       path: 'profile',
