@@ -87,7 +87,7 @@
           <span>{{ row.limit }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="答题人数" width="110px" align="center">
+      <el-table-column label="答题人数" width="110px" align="center" >
         <template slot-scope="{row}">
           <span>{{ row.curCount }}</span>
         </template>
@@ -143,7 +143,7 @@
     />
 
     <!--答卷列表弹出框-->
-    <el-dialog title="答卷列表" :visible.sync="answerListTableVisible">
+    <el-dialog title="答卷列表" :visible.sync="answerListTableVisible" style="background:linear-gradient(#2196f3,rgba(19,242,7,0.83));">
       <el-table :data="answerListData">
         <el-table-column property="answererName" label="答卷人姓名"></el-table-column>
         <el-table-column property="answerTime" label="交卷时间"></el-table-column>
