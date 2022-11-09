@@ -71,13 +71,13 @@ export const asyncRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '数据大屏', icon: 'dashboard', roles: [1001, 1003] }
     },
-    {
-      path: 'profile',
-      name: 'Profile',
-      component: () => import('@/views/profile/profile'),
-      hidden: true,
-      meta: { title: '用户信息', icon: 'dashboard' }
-    }
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/profile/profile'),
+        hidden: true,
+        meta: { title: '用户信息', icon: 'dashboard' }
+      }
     ]
   },
   {
@@ -134,6 +134,11 @@ export const asyncRoutes = [
         meta: { title: '用户管理', icon: 'table', roles: [1002] }
       }
     ]
+  },
+  {
+    path: '/survey',
+    component: () => import('@/views/questionnaire/preview'),
+    meta: { title: '答卷', icon: 'el-icon-s-help', roles: [1002] }
   },
   {
     path: '/lessee',
