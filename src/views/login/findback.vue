@@ -325,6 +325,9 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background-image: url("../background/登录背景.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
   .el-input {
     display: inline-block;
     height: 47px;
@@ -368,10 +371,13 @@ $light_gray: #eee;
   overflow: hidden;
 
   .login-form {
+    background: rgba(255,255,255,0.3);
+    top: 50px;
+    border-radius: 20px;
+    padding: 60px 35px 30px;
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
   }

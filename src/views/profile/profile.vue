@@ -25,6 +25,10 @@
             <el-form-item label="性别" label-width="120px"  align="left">
               <el-select v-model="genderType" placeholder="请选择" >
                 <el-option v-for="item in genderTypes" :key="item.id" :label="item.value" :value="item.value">
+<!--                  <span style="float: left;" v-if="item.key=='1'">-->
+<!--                       <i class="el-icon-male"></i>  &lt;!&ndash; 如果动态显示图标，这里添加判断 &ndash;&gt;-->
+<!--                  </span>-->
+<!--                  <span style="padding-left: 6px;">{{ item.label }}</span>-->
                 </el-option>
               </el-select>
             </el-form-item>
@@ -229,11 +233,11 @@ export default {
       genderTypes: [{
         value: '男',
         id: '1',
-        // icon:'el-icon-male'
+        icon:'el-icon-male'
       }, {
         value: '女',
         id: '2',
-        // icon:'el-icon-male'
+        icon:'el-icon-male'
       }],
       authCode: '',
       teleCode: '',
