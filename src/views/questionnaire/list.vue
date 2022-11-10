@@ -28,7 +28,7 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加问卷
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleRecover">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-delete" @click="handleRecover">
         恢复历史记录
       </el-button>
 
@@ -56,7 +56,7 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="问卷标题" min-width="150px" width="300px">
+      <el-table-column label="问卷标题" min-width="150px" width="150px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
         </template>
@@ -169,12 +169,12 @@
     </el-dialog>
 
     <!--恢复历史记录弹出框-->
-    <el-dialog title="历史记录" :visible.sync="openRecoverDialog" width="1000px">
-      <recover ref="recover" @refresh="getList"/>
+    <el-dialog title="历史记录" :visible.sync="openRecoverDialog" width="1200px">
+      <recover ref="recover" @refresh="getNewList"/>
     </el-dialog>
 
     <!--编辑问卷弹出框-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" aria-readonly="true">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" >
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -183,16 +183,16 @@
         label-width="90px"
         style="width: 400px; margin-left:50px;"
       >
-        <el-form-item label="类型" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option
-              v-for="item in calendarTypeOptions"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
+<!--        <el-form-item label="类型" prop="type">-->
+<!--          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">-->
+<!--            <el-option-->
+<!--              v-for="item in calendarTypeOptions"-->
+<!--              :key="item.key"-->
+<!--              :label="item.display_name"-->
+<!--              :value="item.key"-->
+<!--            />-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
         <el-form-item label="标题" prop="title">
           <el-input v-model="temp.title"/>
         </el-form-item>
@@ -210,15 +210,20 @@
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
           </el-select>
         </el-form-item>
-        <el-form-item label="推荐指数">
-          <el-rate
-            v-model="temp.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top:8px;"
-          />
+<!--        <el-form-item label="推荐指数">-->
+<!--          <el-rate-->
+<!--            v-model="temp.importance"-->
+<!--            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
+<!--            :max="3"-->
+<!--            style="margin-top:8px;"-->
+<!--          />-->
+<!--        </el-form-item>-->
+        <el-form-item label="是否推荐">
+          <el-col :span="4">
+            <el-switch v-model="temp.isRecommon" style="right: 0px"/>
+          </el-col>
         </el-form-item>
-        <el-form-item label="Remark">
+        <el-form-item label="备注">
           <el-input
             readonly
             v-model="temp.remark"
@@ -226,6 +231,9 @@
             type="textarea"
             placeholder="此问卷处于发布状态不允许修改！"
           />
+        </el-form-item>
+        <el-form-item label-width="10px">
+          <el-button>编辑问卷题目</el-button>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -323,6 +331,7 @@ import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
 import { getGroupPage } from '@/api/group'
 import recover from "@/views/questionnaire/recover";
+import {Random} from "mockjs";
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -443,7 +452,7 @@ export default {
           limit: 43,
           curCount: 3,
           isPublic: '是',
-          isRecommend: '是',
+          isRecommend: '否',
           id: 10
         },
         {
@@ -484,7 +493,8 @@ export default {
         timestamp: new Date(),
         title: '',
         type: '',
-        status: 'published'
+        status: 'published',
+        isRecommon:''
       },
       dialogFormVisible2: false,
       dialogFormVisible: false,
@@ -536,6 +546,25 @@ export default {
     },
     getList() {
       this.listLoading = false
+      return
+    },
+    getNewList() {
+      this.listLoading = false
+      let newList =
+          {
+            title: 'hello java',
+            createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+            startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+            endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+            status: '未发布',
+            type: '优质问卷',
+            limit: 20,
+            curCount: 6,
+            isPublic: '是',
+            isRecommend: '是',
+            id: 8
+          }
+      this.list.push(newList)
       return
     },
     handleFilter() {
@@ -613,13 +642,14 @@ export default {
       })
     },
     updateData() {
+      this.list[0].title = this.temp.title
       this.$notify({
-        title: '失败',
-        message: '此问卷暂不允许修改',
-        type: 'error',
+        title: 'Success',
+        message: '问卷修改成功',
+        type: 'success',
         duration: 2000
       })
-      return
+      this.dialogFormVisible = false
     },
     handlePost(row, index) {
       this.$notify({
