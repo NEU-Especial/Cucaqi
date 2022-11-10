@@ -25,10 +25,14 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
+                 @click="handleCreate"
+      >
         添加问卷
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleRecover">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
+                 @click="handleRecover"
+      >
         恢复历史记录
       </el-button>
 
@@ -147,7 +151,6 @@
     <el-dialog
       title="答卷列表"
       :visible.sync="answerListTableVisible"
-      style="background:linear-gradient(#2196f3,rgba(19,242,7,0.83));"
     >
       <el-row>
         <el-button type="primary" round @click="jump">查看整体情况</el-button>
@@ -166,6 +169,11 @@
     <!--答卷细节弹出框-->
     <el-dialog title="答卷详情" :visible.sync="answerDetailTableVisible">
       <survey :survey="survey"/>
+    </el-dialog>
+
+    <!--答卷细节弹出框-->
+    <el-dialog title="答卷详情" :visible.sync="totalDetailVisible">
+      <div id="surveyVizPanel"/>
     </el-dialog>
 
     <!--恢复历史记录弹出框-->
@@ -198,11 +206,11 @@
         </el-form-item>
         <el-form-item label="开始时间" prop="startedTime">
           <el-input v-model="temp.startedTime"/>
-<!--          <el-date-picker v-model="temp.startedTime" type="datetime" placeholder="Please pick a date"/>-->
+          <!--          <el-date-picker v-model="temp.startedTime" type="datetime" placeholder="Please pick a date"/>-->
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-input v-model="temp.endTime"/>
-<!--          <el-date-picker v-model="temp.endTime" type="datetime" placeholder="Please pick a date"/>-->
+          <!--          <el-date-picker v-model="temp.endTime" type="datetime" placeholder="Please pick a date"/>-->
         </el-form-item>
 
         <el-form-item label="问卷状态">
@@ -220,8 +228,8 @@
         </el-form-item>
         <el-form-item label="Remark">
           <el-input
-            readonly
             v-model="temp.remark"
+            readonly
             :autosize="{ minRows: 2, maxRows: 4}"
             type="textarea"
             placeholder="此问卷处于发布状态不允许修改！"
@@ -322,7 +330,9 @@ import { Model, StylesManager } from 'survey-vue'
 import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
 import { getGroupPage } from '@/api/group'
-import recover from "@/views/questionnaire/recover";
+import recover from '@/views/questionnaire/recover'
+
+import 'survey-analytics/survey.analytics.min.css'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -340,7 +350,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,recover },
+  components: { Pagination, recover },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -479,8 +489,8 @@ export default {
         id: undefined,
         importance: 1,
         remark: '',
-        startedTime:Random.date('yyyy-MM-dd-hh:mm:ss'),
-        endTime:Random.date('yyyy-MM-dd-hh:mm:ss'),
+        startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+        endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
         timestamp: new Date(),
         title: '',
         type: '',
@@ -490,6 +500,7 @@ export default {
       dialogFormVisible: false,
       answerListTableVisible: false,
       answerDetailTableVisible: false,
+      totalDetailVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -515,7 +526,7 @@ export default {
       ],
       postListLoading: false,
       postGroupData: [],
-      openRecoverDialog:false
+      openRecoverDialog: false
     }
   },
   created() {
@@ -532,7 +543,7 @@ export default {
       return Y + M + D + h + m + s
     },
     jump() {
-      this.$router.push('/questionnaire/jump')
+      this.totalDetailVisible = true
     },
     getList() {
       this.listLoading = false
@@ -654,11 +665,11 @@ export default {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
-    handleRecover(){
-      this.openRecoverDialog = true;
+    handleRecover() {
+      this.openRecoverDialog = true
       this.$nextTick(() => {
-        this.$refs.recover.getList();
-      });
+        this.$refs.recover.getList()
+      })
     }
   }
 }

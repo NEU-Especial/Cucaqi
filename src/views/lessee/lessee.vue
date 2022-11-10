@@ -19,7 +19,13 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >
         添加租户
       </el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="handleRecover">
@@ -214,7 +220,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
-
+const Random = require('mockjs').Random
 export default {
   name: 'ComplexTable',
   components: { Pagination, recover },
@@ -315,6 +321,14 @@ export default {
       this.listLoading = true
       getLesseeList().then(
         res => {
+          for (let i = 0; i < res.data.length; i++) {
+            res.data[i].username = Random.cname()
+            res.data[i].age = Random.natural(10, 80)
+            res.data[i].gender = ['男', '女'][(Random.natural(0, 1))]
+            res.data[i].job = ['学生', '老师', '社会人士'][(Random.natural(0, 2))]
+            res.data[i].birth = Random.date('yyyy-MM-dd')
+            res.data[i].email = Random.email()
+          }
           this.list = res.data
           this.totalList = res.data
           this.listLoading = false
