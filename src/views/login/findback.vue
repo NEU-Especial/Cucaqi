@@ -325,6 +325,9 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background-image: url("../background/通用背景.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
   .el-input {
     display: inline-block;
     height: 47px;
@@ -362,16 +365,19 @@ $dark_gray: #889aa4;
 $light_gray: #eee;
 
 .login-container {
-  min-height: 100%;
+  height: 100%;
   width: 100%;
   background-color: $bg;
   overflow: hidden;
 
   .login-form {
+    background: rgba(255,255,255,0.2);
+    top: 10px;
+    border-radius: 20px;
+    padding: 45px 25px 5px;
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
   }
@@ -385,7 +391,7 @@ $light_gray: #eee;
 
   .svg-container {
     padding: 6px 5px 6px 15px;
-    color: $dark_gray;
+    color:$light_gray;
     vertical-align: middle;
     width: 30px;
     display: inline-block;
@@ -401,6 +407,10 @@ $light_gray: #eee;
       text-align: center;
       font-weight: bold;
     }
+  }
+  .svg-icon{
+    color:$light_gray;
+
   }
 
   .show-pwd {

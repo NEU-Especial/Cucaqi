@@ -43,7 +43,7 @@
       </el-form-item>
       <el-form-item prop="authCode" style="width:65%;display: inline-block">
         <span class="svg-container">
-          <i class="el-icon-chat-square"/>
+          <i class="el-icon-chat-square" />
         </span>
         <el-input
           ref="authCode"
@@ -251,6 +251,9 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background-image: url("../background/通用背景.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
   .el-input {
     display: inline-block;
     height: 47px;
@@ -294,10 +297,13 @@ $light_gray: #eee;
   overflow: hidden;
 
   .login-form {
+    background: rgba(255,255,255,0.2);
+    top: 120px;
+    border-radius: 20px;
+    padding: 60px 35px 30px;
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
   }
@@ -311,7 +317,7 @@ $light_gray: #eee;
 
   .svg-container {
     padding: 6px 5px 6px 15px;
-    color: $dark_gray;
+    color:$light_gray;
     vertical-align: middle;
     width: 30px;
     display: inline-block;
@@ -327,6 +333,10 @@ $light_gray: #eee;
       text-align: center;
       font-weight: bold;
     }
+  }
+  .svg-icon{
+    color:$light_gray;
+
   }
 
   .show-pwd {

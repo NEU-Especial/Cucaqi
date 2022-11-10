@@ -1,5 +1,7 @@
 <template>
+<!--  <div class="note" :style="note">-->
   <div class="login-container">
+    <div class="login-box">
     <el-form
       ref="loginForm"
       :model="loginForm"
@@ -83,6 +85,7 @@
 
     </el-form>
   </div>
+  </div>
 </template>
 
 <script>
@@ -136,6 +139,7 @@ export default {
           label: '答者'
         }
       ]
+
     }
   },
   watch: {
@@ -203,6 +207,10 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background-image: url("../background/通用背景.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+
   .el-input {
     display: inline-block;
     height: 47px;
@@ -231,13 +239,15 @@ $cursor: #fff;
     border-radius: 5px;
     color: #454545;
   }
+
 }
+
 </style>
 
 <style lang="scss" scoped>
 $bg: #2d3a4b;
 $dark_gray: #889aa4;
-$light_gray: #eee;
+$light_gray: #f1f1f9;
 
 .login-container {
   min-height: 100%;
@@ -246,10 +256,13 @@ $light_gray: #eee;
   overflow: hidden;
 
   .login-form {
+    background: rgba(255,255,255,0.2);
+    top: 120px;
+    border-radius: 20px;
+    padding: 60px 35px 30px;
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
   }
@@ -262,6 +275,7 @@ $light_gray: #eee;
   }
 
   .svg-container {
+
     padding: 6px 5px 6px 15px;
     color: $dark_gray;
     vertical-align: middle;
@@ -274,14 +288,19 @@ $light_gray: #eee;
 
     .title {
       font-size: 26px;
-      color: $light_gray;
+      color: #efeff7;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
     }
   }
+  .svg-icon{
+    color:$light_gray;
+
+  }
 
   .show-pwd {
+
     position: absolute;
     right: 10px;
     top: 7px;
@@ -291,4 +310,5 @@ $light_gray: #eee;
     user-select: none;
   }
 }
+
 </style>

@@ -8,8 +8,13 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+<!--      id排序-->
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+      </el-select>
+<!--      账单排序-->
+      <el-select v-model="paymentListQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+        <el-option v-for="item in paymentSortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -32,7 +37,7 @@
       border
       fit
       highlight-current-row
-      style="width: 80%;"
+      style="width: 100%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -47,9 +52,42 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
+      <el-table-column
+        label="租户账单"
+        prop="payment"
+        sortable="custom"
+        align="center"
+        width="120"
+        :class-name="getPaymentClass('payment')"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.id }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column label="租户姓名" min-width="50px" width="80px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="租户性别" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.gender }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="租户职业" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.job }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="租户年龄" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.age }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="租户生日" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.birth }}</span>
         </template>
       </el-table-column>
       <el-table-column label="租户密码" width="200px" align="center">
@@ -69,13 +107,6 @@
           <span class="link-type">{{ row.email }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column label="租户账单" min-width="150px" width="180px">
-        <template slot-scope="{row}">
-          <span class="link-type">{{ row.payment }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column label="租户邀请码" min-width="150px" width="180px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.inviteCode }}</span>
@@ -121,8 +152,32 @@
         <el-form-item label="租户姓名" prop="username">
           <el-input v-model="temp.username"/>
         </el-form-item>
+<!--        <el-form-item label="租户性别" prop="username">-->
+<!--          <el-input v-model="temp.gender"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="租户密码" prop="password">
           <el-input v-model="temp.password"/>
+        </el-form-item>
+        <el-form-item label="租户性别" prop="gender">
+          <el-select v-model="genderType" placeholder="请选择" >
+            <el-option v-for="item in genderTypes" :key="item.id" :label="item.value" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="租户职业" prop="job">
+          <el-input v-model="temp.job"/>
+        </el-form-item>
+        <el-form-item label="租户年龄" prop="age">
+          <el-input v-model="temp.age"/>
+        </el-form-item>
+        <el-form-item label="租户生日" prop="birth">
+          <div class="block">
+            <el-date-picker
+              v-model="temp.birth"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+          </div>
         </el-form-item>
         <el-form-item label="租户电话号码" prop="title">
           <el-input v-model="temp.telephone"/>
@@ -192,7 +247,21 @@ export default {
         id: 10,
         telephone: 11111111111,
         email: '16381316928@qq.com',
-        payment: 20
+        payment: 20,
+        birth:'',
+        age:'',
+        gender:'男',
+        job:'演员',
+      }],
+      genderType: '',
+      genderTypes: [{
+        value: '男',
+        id: '1',
+        icon:'el-icon-male'
+      }, {
+        value: '女',
+        id: '2',
+        icon:'el-icon-male'
       }],
       total: 1,
       listLoading: true,
@@ -202,18 +271,30 @@ export default {
         lessee_name: '', // 过滤名称
         sort: '+id'
       },
+      paymentListQuery: {
+        page: 1,
+        limit: 20,
+        lessee_name: '', // 过滤名称
+        sort: '+payment'
+      },
       importanceOptions: ['有群组', '无群组'],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
+      paymentSortOptions: [{ label: '账单额升序', key: '+payment' }, { label: '账单额降序', key: '-payment' }],
       showReviewer: false,
       temp: {
         username: undefined,
         password: undefined,
+        gender:'',
         inviteCode: '',
         telephone: '',
         email: '',
-        payment: 0
+        payment: 0,
+        job:'',
+        age:'',
+        birth:undefined
       },
+      value1:'',
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -354,7 +435,11 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
-    }
+    },
+    getPaymentClass: function(key) {
+      const sort = this.paymentListQuery.sort
+      return sort === `+${key}` ? 'ascending' : 'descending'
+    },
   }
 }
 </script>
