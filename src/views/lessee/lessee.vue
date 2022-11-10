@@ -8,13 +8,13 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-<!--      id排序-->
+      <!--      id排序-->
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
-<!--      账单排序-->
+      <!--      账单排序-->
       <el-select v-model="paymentListQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in paymentSortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in paymentSortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -123,7 +123,7 @@
       </el-table-column>
     </el-table>
 
-    <recover ref="recover" title="恢复" v-if="openRecoverDialog" />
+    <recover v-if="openRecoverDialog" ref="recover" title="恢复" />
 
     <pagination
       v-show="total>0"
@@ -144,43 +144,42 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="租户姓名" prop="username">
-          <el-input v-model="temp.username"/>
+          <el-input v-model="temp.username" />
         </el-form-item>
-<!--        <el-form-item label="租户性别" prop="username">-->
-<!--          <el-input v-model="temp.gender"/>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="租户性别" prop="username">-->
+        <!--          <el-input v-model="temp.gender"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="租户密码" prop="password">
-          <el-input v-model="temp.password"/>
+          <el-input v-model="temp.password" />
         </el-form-item>
         <el-form-item label="租户性别" prop="gender">
-          <el-select v-model="genderType" placeholder="请选择" >
-            <el-option v-for="item in genderTypes" :key="item.id" :label="item.value" :value="item.value">
-            </el-option>
+          <el-select v-model="genderType" placeholder="请选择">
+            <el-option v-for="item in genderTypes" :key="item.id" :label="item.value" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="租户职业" prop="job">
-          <el-input v-model="temp.job"/>
+          <el-input v-model="temp.job" />
         </el-form-item>
         <el-form-item label="租户年龄" prop="age">
-          <el-input v-model="temp.age"/>
+          <el-input v-model="temp.age" />
         </el-form-item>
         <el-form-item label="租户生日" prop="birth">
           <div class="block">
             <el-date-picker
               v-model="temp.birth"
               type="date"
-              placeholder="选择日期">
-            </el-date-picker>
+              placeholder="选择日期"
+            />
           </div>
         </el-form-item>
         <el-form-item label="租户电话号码" prop="title">
-          <el-input v-model="temp.telephone"/>
+          <el-input v-model="temp.telephone" />
         </el-form-item>
         <el-form-item label="租户邮箱号码" prop="title">
-          <el-input v-model="temp.email"/>
+          <el-input v-model="temp.email" />
         </el-form-item>
         <el-form-item label="租户邀请码" prop="title">
-          <el-input v-model="temp.inviteCode"/>
+          <el-input v-model="temp.inviteCode" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -201,7 +200,7 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { addLessee, deleteLessee, getLesseeList, updateLessee } from '@/api/lessee'
 import { Message } from 'element-ui' // secondary package based on el-pagination
-import recover from "@/views/lessee/recover";
+import recover from '@/views/lessee/recover'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -218,7 +217,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,recover },
+  components: { Pagination, recover },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -243,20 +242,20 @@ export default {
         telephone: 11111111111,
         email: '16381316928@qq.com',
         payment: 20,
-        birth:'',
-        age:'',
-        gender:'男',
-        job:'演员',
+        birth: '',
+        age: '',
+        gender: '男',
+        job: '演员'
       }],
       genderType: '',
       genderTypes: [{
         value: '男',
         id: '1',
-        icon:'el-icon-male'
+        icon: 'el-icon-male'
       }, {
         value: '女',
         id: '2',
-        icon:'el-icon-male'
+        icon: 'el-icon-male'
       }],
       total: 1,
       listLoading: true,
@@ -280,16 +279,16 @@ export default {
       temp: {
         username: undefined,
         password: undefined,
-        gender:'',
+        gender: '',
         inviteCode: '',
         telephone: '',
         email: '',
         payment: 0,
-        job:'',
-        age:'',
-        birth:undefined
+        job: '',
+        age: '',
+        birth: undefined
       },
-      value1:'',
+      value1: '',
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -305,7 +304,7 @@ export default {
       downloadLoading: false,
       idx: -1,
       totalList: [],
-      openRecoverDialog:false
+      openRecoverDialog: false
     }
   },
   created() {
@@ -432,18 +431,17 @@ export default {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
-    handleRecover(){
-      this.openRecoverDialog = true;
+    handleRecover() {
+      this.openRecoverDialog = true
 
       this.$nextTick(() => {
-        this.$refs.recover.getList();
-      });
-    }
+        this.$refs.recover.getList()
+      })
     },
     getPaymentClass: function(key) {
       const sort = this.paymentListQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
-    },
+    }
   }
 }
 </script>
