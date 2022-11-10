@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
 
@@ -52,7 +52,7 @@ export default {
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['Industries', 'Technology', 'Forex', 'Gold', 'Forecasts']
+          data: ['单项选择', '多项选择', '简答题', '评分题', '个性问题']
         },
         series: [
           {
@@ -62,11 +62,11 @@ export default {
             radius: [15, 95],
             center: ['50%', '38%'],
             data: [
-              { value: 320, name: 'Industries' },
-              { value: 240, name: 'Technology' },
-              { value: 149, name: 'Forex' },
-              { value: 100, name: 'Gold' },
-              { value: 59, name: 'Forecasts' }
+              { value: 320, name: '单项选择' },
+              { value: 240, name: '多项选择' },
+              { value: 149, name: '简答题' },
+              { value: 100, name: '评分题' },
+              { value: 59, name: '个性问题' }
             ],
             animationEasing: 'cubicInOut',
             animationDuration: 2600

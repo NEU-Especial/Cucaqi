@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import echarts from 'echarts'
+import * as echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
 
@@ -74,21 +74,21 @@ export default {
           }
         }],
         series: [{
-          name: 'pageA',
+          name: '男性',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
           data: [79, 52, 200, 334, 390, 330, 220],
           animationDuration
         }, {
-          name: 'pageB',
+          name: '女性',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
           data: [80, 52, 200, 334, 390, 330, 220],
           animationDuration
         }, {
-          name: 'pageC',
+          name: '未设置性别',
           type: 'bar',
           stack: 'vistors',
           barWidth: '60%',
