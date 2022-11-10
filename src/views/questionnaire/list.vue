@@ -147,7 +147,6 @@
     <el-dialog
       title="答卷列表"
       :visible.sync="answerListTableVisible"
-      style="background:linear-gradient(#2196f3,rgba(19,242,7,0.83));"
     >
       <el-row>
         <el-button type="primary" round @click="jump">查看整体情况</el-button>

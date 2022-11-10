@@ -35,7 +35,6 @@
       border
       fit
       highlight-current-row
-      style="width: 90%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -50,31 +49,20 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="问卷标题" min-width="130px" width="150px">
+      <el-table-column label="问卷标题" min-width="230px" width="230px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="开始时间" width="130px" align="center">
+      <el-table-column label="开始时间" width="330px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.startedTime }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="结束时间" width="130px" align="center">
+      <el-table-column label="结束时间" width="330px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.endTime }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="限制人数" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.limit }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="答题人数" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.curCount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="问卷状态" class-name="status-col" width="100" align="center">
@@ -84,7 +72,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="240" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleAnswer(row)">
             答卷
@@ -200,7 +188,7 @@ export default {
       dialogPvVisible: false,
       downloadLoading: false,
       postPublicDialog: false,
-      postPrivateDialog:false,
+      postPrivateDialog: false
     }
   },
   created() {
@@ -264,7 +252,7 @@ export default {
       }
     },
     handleAnswer(row) {
-      this.$router.push("/questionnaire/preview")
+      this.$router.push('/questionnaire/preview')
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
