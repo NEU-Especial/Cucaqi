@@ -9,6 +9,14 @@ export function getGroupPage(userId) {
   })
 }
 
+export function getDeletedGroupPage(userId) {
+  return request({
+    url: `/cucaqi/group/deleted/${userId}`,
+    method: 'get',
+  })
+}
+
+
 export function getAllGroupByAnswererId(answererId) {
   return request({
     url: `/cucaqi/group/belongs/${answererId}`,
@@ -30,6 +38,14 @@ export function updateGroup(data) {
     data
   })
 }
+export function updateGroupDeletedStatus(groupId) {
+  return request({
+    url: `/cucaqi/group/recover/${groupId}`,
+    method: 'put',
+  })
+}
+
+
 
 export function deleteGroup(data) {
   return request({

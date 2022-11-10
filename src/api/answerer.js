@@ -7,6 +7,14 @@ export function getAllAnswererByUserId(id) {
   })
 }
 
+export function getAllDeletedAnswererByUserId(id) {
+  return request({
+    url: `/cucaqi/answerer/deleted/${id}`,
+    method: 'get'
+  })
+}
+
+
 export function getAllAnswererByGroupId(groupId) {
   return request({
     url: `/cucaqi/answerer/details/${groupId}`,
@@ -41,6 +49,13 @@ export function update(data) {
     url: `/cucaqi/answerer`,
     method: 'put',
     data
+  })
+}
+
+export function updateAnswererDeletedStatus(answererId) {
+  return request({
+    url: `/cucaqi/answerer/recover/${answererId}`,
+    method: 'put',
   })
 }
 

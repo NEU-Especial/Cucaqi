@@ -1,4 +1,5 @@
 <template>
+  <el-dialog :title="title" :visible.sync="openRecover" width="900px" :close-on-click-modal="false" append-to-body>
   <div class="app-container">
     <div class="filter-container">
       <el-input
@@ -14,31 +15,13 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加群组
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleRecover">
-        恢复历史记录
-      </el-button>
     </div>
     <br>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 60%;"
+    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row
+      style="width: 90%;"
       @sort-change="sortChange"
     >
-      <el-table-column
-        label="ID"
-        prop="id"
-        sortable="custom"
-        align="center"
-        width="80"
-        :class-name="getSortClass('id')"
+      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')"
       >
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
@@ -47,13 +30,13 @@
 
       <el-table-column label="组名" min-width="50px" width="80px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.groupName }}</span>
+          <span class="link-type">{{ row.groupName }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="描述" min-width="50px" width="80px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
+          <span class="link-type">{{ row.description }}</span>
         </template>
       </el-table-column>
 
@@ -71,16 +54,10 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row,$index)">
-            编辑
-          </el-button>
-          <el-button type="primary" size="mini" @click="handleGroupDetails(row)">
-            群组详情
-          </el-button>
-          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除
+          <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handleRecover(row,$index)">
+            恢复记录
           </el-button>
         </template>
       </el-table-column>
@@ -88,9 +65,6 @@
 
     <!--使用群组详情组件-->
     <groupDetails title="群组详情" v-if="openDetailsDialog" ref="groupDetails" />
-
-    <!--使用恢复历史记录组件-->
-    <recover ref="recover" v-if="openRecoverDialog" @refresh="getList"/>
 
     <pagination
       v-show="total>0"
@@ -100,48 +74,26 @@
       @pagination="pagination"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="90px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item label="组名" prop="type">
-          <el-input v-model="temp.groupName" />
-        </el-form-item>
-        <el-form-item label="描述" prop="type">
-          <el-input v-model="temp.description" />
-        </el-form-item>
-        <el-form-item label="创建时间" prop="timestamp" v-if="dialogStatus === 'create'">
-          <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item label="创建人" prop="title" aria-readonly="true">
-          <el-input v-model="temp.createdBy" readonly/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ dialogStatus === 'create' ? '确认创建' : '确认修改' }}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
+  </el-dialog>
 </template>
 
 <script>
 
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import {addGroup, deleteGroup, getGroupPage, updateGroup} from "@/api/group";
+import {
+  addGroup,
+  deleteGroup,
+  getDeletedGroupPage,
+  getGroupPage,
+  updateGroup,
+  updateGroupDeletedStatus
+} from "@/api/group";
 import {Message} from "element-ui";
 import groupDetails from "@/views/group/details/groupDetails";
-import recover from "@/views/group/recover";
+import {updateDeletedStatus} from "@/api/answerer";
+
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -158,7 +110,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,groupDetails,recover },
+  components: { Pagination,groupDetails },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -224,7 +176,7 @@ export default {
       downloadLoading: false,
       idx: -1,
       totalList: [],
-      openRecoverDialog:false
+      openRecover:false
     }
   },
   created() {
@@ -233,14 +185,17 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getGroupPage(this.$store.getters.user.id).then(
-        res => {
-          this.list = res.data
-          this.totalList = res.data
-          this.listLoading = false
-          this.total = res.data.length
-        }
-      )
+      this.$nextTick(()=>{
+        getDeletedGroupPage(this.$store.getters.user.id).then(
+          res => {
+            this.list = res.data
+            this.totalList = res.data
+            this.listLoading = false
+            this.total = res.data.length
+          }
+        )
+        this.openRecover = true
+      })
     },
     handleGroupDetails(row) {
       this.openDetailsDialog = true;
@@ -303,47 +258,8 @@ export default {
         createdTime: new Date()
       }
     },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-    },
-    createData() {
-      addGroup(this.temp).then(
-        (res) => {
-          Message({
-            message: res.msg,
-            type: 'success',
-            duration: 1000
-          })
-          this.getList()
-          this.dialogFormVisible = false
-        },
-
-      )
-    },
-    handleUpdate(row, index) {
-      this.temp = row
-      this.idx = index
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-    },
-    updateData() {
-      updateGroup(this.temp).then(
-        (res) => {
-          Message({
-            message: res.msg,
-            type: 'success',
-            duration: 1000
-          })
-          this.list[this.index] = { ...this.temp }
-          this.resetTemp()
-          this.dialogFormVisible = false
-        }
-      )
-    },
-    handleDelete(row, index) {
-      deleteGroup(row).then(
+    handleRecover(row,index){
+      updateGroupDeletedStatus(row.id).then(
         (res) => {
           Message({
             message: res.msg,
@@ -351,18 +267,13 @@ export default {
             duration: 1000
           })
           this.list.splice(index, 1)
+          this.$emit("refresh")
         }
       )
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
-    },
-    handleRecover(){
-      this.openRecoverDialog = true;
-      this.$nextTick(() => {
-        this.$refs.recover.getList();
-      });
     }
   }
 }

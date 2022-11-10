@@ -8,6 +8,14 @@ export function listUser(id) {
   })
 }
 
+// 查询租户id下的所有已删除user
+export function listDeletedUser(id) {
+  return request({
+    url: `/cucaqi/user/deleted/${id}`,
+    method: 'get'
+  })
+}
+
 export function addUser(data) {
   return request({
     url: `/cucaqi/user/addUser`,

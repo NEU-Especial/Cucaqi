@@ -28,6 +28,9 @@
       >
         添加租户
       </el-button>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="handleRecover">
+        恢复历史记录
+      </el-button>
     </div>
     <br>
     <el-table
@@ -37,7 +40,7 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;"
+      style="width: 80%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -107,6 +110,13 @@
           <span class="link-type">{{ row.email }}</span>
         </template>
       </el-table-column>
+
+      <el-table-column label="租户账单" min-width="150px" width="180px">
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.payment }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column label="租户邀请码" min-width="150px" width="180px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.inviteCode }}</span>
@@ -115,12 +125,7 @@
 
       <el-table-column label="操作" align="center" width="400" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button
-            class="filter-item"
-            size="mini"
-            type="primary"
-            @click="handleUpdate(row,$index)"
-          >
+          <el-button class="filter-item" size="mini" type="primary" @click="handleUpdate(row,$index)">
             编辑租户信息
           </el-button>
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
@@ -130,6 +135,8 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <recover ref="recover" title="恢复" v-if="openRecoverDialog" />
 
     <pagination
       v-show="total>0"
@@ -152,9 +159,6 @@
         <el-form-item label="租户姓名" prop="username">
           <el-input v-model="temp.username"/>
         </el-form-item>
-<!--        <el-form-item label="租户性别" prop="username">-->
-<!--          <el-input v-model="temp.gender"/>-->
-<!--        </el-form-item>-->
         <el-form-item label="租户密码" prop="password">
           <el-input v-model="temp.password"/>
         </el-form-item>
@@ -207,6 +211,7 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { addLessee, deleteLessee, getLesseeList, updateLessee } from '@/api/lessee'
 import { Message } from 'element-ui' // secondary package based on el-pagination
+import recover from "@/views/lessee/recover";
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -223,7 +228,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination,recover },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -267,7 +272,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         lessee_name: '', // 过滤名称
         sort: '+id'
       },
@@ -309,7 +314,8 @@ export default {
       },
       downloadLoading: false,
       idx: -1,
-      totalList: []
+      totalList: [],
+      openRecoverDialog:false
     }
   },
   created() {
@@ -435,6 +441,14 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    handleRecover(){
+      this.openRecoverDialog = true;
+
+      this.$nextTick(() => {
+        this.$refs.recover.getList();
+      });
+    }
     },
     getPaymentClass: function(key) {
       const sort = this.paymentListQuery.sort
