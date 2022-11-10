@@ -9,7 +9,7 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
       </el-select>
       <el-select v-model="listQuery.type" placeholder="问卷类型" clearable class="filter-item" style="width: 130px">
         <el-option
@@ -20,7 +20,7 @@
         />
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -87,7 +87,7 @@
           <span>{{ row.limit }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="答题人数" width="110px" align="center" >
+      <el-table-column label="答题人数" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.curCount }}</span>
         </template>
@@ -116,21 +116,20 @@
             编辑问卷
           </el-button>
           <el-button
-            v-if="row.status!=='published'"
             size="mini"
             type="success"
             @click="handleModifyStatus(row,'published')"
           >
             发布问卷
           </el-button>
-          <el-button v-if="row.status!=='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
+          <!--          <el-button v-if="row.status!=='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
             恢复问卷
-          </el-button>
+          </el-button>-->
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除问卷
           </el-button>
 
-<!--          答卷列表-->
+          <!--          答卷列表-->
           <el-button type="primary" size="mini" @click="handleAnswerList(row)">
             答卷列表
           </el-button>
@@ -148,16 +147,20 @@
     />
 
     <!--答卷列表弹出框-->
-    <el-dialog title="答卷列表" :visible.sync="answerListTableVisible" style="background:linear-gradient(#2196f3,rgba(19,242,7,0.83));">
+    <el-dialog
+      title="答卷列表"
+      :visible.sync="answerListTableVisible"
+      style="background:linear-gradient(#2196f3,rgba(19,242,7,0.83));"
+    >
       <el-row>
         <el-button type="primary" round @click="jump">查看整体情况</el-button>
       </el-row>
       <el-table :data="answerListData">
-        <el-table-column property="answererName" label="答卷人姓名"></el-table-column>
-        <el-table-column property="answerTime" label="交卷时间"></el-table-column>
+        <el-table-column property="answererName" label="答卷人姓名"/>
+        <el-table-column property="answerTime" label="交卷时间"/>
         <el-table-column property="operation" label="操作">
           <template slot-scope="scope">
-            <el-button @click="handleAnswerDetail(scope.row)" type="text" size="small">查看</el-button>
+            <el-button type="text" size="small" @click="handleAnswerDetail(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -165,7 +168,7 @@
 
     <!--答卷细节弹出框-->
     <el-dialog title="答卷详情" :visible.sync="answerDetailTableVisible">
-      <survey :survey="survey" />
+      <survey :survey="survey"/>
     </el-dialog>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -188,14 +191,14 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date"/>
         </el-form-item>
         <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
+          <el-input v-model="temp.title"/>
         </el-form-item>
         <el-form-item label="Status">
           <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
           </el-select>
         </el-form-item>
         <el-form-item label="Imp">
@@ -224,18 +227,21 @@
         </el-button>
       </div>
     </el-dialog>
-<!--    公开问卷发布时的弹窗-->
+    <!--    公开问卷发布时的弹窗-->
     <el-dialog :visible.sync="postPublicDialog" title="发布问卷">
       <el-table :data="postData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="postAddress" label="问卷地址" />
+        <el-table-column prop="postAddress" label="问卷地址"/>
       </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="postPublicDialog = false">确认</el-button>
       </span>
     </el-dialog>
-<!--    私有问卷发布时的弹窗-->
+    <!--    私有问卷发布时的弹窗-->
     <el-dialog :visible.sync="postPrivateDialog" title="发布问卷" width="1000px">
-      <el-table :key="tableKey" v-loading="postListLoading" :data="postGroupData"
+      <el-table
+        :key="tableKey"
+        v-loading="postListLoading"
+        :data="postGroupData"
         border
         fit
         highlight-current-row
@@ -269,7 +275,7 @@
 
         <el-table-column label="创建时间" width="200px" align="center">
           <template slot-scope="{row}">
-            <span>{{row.createdTime}}</span>
+            <span>{{ row.createdTime }}</span>
           </template>
         </el-table-column>
 
@@ -301,10 +307,10 @@
 
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import { StylesManager, Model } from "survey-vue";
-import "survey-vue/defaultV2.css";
+import { Model, StylesManager } from 'survey-vue'
+import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
-import {getGroupPage} from "@/api/group"; // secondary package based on el-pagination
+import { getGroupPage } from '@/api/group'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -313,7 +319,7 @@ const calendarTypeOptions = [
   { key: 'EU', display_name: 'Eurozone' }
 ]
 
-StylesManager.applyTheme("defaultV2");
+StylesManager.applyTheme('defaultV2')
 // arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -328,7 +334,7 @@ export default {
     statusFilter(status) {
       const statusMap = {
         published: 'success',
-        draft: 'info',
+        draft: '未发布',
         deleted: 'danger'
       }
       return statusMap[status]
@@ -339,59 +345,59 @@ export default {
   },
   data() {
     const answerListData = [{
-      answererName: '徐高高',
-      answerTime: '2022-05-02',
+      answererName: '小王',
+      answerTime: '2022-05-02'
     }, {
-      answererName: '徐矮矮',
-      answerTime: '2016-05-06',
+      answererName: '小李',
+      answerTime: '2016-05-06'
     }, {
-      answererName: '徐好好',
-      answerTime: '2018-08-17',
+      answererName: '大王',
+      answerTime: '2018-08-17'
     }]
-    const surveyJson =  {
-      "title": "计算机专业调查问卷",
-      "description": "调查计算机专业学生信息",
-      "logoPosition": "right",
-      "pages": [
+    const surveyJson = {
+      'title': '计算机专业调查问卷',
+      'description': '调查计算机专业学生信息',
+      'logoPosition': 'right',
+      'pages': [
         {
-          "name": "页面1",
-          "elements": [
+          'name': '页面1',
+          'elements': [
             {
-              "type": "text",
-              "name": "问题1",
-              "title": "你的学校"
+              'type': 'text',
+              'name': '问题1',
+              'title': '你的学校'
             },
             {
-              "type": "boolean",
-              "name": "问题2",
-              "title": "你是否喜欢计算机"
+              'type': 'boolean',
+              'name': '问题2',
+              'title': '你是否喜欢计算机'
             },
             {
-              "type": "matrix",
-              "name": "问题3",
-              "title": "你对编程语言的熟悉程度",
-              "columns": [
+              'type': 'matrix',
+              'name': '问题3',
+              'title': '你对编程语言的熟悉程度',
+              'columns': [
                 {
-                  "value": "Column 1",
-                  "text": "了解"
+                  'value': 'Column 1',
+                  'text': '了解'
                 },
                 {
-                  "value": "Column 2",
-                  "text": "熟练"
+                  'value': 'Column 2',
+                  'text': '熟练'
                 },
                 {
-                  "value": "Column 3",
-                  "text": "擅长"
+                  'value': 'Column 3',
+                  'text': '擅长'
                 }
               ],
-              "rows": [
+              'rows': [
                 {
-                  "value": "Row 1",
-                  "text": "Java"
+                  'value': 'Row 1',
+                  'text': 'Java'
                 },
                 {
-                  "value": "Row 2",
-                  "text": "C++"
+                  'value': 'Row 2',
+                  'text': 'C++'
                 }
               ]
             }
@@ -399,48 +405,45 @@ export default {
         }
       ]
     }
-    const answerJson =  {
-      "问题1": "东北大学",
-      "问题2": true,
-      "问题3": {
-        "Row 1": "Column 1",
-        "Row 2": "Column 3"
+    const answerJson = {
+      '问题1': '东北大学',
+      '问题2': true,
+      '问题3': {
+        'Row 1': 'Column 1',
+        'Row 2': 'Column 3'
       }
     }
 
-
-
-    const survey = new Model(surveyJson);
+    const survey = new Model(surveyJson)
     survey.data = answerJson
-    survey.mode = 'display';
-
-
+    survey.mode = 'display'
+    var Random = require('mockjs').Random
     return {
       tableKey: 0,
       list: [
         {
           title: 'hello world',
-          createdTime: Date.parse(new Date()),
-          startedTime: Date.parse(new Date()),
-          endTime: Date.parse(new Date()),
-          status: 'info',
+          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          status: '未发布',
           type: '优质问卷',
           limit: 43,
           curCount: 3,
-          isPublic:'是',
+          isPublic: '是',
           isRecommend: '是',
           id: 10
         },
         {
           title: 'hello vue',
-          createdTime: Date.parse(new Date()),
-          startedTime: Date.parse(new Date()),
-          endTime: Date.parse(new Date()),
-          status: 'info',
+          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          status: '未发布',
           type: '优质问卷',
           limit: 30,
           curCount: 6,
-          isPublic:'否',
+          isPublic: '否',
           isRecommend: '是',
           id: 11
         }
@@ -469,7 +472,7 @@ export default {
         type: '',
         status: 'published'
       },
-      dialogFormVisible2:false,
+      dialogFormVisible2: false,
       dialogFormVisible: false,
       answerListTableVisible: false,
       answerDetailTableVisible: false,
@@ -490,15 +493,14 @@ export default {
       survey: survey,
       downloadLoading: false,
       postPublicDialog: false,
-      postPrivateDialog:false,
-      postData:[
+      postPrivateDialog: false,
+      postData: [
         {
-          postAddress:'http://localhost:9528/survey?surver='
+          postAddress: 'http://localhost:9528/survey?surver='
         }
       ],
-      postListLoading:false,
-      postGroupData:[]
-
+      postListLoading: false,
+      postGroupData: []
 
     }
   },
@@ -506,7 +508,16 @@ export default {
     this.getList()
   },
   methods: {
-    jump(){
+    parseTime(date) {
+      const Y = date.getFullYear() + '-'
+      const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
+      const D = date.getDate() + ' '
+      const h = date.getHours() + ':'
+      const m = date.getMinutes() + ':'
+      const s = date.getSeconds()
+      return Y + M + D + h + m + s
+    },
+    jump() {
       this.$router.push('/questionnaire/jump')
     },
     getList() {
@@ -521,14 +532,14 @@ export default {
       // postQuestionaire(row).then(()=>{
       //
       // })
-      if(row.isPublic === '是'){
+      if (row.isPublic === '是') {
         this.$message({
           message: '操作Success',
           type: 'success'
         })
         row.status = status
-        this.postPublicDialog = true;
-      }else {
+        this.postPublicDialog = true
+      } else {
         this.postListLoading = true
         getGroupPage(this.$store.getters.user.id).then(
           res => {
@@ -538,11 +549,9 @@ export default {
           }
         )
         row.status = status
-        this.postPrivateDialog = true;
-
+        this.postPrivateDialog = true
       }
-
-
+      this.postData[0].postAddress = 'http://localhost:9528/survey?surver=' + row.id
     },
     sortChange(data) {
       const { prop, order } = data
@@ -602,16 +611,15 @@ export default {
     },
     handleAnswerList(row) {
       this.answerListTableVisible = true
-
     },
     handleAnswerDetail() {
       this.answerListTableVisible = false
       this.answerDetailTableVisible = true
     },
-    handleAnswersDetail(){
+    handleAnswersDetail() {
       this.answerListTableVisible = false
       // this.answerDetailTableVisible = true
-      this.dialogFormVisible2 = true;
+      this.dialogFormVisible2 = true
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {

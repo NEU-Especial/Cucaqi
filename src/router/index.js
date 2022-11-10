@@ -69,15 +69,15 @@ export const asyncRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '数据大屏', icon: 'dashboard', roles: [1001, 1003] }
+      meta: { title: '数据大屏', icon: 'dashboard', roles: [1003] }
     },
-      {
-        path: 'profile',
-        name: 'Profile',
-        component: () => import('@/views/profile/profile'),
-        hidden: true,
-        meta: { title: '用户信息', icon: 'dashboard' }
-      }
+    {
+      path: 'profile',
+      name: 'Profile',
+      component: () => import('@/views/profile/profile'),
+      hidden: true,
+      meta: { title: '用户信息', icon: 'dashboard' }
+    }
     ]
   },
   {
@@ -121,11 +121,11 @@ export const asyncRoutes = [
         meta: { title: '编辑问卷', icon: 'tree' }
       },
       {
-        path:'jump',
-        name:'Jump',
-        component:() =>import('@/views/questionnaire/jump'),
-        hidden:true,
-        meta:{ title:'统计整体答题情况', icon: 'tree'}
+        path: 'jump',
+        name: 'Jump',
+        component: () => import('@/views/questionnaire/jump'),
+        hidden: true,
+        meta: { title: '统计整体答题情况', icon: 'tree' }
       }
     ]
   },
@@ -209,7 +209,7 @@ export const asyncRoutes = [
         path: 'list',
         name: 'Answer',
         component: () => import('@/views/answerer/list'),
-        meta: { title: '答题', icon: 'form', roles: [1001] }
+        meta: { title: '答题', icon: 'form', roles: [1004] }
       }
     ]
 

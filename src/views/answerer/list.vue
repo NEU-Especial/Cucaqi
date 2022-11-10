@@ -55,12 +55,6 @@
           <span class="link-type">{{ row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="130px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.createdTime }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column label="开始时间" width="130px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.startedTime }}</span>
@@ -90,19 +84,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="是否公开" width="100px" align="center">
-        <template slot-scope="{row}">
-          {{ row.isPublic }}
-        </template>
-      </el-table-column>
-      <el-table-column label="是否推荐" width="100px" align="center">
-        <template slot-scope="{row}">
-          {{ row.isRecommend }}
-        </template>
-      </el-table-column>
-
       <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
+        <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleAnswer(row)">
             答卷
           </el-button>
@@ -125,7 +108,6 @@
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import {getGroupPage} from "@/api/group"; // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -158,32 +140,33 @@ export default {
     }
   },
   data() {
+    var Random = require('mockjs').Random
     return {
       tableKey: 0,
       list: [
         {
           title: 'hello world',
-          createdTime: Date.parse(new Date()),
-          startedTime: Date.parse(new Date()),
-          endTime: Date.parse(new Date()),
+          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
           status: 'published',
           type: '优质问卷',
           limit: 43,
           curCount: 3,
-          isPublic:'是',
+          isPublic: '是',
           isRecommend: '是',
           id: 10
         },
         {
           title: 'hello vue',
-          createdTime: Date.parse(new Date()),
-          startedTime: Date.parse(new Date()),
-          endTime: Date.parse(new Date()),
+          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
+          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
           status: 'published',
           type: '优质问卷',
           limit: 30,
           curCount: 6,
-          isPublic:'否',
+          isPublic: '否',
           isRecommend: '是',
           id: 11
         }
