@@ -57,7 +57,26 @@
           <span>{{ row.password }}</span>
         </template>
       </el-table-column>
-
+      <el-table-column label="用户性别" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.gender }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户职业" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.job }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户年龄" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.age }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="用户生日" width="150px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.birth }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="用户电话" min-width="150px" width="180px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.telephone }}</span>
@@ -130,6 +149,27 @@
         <el-form-item label="用户密码" prop="password">
           <el-input v-model="temp.password"/>
         </el-form-item>
+        <el-form-item label="用户性别" prop="gender">
+          <el-select v-model="genderType" placeholder="请选择" >
+            <el-option v-for="item in genderTypes" :key="item.id" :label="item.value" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="用户职业" prop="job">
+          <el-input v-model="temp.job"/>
+        </el-form-item>
+        <el-form-item label="用户年龄" prop="age">
+          <el-input v-model="temp.age"/>
+        </el-form-item>
+        <el-form-item label="用户生日" prop="birth">
+          <div class="block">
+            <el-date-picker
+              v-model="temp.birth"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+          </div>
+        </el-form-item>
         <el-form-item label="用户电话号码" prop="title">
           <el-input v-model="temp.telephone"/>
         </el-form-item>
@@ -188,17 +228,31 @@ export default {
         lessee_name: '', // 过滤名称
         sort: '+id'
       },
+      genderType: '',
+      genderTypes: [{
+        value: '男',
+        id: '1',
+        icon:'el-icon-male'
+      }, {
+        value: '女',
+        id: '2',
+        icon:'el-icon-male'
+      }],
       importanceOptions: ['有群组', '无群组'],
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       showReviewer: false,
       temp: {
         username: undefined,
         password: undefined,
+        gender:'',
         inviteCode: '',
         telephone: '',
         email: '',
         payment: 0,
-        limitCount: 0
+        limitCount: 0,
+        job:'',
+        age:'',
+        birth:undefined
       },
       dialogFormVisible: false,
       dialogStatus: '',

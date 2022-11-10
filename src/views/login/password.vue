@@ -207,7 +207,7 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
-  background-image: url("../background/登录背景.jpg");
+  background-image: url("../background/通用背景.jpg");
   background-repeat: no-repeat;
   background-size: cover;
 
@@ -247,7 +247,7 @@ $cursor: #fff;
 <style lang="scss" scoped>
 $bg: #2d3a4b;
 $dark_gray: #889aa4;
-$light_gray: #eee;
+$light_gray: #f1f1f9;
 
 .login-container {
   min-height: 100%;
@@ -256,7 +256,7 @@ $light_gray: #eee;
   overflow: hidden;
 
   .login-form {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
     top: 120px;
     border-radius: 20px;
     padding: 60px 35px 30px;
@@ -288,11 +288,15 @@ $light_gray: #eee;
 
     .title {
       font-size: 26px;
-      color: $light_gray;
+      color: #efeff7;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
     }
+  }
+  .svg-icon{
+    color:$light_gray;
+
   }
 
   .show-pwd {

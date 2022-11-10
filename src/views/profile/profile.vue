@@ -2,12 +2,13 @@
 <!--  创建问卷表单-->
 <template>
 
-  <div>
+<!--  <div class="note" :style ="note">-->
+<div>
     <transition name="fade">
 
       <el-container style="height: 1200px">
         <el-aside width="50%" style="height:100%;margin: 40px">
-
+          <div style="border: solid 1px black;border-radius: 30px;padding:15px">
           <el-form ref="form" :model="form" label-width="80px" >
             <el-form-item label="头像" label-width="120px">
               <el-col :span="16" align="left">
@@ -50,6 +51,18 @@
                         v-model="form.age"
                         prefix-icon="el-icon-position"
                         type="primary"/>
+              </el-col>
+            </el-form-item>
+<!--            生日-->
+            <el-form-item label="生日" label-width="120px">
+              <el-col :span="8" align="center">
+                <div class="block">
+                  <el-date-picker
+                    v-model="value1"
+                    type="date"
+                    placeholder="选择日期">
+                  </el-date-picker>
+                </div>
               </el-col>
             </el-form-item>
 <!--            下面利用折叠面板进行页面简化-->
@@ -181,12 +194,13 @@
             <el-form-item v-show="show" style="margin-top: 20px">
               <el-button type="primary" style="margin-left: 30px" @click="CreateInviteCode">生成新邀请码</el-button>
             </el-form-item>
-
           </el-form>
+          </div>
         </el-aside>
         <!--    这里放预览表单-->
       </el-container>
     </transition>
+
   </div>
 </template>
 
@@ -228,6 +242,7 @@ export default {
         age:'',
 
       },
+      value1: '',
       activeName: '1',
       genderType: '',
       genderTypes: [{
@@ -250,7 +265,7 @@ export default {
       note: {
         backgroundImage: "url(" + require("../background/个人信息修改背景.jpg") + ")",
         backgroundRepeat: "no-repeat",
-        backgroundSize: "contain",
+        backgroundSize: "cover",
         marginTop: "5px",
       },
 
@@ -324,16 +339,20 @@ export default {
 </script>
 
 <style scoped>
+
 .title {
-  font-size: 17px;
-  /*font-weight: bold;*/
-  color: #000000;
-  padding-bottom: 17px;
-  padding-top: 17px;
+
+  font-size: 14px;
+  font-weight: bold;
+  color: #606266;
+  padding-bottom: 16px;
+  padding-top: 16px;
+
 }
 .icon{
-  /*font-weight: bold;*/
-  font-size: 19px;
+  color: #606266;
+  font-weight: bold;
+  font-size: 14px;
   padding-bottom: 17px;
   padding-top: 17px;
 }
@@ -362,6 +381,7 @@ export default {
 
 .el-container {
   margin-bottom: 40px;
+
 }
 
 .el-form-item {
