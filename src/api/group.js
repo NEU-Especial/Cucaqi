@@ -1,21 +1,19 @@
 import request from '@/utils/request'
-import axios from "axios";
-
+import axios from 'axios'
 
 export function getGroupPage(userId) {
   return request({
     url: `/cucaqi/group/${userId}`,
-    method: 'get',
+    method: 'get'
   })
 }
 
 export function getDeletedGroupPage(userId) {
   return request({
     url: `/cucaqi/group/deleted/${userId}`,
-    method: 'get',
+    method: 'get'
   })
 }
-
 
 export function getAllGroupByAnswererId(answererId) {
   return request({
@@ -41,11 +39,9 @@ export function updateGroup(data) {
 export function updateGroupDeletedStatus(groupId) {
   return request({
     url: `/cucaqi/group/recover/${groupId}`,
-    method: 'put',
+    method: 'put'
   })
 }
-
-
 
 export function deleteGroup(data) {
   return request({
@@ -55,17 +51,17 @@ export function deleteGroup(data) {
   })
 }
 
-export function deleteFromGroupAnswererRelation(groupId,answererId) {
+export function deleteFromGroupAnswererRelation(groupId, answererId) {
   return request({
     url: `/cucaqi/group/deleteRelation/${groupId}/${answererId}`,
-    method: 'delete',
+    method: 'delete'
   })
 }
 
-export function addToGroupAnswererRelation(groupId,answererId) {
+export function addToGroupAnswererRelation(groupId, answererId) {
   return request({
     url: `/cucaqi/group/addRelation/${groupId}/${answererId}`,
-    method: 'post',
+    method: 'post'
   })
 }
 

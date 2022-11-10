@@ -69,7 +69,7 @@
 
         <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
           <template slot-scope="{row,$index}">
-  <!--          第一个id为groupId，第二个id为answererId-->
+            <!--          第一个id为groupId，第二个id为answererId-->
             <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row.id,$index)">
               删除组员
             </el-button>
@@ -96,19 +96,18 @@
           style="width: 400px; margin-left:50px;"
         >
           <el-form-item label="答者姓名">
-            <el-select v-model="temp.username" style="width: 140px" clearable="" @change="answererChange" >
+            <el-select v-model="temp.username" style="width: 140px" clearable="" @change="answererChange">
               <el-option v-for="item in allAnswerers" :key="item.id" :label="item.username" :value="item.id" />
             </el-select>
           </el-form-item>
 
           <el-form-item label="答者电话号码" prop="title">
-            <el-input class="answerer" v-model="temp.telephone" value=""/>
+            <el-input v-model="temp.telephone" class="answerer" value="" />
           </el-form-item>
           <el-form-item label="答者邮箱号码" prop="title">
-            <el-input class="answerer" v-model="temp.email"/>
+            <el-input v-model="temp.email" class="answerer" />
           </el-form-item>
         </el-form>
-
 
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
@@ -126,15 +125,14 @@
 <script>
 
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import {
-  addGroup, addToGroupAnswererRelation,
+  addToGroupAnswererRelation,
   deleteFromGroupAnswererRelation,
   updateGroup
-} from "@/api/group";
-import {Message} from "element-ui";
-import {getAllAnswerer, getAllAnswererByGroupId} from "@/api/answerer"; // secondary package based on el-pagination
+} from '@/api/group'
+import { Message } from 'element-ui'
+import { getAllAnswerer, getAllAnswererByGroupId } from '@/api/answerer' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -168,21 +166,21 @@ export default {
   },
   data() {
     return {
-      openDetails:false,
+      openDetails: false,
       groupId: '',
       tableKey: 0,
-      allAnswerers:[],
-      selectAnswerer:'请选择答者',
+      allAnswerers: [],
+      selectAnswerer: '请选择答者',
       list:
        [
-          {
-          username: '张三',
-          telephone:13940131469,
-          email:'',
-          createBy: '地球组',
-          id: 10
-          },
-      ],
+         {
+           username: '张三',
+           telephone: 13940131469,
+           email: '',
+           createBy: '地球组',
+           id: 10
+         }
+       ],
       total: 1,
       listLoading: true,
       listQuery: {
@@ -196,13 +194,13 @@ export default {
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       showReviewer: false,
       temp: {
-        id:'',
-        username:'',
-        password:'',
-        telephone:'',
-        payment:0,
-        createdBy:'',
-        email:'',
+        id: '',
+        username: '',
+        password: '',
+        telephone: '',
+        payment: 0,
+        createdBy: '',
+        email: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -221,14 +219,11 @@ export default {
       downloadLoading: false
     }
   },
-  created() {
-    this.getList()
-  },
   methods: {
     getList(groupId) {
-      this.groupId=groupId
+      this.groupId = groupId
       this.listLoading = true
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         getAllAnswererByGroupId(groupId).then(
           res => {
             this.list = res.data
@@ -242,7 +237,7 @@ export default {
             this.allAnswerers = res.data
           }
         )
-        this.openDetails=true
+        this.openDetails = true
       })
     },
     handleFilter() {
@@ -283,16 +278,16 @@ export default {
         this.sortByID(order)
       }
     },
-    answererChange(val){
-        this.allAnswerers.forEach((v) => {
-          if (v.username == val) {
-            this.temp.id = v.id;
-            this.temp.telephone = v.telephone;
-            this.temp.email = v.email;
-            this.temp.createdBy = v.createBy;
-          }
-          return false;
-        });
+    answererChange(val) {
+      this.allAnswerers.forEach((v) => {
+        if (v.username == val) {
+          this.temp.id = v.id
+          this.temp.telephone = v.telephone
+          this.temp.email = v.email
+          this.temp.createdBy = v.createBy
+        }
+        return false
+      })
     },
     sortByID(order) {
       if (order === 'ascending') {
@@ -316,7 +311,7 @@ export default {
     createData() {
       var groupId = this.groupId
       var answererId = this.temp.id
-      addToGroupAnswererRelation(groupId,answererId).then(
+      addToGroupAnswererRelation(groupId, answererId).then(
         (res) => {
           Message({
             message: res.msg,
@@ -324,7 +319,7 @@ export default {
             duration: 1000
           })
           this.getList(groupId)
-          this.dialogFormVisible=false
+          this.dialogFormVisible = false
         }
       )
     },
@@ -344,13 +339,13 @@ export default {
           })
           this.list[this.index] = { ...this.temp }
           this.resetTemp()
-          this.dialogFormVisible=false
+          this.dialogFormVisible = false
         }
       )
     },
-    handleDelete(answererId,index) {
-      var groupId =this.groupId
-      deleteFromGroupAnswererRelation(groupId,answererId).then(
+    handleDelete(answererId, index) {
+      var groupId = this.groupId
+      deleteFromGroupAnswererRelation(groupId, answererId).then(
         (res) => {
           Message({
             message: res.msg,

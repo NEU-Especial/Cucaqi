@@ -10,7 +10,7 @@
           @keyup.enter.native="handleFilter"
         />
         <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-          <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+          <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
         </el-select>
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
           搜索
@@ -54,7 +54,7 @@
 
         <el-table-column label="创建时间" width="200px" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.createdTime}}</span>
+            <span>{{ row.createdTime }}</span>
           </template>
         </el-table-column>
 
@@ -83,7 +83,6 @@
         @pagination="pagination"
       />
 
-
       <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
         <el-form
           ref="dataForm"
@@ -94,16 +93,16 @@
           style="width: 400px; margin-left:50px;"
         >
           <el-form-item label="组名" prop="type">
-            <el-input v-model="temp.groupName" />
+            <el-input v-model="temp.groupName"/>
           </el-form-item>
           <el-form-item label="描述" prop="type">
-            <el-input v-model="temp.description" />
+            <el-input v-model="temp.description"/>
           </el-form-item>
           <el-form-item label="创建时间" prop="timestamp">
-            <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date" />
+            <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date"/>
           </el-form-item>
           <el-form-item label="创建人" prop="title">
-            <el-input v-model="temp.createdBy" />
+            <el-input v-model="temp.createdBy"/>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -123,16 +122,8 @@
 
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import {
-  addGroup,
-  deleteFromGroupAnswererRelation,
-  deleteGroup,
-  getAllGroupByAnswererId,
-  getGroupPage,
-  updateGroup
-} from "@/api/group";
-import {Message} from "element-ui";
-import {getLesseeList} from "@/api/lessee"; // secondary package based on el-pagination
+import { addGroup, deleteFromGroupAnswererRelation, getAllGroupByAnswererId, updateGroup } from '@/api/group'
+import { Message } from 'element-ui'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -166,19 +157,19 @@ export default {
   },
   data() {
     return {
-      openBelongs:false,
-      answererId:1,
+      openBelongs: false,
+      answererId: 1,
       tableKey: 0,
       list:
-       [
+        [
           {
-          groupName: '秒天',
-          description: '',
-          createdTime:new Date(),
-          createdBy: '太阳',
-          id: 10
+            groupName: '秒天',
+            description: '',
+            createdTime: new Date(),
+            createdBy: '太阳',
+            id: 10
           }
-      ],
+        ],
       total: 1,
       listLoading: true,
       listQuery: {
@@ -192,10 +183,10 @@ export default {
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       showReviewer: false,
       temp: {
-        groupName:'',
-        description:'',
+        groupName: '',
+        description: '',
         createdBy: '',
-        createdTime: new Date(),
+        createdTime: new Date()
         // deleted:'',
       },
       dialogFormVisible: false,
@@ -217,14 +208,11 @@ export default {
       totalList: []
     }
   },
-  created() {
-    this.getList()
-  },
   methods: {
     getList(answererId) {
       this.answererId = answererId
       this.listLoading = true
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         getAllGroupByAnswererId(answererId).then(
           res => {
             this.list = res.data
@@ -233,7 +221,7 @@ export default {
             this.total = res.data.length
           }
         )
-        this.openBelongs=true
+        this.openBelongs = true
       })
     },
     handleFilter() {
@@ -295,7 +283,6 @@ export default {
       this.dialogFormVisible = true
     },
     createData() {
-
       addGroup(this.temp).then(
         (res) => {
           Message({
@@ -326,9 +313,9 @@ export default {
         }
       )
     },
-    handleDelete(groupId,index) {
-      var answererId =this.answererId
-      deleteFromGroupAnswererRelation(groupId,answererId).then(
+    handleDelete(groupId, index) {
+      var answererId = this.answererId
+      deleteFromGroupAnswererRelation(groupId, answererId).then(
         (res) => {
           Message({
             message: res.msg,
