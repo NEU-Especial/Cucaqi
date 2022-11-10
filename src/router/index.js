@@ -119,6 +119,13 @@ export const asyncRoutes = [
         component: () => import('@/views/questionnaire/editor'),
         hidden: true,
         meta: { title: '编辑问卷', icon: 'tree' }
+      },
+      {
+        path:'jump',
+        name:'Jump',
+        component:() =>import('@/views/questionnaire/jump'),
+        hidden:true,
+        meta:{ title:'统计整体答题情况', icon: 'tree'}
       }
     ]
   },
