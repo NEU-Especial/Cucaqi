@@ -201,6 +201,19 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/answerer',
+    component: Layout,
+    children: [
+      {
+        path: 'list',
+        name: 'Answer',
+        component: () => import('@/views/answerer/list'),
+        meta: { title: '答题', icon: 'form', roles: [1001] }
+      }
+    ]
+
+  },
 
   {
     path: 'external-link',

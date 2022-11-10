@@ -14,14 +14,11 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加用户
+      </el-button>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-edit" @click="handleRecover">
+        恢复历史记录
       </el-button>
     </div>
     <br>
@@ -125,6 +122,8 @@
       </el-table-column>
     </el-table>
 
+    <recover ref="recover" v-if="openRecoverDialog" />
+
     <pagination
       v-show="total>0"
       :limit.sync="listQuery.limit"
@@ -200,11 +199,12 @@
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { Message } from 'element-ui'
-import { addUser, deleteUser, listUser, updateUser } from '@/api/user' // secondary package based on el-pagination
+import {addUser, deleteUser, listDeletedUser, listUser, updateUser} from '@/api/user' // secondary package based on el-pagination
+import recover from "@/views/user/recover";
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: { Pagination, recover },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -224,7 +224,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         lessee_name: '', // 过滤名称
         sort: '+id'
       },
@@ -268,7 +268,8 @@ export default {
       },
       downloadLoading: false,
       idx: -1,
-      totalList: []
+      totalList: [],
+      openRecoverDialog:false
     }
   },
   created() {
@@ -390,6 +391,12 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    handleRecover(){
+      this.openRecoverDialog = true;
+      this.$nextTick(() => {
+        this.$refs.recover.getList();
+      });
     }
   }
 }

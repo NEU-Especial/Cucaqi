@@ -1,4 +1,5 @@
 <template>
+  <el-dialog :title="title" :visible.sync="openRecover" width="1200px" :close-on-click-modal="false" append-to-body>
   <div class="app-container">
     <div class="filter-container">
       <el-input
@@ -13,12 +14,6 @@
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加答者
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleRecover">
-        恢复历史记录
       </el-button>
     </div>
     <br>
@@ -67,42 +62,24 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="创建人ID" min-width="120px" width="120px">
+      <el-table-column label="创建人ID" min-width="150px" width="120px">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.createdBy }}</span>
         </template>
       </el-table-column>
 
 
-      <el-table-column label="操作" align="center" width="400" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button
-            class="filter-item"
-            size="mini"
-            type="primary"
-            @click="handleUpdate(row,$index)"
-          >
-            编辑答者信息
-          </el-button>
-          <el-button
-            class="filter-item"
-            size="mini"
-            type="primary"
-            @click="handleBelongGroup(row)"
-          >
-            答者所属群组
-          </el-button>
-          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除答者
-          </el-button>
 
+          <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handleRecover(row,$index)">
+            恢复记录
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
     <!--使用所属群组组件-->
     <belongGroup title="所属群组" v-if="openBelongDialog" ref="belongGroup" />
-
-    <recover ref="recover" v-if="openRecoverDialog" @refresh="getList"/>
 
     <pagination
       v-show="total>0"
@@ -111,40 +88,8 @@
       :total="total"
       @pagination="pagination"
     />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-
-      <el-form
-        ref="dataForm"
-        :model="temp"
-        :rules="rules"
-        label-position="left"
-        label-width="120px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item label="答者姓名" prop="username">
-          <el-input v-model="temp.username"/>
-        </el-form-item>
-        <el-form-item label="答者密码" prop="password">
-          <el-input v-model="temp.password"/>
-        </el-form-item>
-        <el-form-item label="答者电话号码" prop="title">
-          <el-input v-model="temp.telephone"/>
-        </el-form-item>
-        <el-form-item label="答者邮箱号码" prop="title">
-          <el-input v-model="temp.email"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ dialogStatus === 'create' ? '确认创建' : '确认修改' }}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -152,13 +97,19 @@
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { Message } from 'element-ui'
-import { Delete, getAllAnswererByUserId, save, update } from '@/api/answerer' // secondary package based on el-pagination
+import {
+  Delete,
+  getAllAnswererByUserId,
+  getAllDeletedAnswererByUserId,
+  save,
+  update, updateAnswererDeletedStatus,
+  updateDeletedStatus
+} from '@/api/answerer' // secondary package based on el-pagination
 import belongGroup from "@/views/answerer/belongs/belongGroup";
-import recover from "@/views/answerer/recover";
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,belongGroup,recover },
+  components: { Pagination,belongGroup },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -197,20 +148,12 @@ export default {
       openBelongDialog:false,
       dialogFormVisible: false,
       dialogStatus: '',
-      textMap: {
-        update: '编辑',
-        create: '创建'
-      },
       dialogPvVisible: false,
       pvData: [],
-      rules: {
-        username: [{ required: true, message: '答者名必填', trigger: 'blur' }],
-        password: [{ required: true, message: '密码必填', trigger: 'blur' }]
-      },
       downloadLoading: false,
       idx: -1,
       totalList: [],
-      openRecoverDialog:false
+      openRecover:false
     }
   },
   created() {
@@ -219,14 +162,17 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getAllAnswererByUserId(this.$store.getters.user.id).then(
-        res => {
-          this.list = res.data
-          this.totalList = res.data
-          this.listLoading = false
-          this.total = res.data.length
-        }
-      )
+      this.$nextTick(()=>{
+        getAllDeletedAnswererByUserId(this.$store.getters.user.id).then(
+          res => {
+            this.list = res.data
+            this.totalList = res.data
+            this.listLoading = false
+            this.total = res.data.length
+          }
+        )
+        this.openRecover = true
+      })
     },
     handleFilter() {
       // 执行过滤，需要查询分页条件等信息
@@ -289,43 +235,6 @@ export default {
         createdBy: this.$store.getters.user.id
       }
     },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-    },
-    createData() {
-      save(this.temp).then(
-        (res) => {
-          Message({
-            message: res.msg,
-            type: 'success',
-            duration: 1000
-          })
-          this.getList()
-          this.dialogFormVisible = false
-        }
-      )
-    },
-    handleUpdate(row, index) {
-      this.temp = row
-      this.idx = index
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-    },
-    updateData() {
-      update(this.temp).then(
-        (res) => {
-          Message({
-            message: res.msg,
-            type: 'success',
-            duration: 1000
-          })
-          this.list[this.index] = { ...this.temp }
-          this.dialogFormVisible = false
-        }
-      )
-    },
     handleDelete(row, index) {
       Delete(row.id).then(
         (res) => {
@@ -342,12 +251,18 @@ export default {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
-    handleRecover(){
-      this.openRecoverDialog = true;
-      this.$nextTick(() => {
-        this.$refs.recover.getList();
-      });
-      this.getList()
+    handleRecover(row,index){
+      updateAnswererDeletedStatus(row.id).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
+          })
+          this.list.splice(index, 1)
+          this.$emit("refresh")
+        }
+      )
     }
   }
 }

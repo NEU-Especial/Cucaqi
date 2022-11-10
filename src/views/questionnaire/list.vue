@@ -99,6 +99,11 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="是否公开" width="100px" align="center">
+        <template slot-scope="{row}">
+          {{ row.isPublic }}
+        </template>
+      </el-table-column>
       <el-table-column label="是否推荐" width="100px" align="center">
         <template slot-scope="{row}">
           {{ row.isRecommend }}
@@ -219,7 +224,76 @@
         </el-button>
       </div>
     </el-dialog>
-    <!--答卷整体情况弹出框-->
+<!--    公开问卷发布时的弹窗-->
+    <el-dialog :visible.sync="postPublicDialog" title="发布问卷">
+      <el-table :data="postData" border fit highlight-current-row style="width: 100%">
+        <el-table-column prop="postAddress" label="问卷地址" />
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="postPublicDialog = false">确认</el-button>
+      </span>
+    </el-dialog>
+<!--    私有问卷发布时的弹窗-->
+    <el-dialog :visible.sync="postPrivateDialog" title="发布问卷" width="1000px">
+      <el-table :key="tableKey" v-loading="postListLoading" :data="postGroupData"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;"
+        @sort-change="sortChange"
+      >
+        <el-table-column
+          label="ID"
+          prop="id"
+          sortable="custom"
+          align="center"
+          width="80"
+          :class-name="getSortClass('id')"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.id }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="组名" min-width="50px" width="80px">
+          <template slot-scope="{row}">
+            <span class="link-type" @click="handleUpdate(row)">{{ row.groupName }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="描述" min-width="50px" width="80px">
+          <template slot-scope="{row}">
+            <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="创建时间" width="200px" align="center">
+          <template slot-scope="{row}">
+            <span>{{row.createdTime}}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="创建人" class-name="status-col" width="100" align="center">
+          <template slot-scope="{row}">
+            <el-tag :type="row.createdBy | statusFilter">
+              {{ row.createdBy }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
+          <template slot-scope="{row,$index}">
+            <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handlePost(row,$index)">
+              发布
+            </el-button>
+          </template>
+        </el-table-column>
+
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="postPublicDialog = false">确认</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -230,6 +304,8 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { StylesManager, Model } from "survey-vue";
 import "survey-vue/defaultV2.css";
+import Pagination from '@/components/Pagination'
+import {getGroupPage} from "@/api/group"; // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -342,18 +418,34 @@ export default {
 
     return {
       tableKey: 0,
-      list: [{
-        title: 'hello world',
-        createdTime: Date.parse(new Date()),
-        startedTime: Date.parse(new Date()),
-        endTime: Date.parse(new Date()),
-        status: 'info',
-        type: '优质问卷',
-        limit: 43,
-        curCount: 3,
-        isRecommend: '是',
-        id: 10
-      }],
+      list: [
+        {
+          title: 'hello world',
+          createdTime: Date.parse(new Date()),
+          startedTime: Date.parse(new Date()),
+          endTime: Date.parse(new Date()),
+          status: 'info',
+          type: '优质问卷',
+          limit: 43,
+          curCount: 3,
+          isPublic:'是',
+          isRecommend: '是',
+          id: 10
+        },
+        {
+          title: 'hello vue',
+          createdTime: Date.parse(new Date()),
+          startedTime: Date.parse(new Date()),
+          endTime: Date.parse(new Date()),
+          status: 'info',
+          type: '优质问卷',
+          limit: 30,
+          curCount: 6,
+          isPublic:'否',
+          isRecommend: '是',
+          id: 11
+        }
+      ],
       total: 1,
       listLoading: true,
       listQuery: {
@@ -388,7 +480,6 @@ export default {
         create: 'Create'
       },
       dialogPvVisible: false,
-      pvData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
@@ -399,6 +490,18 @@ export default {
       surveyJson: surveyJson,
       answerJson: answerJson,
       survey: survey,
+      downloadLoading: false,
+      postPublicDialog: false,
+      postPrivateDialog:false,
+      postData:[
+        {
+          postAddress:'http://localhost:9528/survey?surver='
+        }
+      ],
+      postListLoading:false,
+      postGroupData:[]
+
+
     }
   },
   created() {
@@ -417,11 +520,31 @@ export default {
       this.getList()
     },
     handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
-      })
-      row.status = status
+      // postQuestionaire(row).then(()=>{
+      //
+      // })
+      if(row.isPublic === '是'){
+        this.$message({
+          message: '操作Success',
+          type: 'success'
+        })
+        row.status = status
+        this.postPublicDialog = true;
+      }else {
+        this.postListLoading = true
+        getGroupPage(this.$store.getters.user.id).then(
+          res => {
+            this.postGroupData = res.data
+            this.postListLoading = false
+            this.total = res.data.length
+          }
+        )
+        row.status = status
+        this.postPrivateDialog = true;
+
+      }
+
+
     },
     sortChange(data) {
       const { prop, order } = data
@@ -471,14 +594,13 @@ export default {
     updateData() {
       return
     },
-    handleDelete(row, index) {
+    handlePost(row, index) {
       this.$notify({
         title: 'Success',
-        message: 'Delete Successfully',
+        message: 'Post Successfully',
         type: 'success',
         duration: 2000
       })
-      this.list.splice(index, 1)
     },
     handleAnswerList(row) {
       this.answerListTableVisible = true

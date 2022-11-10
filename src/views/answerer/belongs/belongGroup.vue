@@ -1,120 +1,122 @@
 <template>
-  <div class="app-container">
-    <div class="filter-container">
-      <el-input
-        v-model="listQuery.group_name"
-        placeholder="组名"
-        style="width: 200px;"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        搜索
-      </el-button>
-    </div>
-    <br>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 80%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column
-        label="ID"
-        prop="id"
-        sortable="custom"
-        align="center"
-        width="80"
-        :class-name="getSortClass('id')"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="所属群组" min-width="50px" width="80px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.groupName }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="描述" min-width="50px" width="80px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="创建时间" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="群组创建人" class-name="status-col" width="100" align="center">
-        <template slot-scope="{row}">
-          <el-tag :type="row.createdBy | statusFilter">
-            {{ row.createdBy }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row.id,$index)">
-            移出群组
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-show="total>0"
-      :limit.sync="listQuery.limit"
-      :page.sync="listQuery.page"
-      :total="total"
-      @pagination="pagination"
-    />
-
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="90px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item label="组名" prop="type">
-          <el-input v-model="temp.groupName" />
-        </el-form-item>
-        <el-form-item label="描述" prop="type">
-          <el-input v-model="temp.description" />
-        </el-form-item>
-        <el-form-item label="创建时间" prop="timestamp">
-          <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item label="创建人" prop="title">
-          <el-input v-model="temp.createdBy" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ dialogStatus === 'create' ? '确认创建' : '确认修改' }}
+  <el-dialog :title="title" :visible.sync="openBelongs" width="1000px" :close-on-click-modal="false" append-to-body>
+    <div class="app-container">
+      <div class="filter-container">
+        <el-input
+          v-model="listQuery.group_name"
+          placeholder="组名"
+          style="width: 200px;"
+          class="filter-item"
+          @keyup.enter.native="handleFilter"
+        />
+        <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+          <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+        </el-select>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+          搜索
         </el-button>
       </div>
-    </el-dialog>
-  </div>
+      <br>
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;"
+        @sort-change="sortChange"
+      >
+        <el-table-column
+          label="ID"
+          prop="id"
+          sortable="custom"
+          align="center"
+          width="80"
+          :class-name="getSortClass('id')"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.id }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="所属群组" min-width="50px" width="80px">
+          <template slot-scope="{row}">
+            <span class="link-type" @click="handleUpdate(row)">{{ row.groupName }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="描述" min-width="50px" width="80px">
+          <template slot-scope="{row}">
+            <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="创建时间" width="200px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.createdTime}}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="群组创建人" class-name="status-col" width="100" align="center">
+          <template slot-scope="{row}">
+            <el-tag :type="row.createdBy | statusFilter">
+              {{ row.createdBy }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
+          <template slot-scope="{row,$index}">
+            <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row.id,$index)">
+              移出群组
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination
+        v-show="total>0"
+        :limit.sync="listQuery.limit"
+        :page.sync="listQuery.page"
+        :total="total"
+        @pagination="pagination"
+      />
+
+
+      <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+        <el-form
+          ref="dataForm"
+          :rules="rules"
+          :model="temp"
+          label-position="left"
+          label-width="90px"
+          style="width: 400px; margin-left:50px;"
+        >
+          <el-form-item label="组名" prop="type">
+            <el-input v-model="temp.groupName" />
+          </el-form-item>
+          <el-form-item label="描述" prop="type">
+            <el-input v-model="temp.description" />
+          </el-form-item>
+          <el-form-item label="创建时间" prop="timestamp">
+            <el-date-picker v-model="temp.createdTime" type="datetime" placeholder="Please pick a date" />
+          </el-form-item>
+          <el-form-item label="创建人" prop="title">
+            <el-input v-model="temp.createdBy" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">
+            取消
+          </el-button>
+          <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+            {{ dialogStatus === 'create' ? '确认创建' : '确认修改' }}
+          </el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -164,6 +166,7 @@ export default {
   },
   data() {
     return {
+      openBelongs:false,
       answererId:1,
       tableKey: 0,
       list:
@@ -218,20 +221,20 @@ export default {
     this.getList()
   },
   methods: {
-    getList() {
-      this.answererId = this.$route.query.id
+    getList(answererId) {
+      this.answererId = answererId
       this.listLoading = true
-      getAllGroupByAnswererId(this.$route.query.id).then(
-        res => {
-          this.list = res.data
-          this.totalList = res.data
-          this.listLoading = false
-          this.total = res.data.length
-        }
-      )
-    },
-    handleGroupDetails(row) {
-      this.$router.replace({ path: '/group/details', query:{id:row.id}})
+      this.$nextTick(()=>{
+        getAllGroupByAnswererId(answererId).then(
+          res => {
+            this.list = res.data
+            this.totalList = res.data
+            this.listLoading = false
+            this.total = res.data.length
+          }
+        )
+        this.openBelongs=true
+      })
     },
     handleFilter() {
       // 执行过滤，需要查询分页条件等信息
