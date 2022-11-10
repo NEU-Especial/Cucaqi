@@ -6,30 +6,30 @@
         <el-aside width="40%" style="height:800px;margin: 30px">
           <el-form ref="form" :model="form" label-width="80px">
             <el-form-item label="问卷标题" label-width="120px">
-              <el-input v-model="form.name"/>
+              <el-input v-model="form.name" />
             </el-form-item>
             <el-form-item label="开始时间" label-width="120px">
               <el-col :span="11">
-                <el-date-picker v-model="form.date1" type="date" placeholder="选择日期" style="width: 100%;"/>
+                <el-date-picker v-model="form.dateStart" type="date" placeholder="选择日期" style="width: 100%;" />
               </el-col>
               <el-col class="line" :span="2">-</el-col>
               <el-col :span="11">
-                <el-time-picker v-model="form.date2" placeholder="选择时间" style="width: 100%;"/>
+                <el-time-picker v-model="form.timeStart" placeholder="选择时间" style="width: 100%;" />
               </el-col>
             </el-form-item>
 
             <el-form-item label="结束时间(可选)" label-width="120px">
               <el-col :span="11">
-                <el-date-picker v-model="form.date1" type="date" placeholder="选择日期" style="width: 100%;"/>
+                <el-date-picker v-model="form.dateEnd" type="date" placeholder="选择日期" style="width: 100%;" />
               </el-col>
               <el-col class="line" :span="2">-</el-col>
               <el-col :span="11">
-                <el-time-picker v-model="form.date2" placeholder="选择时间" style="width: 100%;"/>
+                <el-time-picker v-model="form.timeEnd" placeholder="选择时间" style="width: 100%;" />
               </el-col>
             </el-form-item>
 
             <el-form-item label="公开问卷" label-width="120px">
-              <el-switch v-model="form.open"/>
+              <el-switch v-model="form.open" />
             </el-form-item>
 
             <el-form-item label="选择群组" label-width="120px" :disabled="form.open">
@@ -43,15 +43,18 @@
                   :autosize="{ minRows: 2, maxRows: 4}"
                   size="medium"
                 >
-                  <el-option label="群组一" value="shanghai"/>
-                  <el-option label="群组二" value="beijing"/>
+                  <el-option label="群组一" value="群组一" />
+                  <el-option label="群组二" value="群组二" />
+                  <el-option label="群组三" value="群组三" />
+                  <el-option label="group4" value="group4" />
+                  <el-option label="群4" value="群4" />
                 </el-select>
               </el-col>
             </el-form-item>
 
             <el-form-item label="限制回答人数" label-width="120px">
               <el-col :span="4">
-                <el-switch v-model="form.limited" style="right: 0px"/>
+                <el-switch v-model="form.limited" style="right: 0px" />
               </el-col>
 
               <el-col :span="20">
@@ -67,8 +70,8 @@
 
             <el-form-item label="问卷类型" label-width="120px">
               <el-radio-group v-model="form.resource">
-                <el-radio label="普通问卷"/>
-                <el-radio label="优质问卷"/>
+                <el-radio label="普通问卷" value="hello"  />
+                <el-radio label="优质问卷"  value="hi"/>
               </el-radio-group>
             </el-form-item>
 
@@ -91,7 +94,7 @@
             </el-empty>
           </div>
           <div v-else>
-            <Survey :survey="surveyForm"/>
+            <Survey :survey="surveyForm" />
           </div>
         </el-main>
       </el-container>
@@ -102,7 +105,7 @@
         <el-button type="primary" style="margin: 5px" icon="el-icon-arrow-left" @click="isEditing=false">返回创建
         </el-button>
         <br>
-        <div id="surveyCreator"/>
+        <div id="surveyCreator" />
       </div>
     </transition>
   </div>
@@ -114,6 +117,7 @@ import 'survey-creator-core/survey-creator-core.min.css'
 import { localization } from 'survey-creator-core'
 import { SurveyCreator } from 'survey-creator-knockout'
 import { Model, StylesManager, Survey } from 'survey-vue'
+import { Message } from 'element-ui'
 
 StylesManager.applyTheme('defaultV2')
 const creatorOptions = {
@@ -140,7 +144,7 @@ export default {
         limited: true,
         open: true,
         maxCount: 0,
-        resource: '',
+        resource: 'hello',
         desc: ''
       }
     }
@@ -164,12 +168,20 @@ export default {
   methods: {
     preview() {
       // 模拟答题
-      const next = this.$router.resolve({ path: '/questionnaire/preview', query: { survey: JSON.stringify(this.survey) }})
+      const next = this.$router.resolve({
+        path: '/questionnaire/preview',
+        query: { survey: JSON.stringify(this.survey) }
+      })
       window.open(next.href, '_blank')
     },
     onSubmit() {
       this.isEditing = false
       // 提交问卷给后台
+      Message({
+        message: '创建成功',
+        type: 'success',
+        duration: 1000
+      })
     },
     startEdit() {
       // 开始编辑问卷

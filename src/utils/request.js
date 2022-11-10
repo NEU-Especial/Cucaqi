@@ -34,7 +34,7 @@ service.interceptors.response.use(
       Message({
         message: res.msg || 'Error',
         type: 'error',
-        duration: 5 * 1000
+        duration: 2 * 1000
       })
       // 过期信息，对于非法jwt或者多用户登陆
       // 50008: 权限异常需要登出
