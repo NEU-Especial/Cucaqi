@@ -25,12 +25,6 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加问卷
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleRecover">
-        恢复历史记录
-      </el-button>
 
     </div>
 
@@ -56,26 +50,26 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="问卷标题" min-width="150px" width="300px">
+      <el-table-column label="问卷标题" min-width="150px" width="150px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="130px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.createdTime }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="开始时间" width="130px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.startedTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.startedTime }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="结束时间" width="130px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.endTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.endTime }}</span>
         </template>
       </el-table-column>
 
@@ -107,30 +101,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑问卷
+          <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handleRecover(row,$index)">
+            恢复
           </el-button>
-          <el-button
-            size="mini"
-            type="success"
-            @click="handleModifyStatus(row,'已发布')"
-          >
-            发布问卷
-          </el-button>
-          <!--          <el-button v-if="row.status!=='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            恢复问卷
-          </el-button>-->
-          <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            删除问卷
-          </el-button>
-
-          <!--          答卷列表-->
-          <el-button type="primary" size="mini" @click="handleAnswerList(row)">
-            答卷列表
-          </el-button>
-
         </template>
       </el-table-column>
     </el-table>
@@ -142,175 +117,6 @@
       :limit.sync="listQuery.limit"
       @pagination="getList"
     />
-
-    <!--答卷列表弹出框-->
-    <el-dialog
-      title="答卷列表"
-      :visible.sync="answerListTableVisible"
-      style="background:linear-gradient(#2196f3,rgba(19,242,7,0.83));"
-    >
-      <el-row>
-        <el-button type="primary" round @click="jump">查看整体情况</el-button>
-      </el-row>
-      <el-table :data="answerListData">
-        <el-table-column property="answererName" label="答卷人姓名"/>
-        <el-table-column property="answerTime" label="交卷时间"/>
-        <el-table-column property="operation" label="操作">
-          <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleAnswerDetail(scope.row)">查看</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-dialog>
-
-    <!--答卷细节弹出框-->
-    <el-dialog title="答卷详情" :visible.sync="answerDetailTableVisible">
-      <survey :survey="survey"/>
-    </el-dialog>
-
-    <!--恢复历史记录弹出框-->
-    <el-dialog title="历史记录" :visible.sync="openRecoverDialog" width="1000px">
-      <recover ref="recover" @refresh="getList"/>
-    </el-dialog>
-
-    <!--编辑问卷弹出框-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" aria-readonly="true">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="90px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item label="类型" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option
-              v-for="item in calendarTypeOptions"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="temp.title"/>
-        </el-form-item>
-        <el-form-item label="开始时间" prop="startedTime">
-          <el-input v-model="temp.startedTime"/>
-<!--          <el-date-picker v-model="temp.startedTime" type="datetime" placeholder="Please pick a date"/>-->
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endTime">
-          <el-input v-model="temp.endTime"/>
-<!--          <el-date-picker v-model="temp.endTime" type="datetime" placeholder="Please pick a date"/>-->
-        </el-form-item>
-
-        <el-form-item label="问卷状态">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="推荐指数">
-          <el-rate
-            v-model="temp.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top:8px;"
-          />
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input
-            readonly
-            v-model="temp.remark"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="此问卷处于发布状态不允许修改！"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <!--    公开问卷发布时的弹窗-->
-    <el-dialog :visible.sync="postPublicDialog" title="发布问卷">
-      <el-table :data="postData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="postAddress" label="问卷地址"/>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="postPublicDialog = false">确认</el-button>
-      </span>
-    </el-dialog>
-    <!--    私有问卷发布时的弹窗-->
-    <el-dialog :visible.sync="postPrivateDialog" title="发布问卷" width="1000px">
-      <el-table
-        :key="tableKey"
-        v-loading="postListLoading"
-        :data="postGroupData"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%;"
-        @sort-change="sortChange"
-      >
-        <el-table-column
-          label="ID"
-          prop="id"
-          sortable="custom"
-          align="center"
-          width="80"
-          :class-name="getSortClass('id')"
-        >
-          <template slot-scope="{row}">
-            <span>{{ row.id }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="组名" min-width="50px" width="80px">
-          <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.groupName }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="描述" min-width="50px" width="80px">
-          <template slot-scope="{row}">
-            <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="创建时间" width="200px" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.createdTime }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="创建人" class-name="status-col" width="100" align="center">
-          <template slot-scope="{row}">
-            <el-tag :type="row.createdBy | statusFilter">
-              {{ row.createdBy }}
-            </el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
-          <template slot-scope="{row,$index}">
-            <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handlePost(row,$index)">
-              发布
-            </el-button>
-          </template>
-        </el-table-column>
-
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="postPublicDialog = false">确认</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -322,7 +128,7 @@ import { Model, StylesManager } from 'survey-vue'
 import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
 import { getGroupPage } from '@/api/group'
-import recover from "@/views/questionnaire/recover";
+import {Message} from "element-ui";
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -340,7 +146,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,recover },
+  components: { Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -434,20 +240,20 @@ export default {
       tableKey: 0,
       list: [
         {
-          title: 'hello world',
+          title: 'hello java',
           createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
           startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
           endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
           status: '未发布',
           type: '优质问卷',
-          limit: 43,
-          curCount: 3,
+          limit: 20,
+          curCount: 6,
           isPublic: '是',
           isRecommend: '是',
-          id: 10
+          id: 8
         },
         {
-          title: 'hello vue',
+          title: 'hello spring',
           createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
           startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
           endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
@@ -457,14 +263,14 @@ export default {
           curCount: 6,
           isPublic: '否',
           isRecommend: '是',
-          id: 11
+          id: 9
         }
       ],
       total: 1,
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         importance: undefined,
         title: undefined,
         type: undefined,
@@ -473,14 +279,12 @@ export default {
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
-      statusOptions: ['已发布', 'draft', '未发布'],
+      statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
         id: undefined,
         importance: 1,
         remark: '',
-        startedTime:Random.date('yyyy-MM-dd-hh:mm:ss'),
-        endTime:Random.date('yyyy-MM-dd-hh:mm:ss'),
         timestamp: new Date(),
         title: '',
         type: '',
@@ -613,12 +417,6 @@ export default {
       })
     },
     updateData() {
-      this.$notify({
-        title: '失败',
-        message: '此问卷暂不允许修改',
-        type: 'error',
-        duration: 2000
-      })
       return
     },
     handlePost(row, index) {
@@ -654,11 +452,13 @@ export default {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
-    handleRecover(){
-      this.openRecoverDialog = true;
-      this.$nextTick(() => {
-        this.$refs.recover.getList();
-      });
+    handleRecover(row,index){
+      this.$message({
+        message: '恢复成功',
+        type: 'success'
+      })
+      this.list.splice(index, 1)
+      this.$emit("refresh")
     }
   }
 }
