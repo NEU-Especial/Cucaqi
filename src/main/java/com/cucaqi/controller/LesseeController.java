@@ -5,7 +5,6 @@ import com.cucaqi.entity.Lessee;
 import com.cucaqi.entity.Result;
 import com.cucaqi.entity.User;
 import com.cucaqi.service.ILesseeService;
-import jdk.vm.ci.meta.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +40,7 @@ public class LesseeController {
         }
         catch (Exception e){
             result.setCode(HTTP.NOT_FOUND);
-            result.setMsg("查询租户失败--"+e.getLocalizedMessage());
+            result.setMsg("查询租户失败--");
         }
 
         return result;
@@ -61,13 +60,20 @@ public class LesseeController {
         }
         else {
             try {
-                boolean number= iLesseeService.save(lessee);
-                result.setCode(HTTP.SUCCESS);
-                result.setMsg("添加成功！");
+                if(iLesseeService.searchLessee(lessee.getUsername())) {
+                    result.setCode(HTTP.SERVER_ERR);
+                    result.setMsg("租户添加失败--该用户名已存在");
+                }
+                else {
+                    boolean number= iLesseeService.save(lessee);
+                    result.setCode(HTTP.SUCCESS);
+                    result.setMsg("添加成功！");
+                }
+
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("添加租户失败--"+e.getLocalizedMessage());
+                result.setMsg("添加租户失败--");
             }
         }
 
@@ -102,7 +108,7 @@ public class LesseeController {
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("删除租户失败--"+e.getLocalizedMessage());
+                result.setMsg("删除租户失败--");
 
             }
         }
@@ -119,11 +125,25 @@ public class LesseeController {
         }
         else {
             try {
-                iLesseeService.updateById(lessee);
+                Lessee byId = iLesseeService.getById(id);
+             if(byId.getUsername().equals(lessee.getUsername()))  {
+                 iLesseeService.updateById(lessee);
+                 result.setCode(HTTP.SUCCESS);
+             }
+             else {
+                 if(iLesseeService.searchLessee(lessee.getUsername())) {
+                     result.setCode(HTTP.SERVER_ERR);
+                     result.setMsg("租户修改失败--该用户名已存在");
+                 }
+                 else {
+                     iLesseeService.updateById(lessee);
+                     result.setCode(HTTP.SUCCESS);
+                 }
+             }
             }
             catch (Exception e){
                 result.setCode(HTTP.NOT_FOUND);
-                result.setMsg("租户修改失败--"+e.getLocalizedMessage());
+                result.setMsg("租户修改失败--");
             }
         }
 

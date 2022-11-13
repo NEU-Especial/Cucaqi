@@ -1,5 +1,7 @@
 package com.cucaqi.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
@@ -17,10 +19,14 @@ import java.time.LocalDateTime;
 public class Group implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private String groupName;
+
+    private String description;
+
+
 
     private Integer createdBy;
 
@@ -44,7 +50,13 @@ public class Group implements Serializable {
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
     public Integer getCreatedBy() {
         return createdBy;
     }
@@ -72,11 +84,12 @@ public class Group implements Serializable {
     @Override
     public String toString() {
         return "Group{" +
-        "id=" + id +
-        ", groupName=" + groupName +
-        ", createdBy=" + createdBy +
-        ", createdTime=" + createdTime +
-        ", deleted=" + deleted +
-        "}";
+                "id=" + id +
+                ", groupName='" + groupName + '\'' +
+                ", description='" + description + '\'' +
+                ", createdBy=" + createdBy +
+                ", createdTime=" + createdTime +
+                ", deleted=" + deleted +
+                '}';
     }
 }

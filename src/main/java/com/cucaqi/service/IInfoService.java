@@ -22,6 +22,5 @@ public interface IInfoService {
     int BindEmail(int id, int role, String Email);
 
 
-
-
+    int updateInviteCode(int id, int role);
 }

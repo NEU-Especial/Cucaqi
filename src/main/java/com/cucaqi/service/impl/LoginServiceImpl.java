@@ -158,6 +158,9 @@ public class LoginServiceImpl implements ILoginService {
                 Answerer answerer = answererMapper.selectOne(new QueryWrapper<Answerer>().and(i -> {
                     i.eq("username", userName).eq("securityQuestion", questionId).eq("securityAnswer", answer);
                 }));
+                if (answerer == null) {
+                    return REASON.WRONG_ANSWER;
+                }
                 answerer.setPassword(password);
                 return answererMapper.updateById(answerer);
             default:
@@ -168,14 +171,15 @@ public class LoginServiceImpl implements ILoginService {
     //检查是否有绑定该邮箱号，如果绑定了则发送邮件，方法返回值为验证码
     @Override
     public int askAuthCodeByEmail(String email, int role) {
+        System.out.println(email + " " + role);
         switch (role) {
             case ROLE.ADMIN:
-                Admin admin = adminMapper.selectOne(new QueryWrapper<Admin>().and(i -> {
-                    i.eq("email", email);
-                }));
+                QueryWrapper<Admin> sql = new QueryWrapper<Admin>().eq("email", email);
+                Admin admin = adminMapper.selectOne(sql);
                 if (admin == null) {
                     return REASON.WRONG_EMAIL;
                 }
+                break;
             case ROLE.LESSEE:
                 Lessee lessee = lesseeMapper.selectOne(new QueryWrapper<Lessee>().and(i -> {
                     i.eq("email", email);
@@ -183,6 +187,7 @@ public class LoginServiceImpl implements ILoginService {
                 if (lessee == null) {
                     return REASON.WRONG_EMAIL;
                 }
+                break;
             case ROLE.USER:
                 User user = userMapper.selectOne(new QueryWrapper<User>().and(i -> {
                     i.eq("email", email);
@@ -190,6 +195,7 @@ public class LoginServiceImpl implements ILoginService {
                 if (user == null) {
                     return REASON.WRONG_EMAIL;
                 }
+                break;
             case ROLE.ANSWERER:
                 Answerer answerer = answererMapper.selectOne(new QueryWrapper<Answerer>().and(i -> {
                     i.eq("email", email);
@@ -197,6 +203,7 @@ public class LoginServiceImpl implements ILoginService {
                 if (answerer == null) {
                     return REASON.WRONG_EMAIL;
                 }
+                break;
         }
         int authCode = 100001 + new Random().nextInt(888888);
         //否则就往该邮箱发送邮件验证码
