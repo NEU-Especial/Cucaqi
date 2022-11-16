@@ -1,16 +1,15 @@
 package com.cucaqi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cucaqi.constants.HTTP;
 import com.cucaqi.entity.Answerer;
 import com.cucaqi.entity.Group;
 import com.cucaqi.entity.Result;
 import com.cucaqi.service.IAnswererService;
 import com.cucaqi.service.IGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -28,15 +27,57 @@ public class AnswererController {
     @Autowired
     private IAnswererService answererService;
     @GetMapping()
-    public com.cucaqi.entity.Result getAllGroupById(){
-        com.cucaqi.entity.Result result = new Result();
-//        LambdaQueryWrapper<Group> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.eq(Group::getCreatedBy,id);
-//        queryWrapper.orderByDesc(Group::getCreatedTime);
+    public Result getAllAnswerer(){
         List<Answerer> list = answererService.list();
-        System.out.println(list);
-        result.setCode(200);
-        result.setData("list"+list);
-        return result;
+        return new Result(HTTP.SUCCESS,list);
+    }
+    @GetMapping("/{userId}")
+    public Result getAllAnswererByUserId( @PathVariable Integer userId){
+        LambdaQueryWrapper<Answerer> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Answerer::getCreatedBy,userId);
+        List<Answerer> list = answererService.list(queryWrapper);
+        return new Result(HTTP.SUCCESS,list);
+    }
+    @GetMapping("/deleted/{userId}")
+    public Result getAllDeletedAnswererByUserId( @PathVariable Integer userId){
+        List<Answerer> list = answererService.listDeletedAnswerer(userId);
+        return new Result(HTTP.SUCCESS,list);
+    }
+    @GetMapping("/details/{groupId}")
+    public Result getAllAnswererByGroupId( @PathVariable Integer groupId){
+        List<Answerer> answerers = answererService.listAnswererByGroupId(groupId);
+        return new Result(HTTP.SUCCESS,answerers);
+    }
+    @PostMapping
+    public Result save(@RequestBody Answerer answerer){
+        answererService.save(answerer);
+        return new Result(HTTP.SUCCESS,"保存成功");
+    }
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable Integer id){
+        //判断该id的答者是否存在
+        Answerer answerer = answererService.getById(id);
+        if(answerer!=null) {
+            //存在该id答者才能删除，否则返回错误信息
+            answererService.removeById(id);
+            return new Result(HTTP.SUCCESS,"删除成功");
+        }
+        return new Result(HTTP.NOT_FOUND,"删除出现错误");
+    }
+    @PutMapping
+    public Result update(@RequestBody Answerer answerer){
+        Answerer answerer1 = answererService.getById(answerer.getId());
+        if(answerer1 != null) {
+            answererService.updateById(answerer);
+            return new Result(HTTP.SUCCESS,"修改成功");
+        }
+        return new Result(HTTP.NOT_FOUND,"修改出现未知错误");
+    }
+    @PutMapping("/recover/{answererId}")
+    public Result updateDeletedStatus(@PathVariable Integer answererId){
+        if(answererService.updateDeletedStatus(answererId)) {
+            return new Result(HTTP.SUCCESS, "恢复成功");
+        }
+        return new Result(HTTP.BAD_REQ,"恢复出错");
     }
 }

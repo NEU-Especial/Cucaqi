@@ -18,7 +18,6 @@ mybatis-plus:
       logic-delete-field: deleted #默认deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
- 
 
 server:
   port: 8085
