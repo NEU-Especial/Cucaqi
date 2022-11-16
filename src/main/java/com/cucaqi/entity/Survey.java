@@ -1,13 +1,17 @@
 package com.cucaqi.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import org.springframework.data.annotation.Id;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author GaoSong Xu
@@ -18,6 +22,7 @@ public class Survey implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private String content;
@@ -36,11 +41,48 @@ public class Survey implements Serializable {
 
     private Integer style;
 
-    private Boolean isRecommon;
 
     private Integer state;
 
     private LocalDateTime createdTime;
+    private String title;
+
+
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    @Override
+    public String toString() {
+        return "Survey{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", createdBy=" + createdBy +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", limitCount=" + limitCount +
+                ", curCount=" + curCount +
+                ", isPublic=" + isPublic +
+                ", style=" + style +
+                ", state=" + state +
+                ", createdTime=" + createdTime +
+                ", title='" + title + '\'' +
+                ", deleted=" + deleted +
+                '}';
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     @TableLogic
     private Integer deleted;
 
@@ -117,13 +159,6 @@ public class Survey implements Serializable {
         this.style = style;
     }
 
-    public Boolean getIsRecommon() {
-        return isRecommon;
-    }
-
-    public void setIsRecommon(Boolean isRecommon) {
-        this.isRecommon = isRecommon;
-    }
 
     public Integer getState() {
         return state;
@@ -149,22 +184,4 @@ public class Survey implements Serializable {
         this.deleted = deleted;
     }
 
-    @Override
-    public String toString() {
-        return "Survey{" +
-        "id=" + id +
-        ", content=" + content +
-        ", createdBy=" + createdBy +
-        ", startTime=" + startTime +
-        ", endTime=" + endTime +
-        ", limitCount=" + limitCount +
-        ", curCount=" + curCount +
-        ", isPublic=" + isPublic +
-        ", style=" + style +
-        ", isRecommon=" + isRecommon +
-        ", state=" + state +
-        ", createdTime=" + createdTime +
-        ", deleted=" + deleted +
-        "}";
-    }
 }
