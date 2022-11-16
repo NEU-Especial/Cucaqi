@@ -9,23 +9,15 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
       </el-select>
-      <el-select v-model="listQuery.type" placeholder="问卷类型" clearable class="filter-item" style="width: 130px">
-        <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name+'('+item.key+')'"
-          :value="item.key"
-        />
-      </el-select>
+
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-
     </div>
 
     <el-table
@@ -35,6 +27,7 @@
       border
       fit
       highlight-current-row
+      style="width: 60%;"
       @sort-change="sortChange"
     >
       <el-table-column
@@ -49,38 +42,33 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="问卷标题" min-width="230px" width="230px">
+      <el-table-column label="问卷标题" min-width="150px" width="150px">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.title }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="开始时间" width="330px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.startedTime }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="结束时间" width="330px" align="center">
+      <el-table-column label="开始时间" width="180px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.endTime }}</span>
+          <span>{{ row.startTime| parse }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="问卷状态" class-name="status-col" width="100" align="center">
+      <el-table-column label="结束时间" width="180px" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
+          <span>{{ row.endTime| parse }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="240" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleAnswer(row)">
-            答卷
+          <el-button v-show="row.answer===undefined" type="primary" size="mini" @click="answerSurvey(row)">
+            开始答卷
+          </el-button>
+          <el-button v-show="row.answer!==undefined" type="primary" size="mini" :disabled="true">
+            已作答
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination
       v-show="total>0"
       :total="total"
@@ -95,20 +83,9 @@
 
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
+import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+import { allSurveyToAnswer } from '@/api/survey'
 
 export default {
   name: 'ComplexTable',
@@ -116,115 +93,83 @@ export default {
   directives: { waves },
   filters: {
     statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
+      const statusMap = [
+        'success',
+        'primary',
+        'danger'
+      ]
       return statusMap[status]
     },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
+    parse(date) {
+      var arr = date
+      if (arr == null || arr === '') {
+        return '-'
+      } else {
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i].length === 1) {
+            arr[i] = '0' + arr[i]
+          }
+        }
+        var getFormatTime
+        if (arr.length === 5) {
+          getFormatTime = arr[0] + '-' + arr[1] + '-' + arr[2] + '\t' + arr[3] + ':' + arr[4] + ':' + '00'
+        } else {
+          getFormatTime = arr[0] + '-' + arr[1] + '-' + arr[2] + '\t' + arr[3] + ':' + arr[4] + ':' + arr[5]
+        }
+        return getFormatTime
+      }
     }
   },
   data() {
-    var Random = require('mockjs').Random
     return {
       tableKey: 0,
-      list: [
-        {
-          title: 'hello world',
-          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          status: 'published',
-          type: '优质问卷',
-          limit: 43,
-          curCount: 3,
-          isPublic: '是',
-          isRecommend: '是',
-          id: 10
-        },
-        {
-          title: 'hello vue',
-          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          status: 'published',
-          type: '优质问卷',
-          limit: 30,
-          curCount: 6,
-          isPublic: '否',
-          isRecommend: '是',
-          id: 11
-        }
-      ],
+      list: [],
       total: 1,
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 10,
-        importance: '',
-        title: '',
-        type: '',
+        limit: 20,
+        importance: undefined,
+        title: undefined,
+        type: undefined,
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
+      statusOptions: ['已发布', 'draft', '未发布'],
       showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
-      dialogFormVisible: false,
-      dialogStatus: '',
-      dialogPvVisible: false,
-      downloadLoading: false,
-      postPublicDialog: false,
-      postPrivateDialog: false
+      temp: {}, // 临时问卷数据
+      dialogFormVisible2: false,
+      dialogFormVisible: false
+
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    answerSurvey(row) {
+      const next = this.$router.resolve({
+        path: '/survey',
+        query: { surveyId: row.id, answererId: this.$store.getters.user.id }
+      })
+      window.open(next.href, '_blank')
+    },
     getList() {
+      allSurveyToAnswer({ id: this.$store.getters.user.id }).then(
+        (res) => {
+          this.list = res.data
+          this.total = res.data.length
+        }
+      )
       this.listLoading = false
       return
     },
     handleFilter() {
-      // 执行过滤，需要查询分页条件等信息
-      // 分别有关键字，id升降序，分页
-      // 先找关键字
-      var word = this.listQuery.title
-      var filterList = this.list.filter(function(questionnaire) {
-        return questionnaire.title.includes(word)
-      })
-      // 过滤完成之后需要进行排序
-      filterList.sort((a, b) => {
-        if (this.listQuery.sort === '+id') {
-          return a.id - b.id
-        } else {
-          return b.id - a.id
-        }
-      })
-      var page = this.listQuery.page
-      var limit = this.listQuery.limit
-      // 进行分页处理,找到对应的位置
-      this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
+      this.listQuery.page = 1
+      this.getList()
     },
-    pagination() {
-      this.list = this.totalList
-      var page = this.listQuery.page
-      var limit = this.listQuery.limit
-      this.list = this.list.slice((page - 1) * limit, (page - 1) * limit + limit)
+    handleModifyStatus(row) {
     },
     sortChange(data) {
       const { prop, order } = data
@@ -250,9 +195,6 @@ export default {
         status: 'published',
         type: ''
       }
-    },
-    handleAnswer(row) {
-      this.$router.push('/questionnaire/preview')
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {

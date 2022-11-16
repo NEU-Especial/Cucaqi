@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 根据ID查找问卷
 export function getSurveyById(id) {
   return request({
-    url: `/cucaqi/survey/${id}`,
+    url: `/cucaqi/survey/getSurveyById/${id}`,
     method: 'get'
   })
 }
@@ -49,7 +49,7 @@ export function softDeleteSurvey(data) {
   return request({
     url: `/cucaqi/survey/softDeleteSurvey`,
     method: 'delete',
-    params:data
+    params: data
   })
 }
 
@@ -61,7 +61,6 @@ export function updateSurvey(data) {
     data
   })
 }
-
 
 export function PostToPublic(params) {
   return request({
@@ -80,7 +79,6 @@ export function PostToGroup(params) {
   })
 }
 
-
 // 更新问卷状态
 export function updateSurveyState(params) {
   return request({
@@ -96,5 +94,23 @@ export function RecoverSurvey(params) {
     url: `/cucaqi/survey/recoverSurvey`,
     method: 'put',
     params: params
+  })
+}
+
+// 根据答者ID获取所有需要答得问卷
+export function allSurveyToAnswer(params) {
+  return request({
+    url: `/cucaqi/survey/allSurveyToAnswer`,
+    method: 'get',
+    params: params
+  })
+}
+
+// 保存答卷结果
+export function saveAnswerResult(surveyId, answererId, data) {
+  return request({
+    url: `/cucaqi/survey/saveAnswerResult/${surveyId}/${answererId}`,
+    method: 'post',
+    data
   })
 }

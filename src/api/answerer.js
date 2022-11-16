@@ -58,4 +58,3 @@ export function updateAnswererDeletedStatus(answererId) {
     method: 'put',
   })
 }
-

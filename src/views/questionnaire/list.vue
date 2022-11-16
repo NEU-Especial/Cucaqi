@@ -156,7 +156,7 @@
 
     <!--恢复历史记录弹出框-->
     <el-dialog title="历史记录" :visible.sync="openRecoverDialog" width="1400px">
-      <recover ref="recover" :parent-list="list" @refresh="getNewList"/>
+      <recover ref="recover"  @refresh="getNewList"/>
     </el-dialog>
 
     <!--编辑问卷弹出框-->
@@ -406,7 +406,7 @@ export default {
       postPrivateDialog: false,
       postData: [
         {
-          postAddress: 'http://localhost:9528/survey?surver='
+          postAddress: 'http://localhost:9528/survey?survery='
         }
       ],
       postListLoading: false,
@@ -470,6 +470,7 @@ export default {
       return
     },
     getNewList() {
+      this.getList()
     },
     handleFilter() {
       this.listQuery.page = 1
@@ -490,7 +491,7 @@ export default {
         )
         this.postPrivateDialog = true
       }
-      this.postData[0].postAddress = 'http://localhost:9528/survey?surver=' + row.id
+      this.postData[0].postAddress = 'http://localhost:9528/survey?survey=' + row.id
     },
     sortChange(data) {
       const { prop, order } = data

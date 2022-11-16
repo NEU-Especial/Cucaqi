@@ -281,8 +281,6 @@ export default {
             type: 'success'
           })
           row.state = 0
-          this.parentList.push(row)
-          this.list.splice(index, 1)
         }
       )
     }
