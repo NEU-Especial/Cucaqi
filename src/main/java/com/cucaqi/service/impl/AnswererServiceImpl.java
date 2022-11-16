@@ -25,4 +25,14 @@ public class AnswererServiceImpl extends ServiceImpl<AnswererMapper, Answerer> i
     public List<Answerer> listAnswererByGroupId(Integer groupId) {
         return answererMapper.getByGroupId(groupId);
     }
+
+    @Override
+    public List<Answerer> listDeletedAnswerer(Integer userId) {
+        return answererMapper.getDeleted(userId);
+    }
+
+    @Override
+    public boolean updateDeletedStatus(Integer answererId) {
+        return answererMapper.updateDeletedStatus(answererId) > 0;
+    }
 }

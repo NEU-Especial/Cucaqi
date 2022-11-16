@@ -42,11 +42,26 @@ public class LesseeController {
             result.setCode(HTTP.NOT_FOUND);
             result.setMsg("查询租户失败--");
         }
-
         return result;
 
     }
+    @GetMapping("/deleted")
+    public Result getDeletedLesseeList(){
+        Result result=new Result();
+        try {
+            List<Lessee> lesseeList = iLesseeService.getDeletedLesseeList();
+            //获取数据库中所有租户
+            result.setData(lesseeList);
+            result.setCode(HTTP.SUCCESS);
+            result.setMsg("查询成功！");
+        }
+        catch (Exception e){
+            result.setCode(HTTP.NOT_FOUND);
+            result.setMsg("查询租户失败--");
+        }
+        return result;
 
+    }
     /**
      *添加租户
      * @return

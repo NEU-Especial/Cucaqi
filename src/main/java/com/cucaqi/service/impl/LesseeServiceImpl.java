@@ -71,4 +71,9 @@ public class LesseeServiceImpl extends ServiceImpl<LesseeMapper, Lessee> impleme
 
     }
 
+    @Override
+    public List<Lessee> getDeletedLesseeList() {
+        return lesseeMapper.getDeletedLesseeList();
+    }
+
 }

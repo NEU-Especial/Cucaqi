@@ -15,4 +15,8 @@ import java.util.List;
  */
 public interface IAnswererService extends IService<Answerer> {
     public List<Answerer> listAnswererByGroupId(Integer groupId);
+
+    List<Answerer> listDeletedAnswerer(Integer userId);
+
+    boolean updateDeletedStatus(Integer answererId);
 }

@@ -15,4 +15,8 @@ public interface IGroupService extends IService<Group> {
     boolean addRelation(Integer groupId, Integer answererId);
 
     public boolean hasRelationBetweenGroupAnswerer(Integer groupId, Integer answererId);
+
+    List<Group> listDeleted(Integer userId);
+
+    boolean updateDeletedStatus(Integer groupId);
 }

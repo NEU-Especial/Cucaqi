@@ -38,7 +38,11 @@ public class AnswererController {
         List<Answerer> list = answererService.list(queryWrapper);
         return new Result(HTTP.SUCCESS,list);
     }
-
+    @GetMapping("/deleted/{userId}")
+    public Result getAllDeletedAnswererByUserId( @PathVariable Integer userId){
+        List<Answerer> list = answererService.listDeletedAnswerer(userId);
+        return new Result(HTTP.SUCCESS,list);
+    }
     @GetMapping("/details/{groupId}")
     public Result getAllAnswererByGroupId( @PathVariable Integer groupId){
         List<Answerer> answerers = answererService.listAnswererByGroupId(groupId);
@@ -68,5 +72,12 @@ public class AnswererController {
             return new Result(HTTP.SUCCESS,"修改成功");
         }
         return new Result(HTTP.NOT_FOUND,"修改出现未知错误");
+    }
+    @PutMapping("/recover/{answererId}")
+    public Result updateDeletedStatus(@PathVariable Integer answererId){
+        if(answererService.updateDeletedStatus(answererId)) {
+            return new Result(HTTP.SUCCESS, "恢复成功");
+        }
+        return new Result(HTTP.BAD_REQ,"恢复出错");
     }
 }

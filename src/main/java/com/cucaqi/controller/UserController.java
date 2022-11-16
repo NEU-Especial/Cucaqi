@@ -41,8 +41,6 @@ public class UserController {
             result.setMsg("查询失败--该租户不存在");
             result.setCode(HTTP.SERVER_ERR);
         }
-
-
         else {
             try {
                 List<User> userlist = iUserService.getUserlist(id);
@@ -55,7 +53,27 @@ public class UserController {
                 result.setMsg("查找用户失败--");
             }
         }
-
+        return result;
+    }
+    @GetMapping("/deleted/{id}")
+    public Result listDeletedUser(@PathVariable int id){
+        Result result = new Result();
+        if(iLesseeService.getById(id)==null){
+            result.setMsg("查询失败--该租户不存在");
+            result.setCode(HTTP.SERVER_ERR);
+        }
+        else {
+            try {
+                List<User> userlist = iUserService.getDeletedUserlist(id);
+                result.setData(userlist);
+                result.setCode(HTTP.SUCCESS);
+                result.setMsg("查询成功");
+            }
+            catch (Exception e){
+                result.setCode(HTTP.NOT_FOUND);
+                result.setMsg("查找用户失败--");
+            }
+        }
         return result;
     }
 

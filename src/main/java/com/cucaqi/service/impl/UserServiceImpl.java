@@ -59,4 +59,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
             return true;
     }
+
+    @Override
+    public List<User> getDeletedUserlist(int id) {
+        return userMapper.getDeletedUserlist(id);
+    }
 }

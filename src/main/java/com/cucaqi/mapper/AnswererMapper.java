@@ -3,6 +3,10 @@ package com.cucaqi.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.Answerer;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
@@ -38,4 +42,8 @@ public interface AnswererMapper extends BaseMapper<Answerer> {
     @Select("select count(*) from t_answerer_survey where surveyId=#{surveyId} " +
             "and surveyId=#{surveyId} and answererId=#{answerId}")
     int getCountByGroupIDAndAnswerId(Integer answerId, int surveyId);
+    @Select("select * from t_answerer where createdBy =#{userId} and deleted = 1 ")
+    List<Answerer> getDeleted(Integer userId);
+    @Update("update t_answerer set deleted = 0 where id = #{answererId}")
+    Integer updateDeletedStatus(Integer answererId);
 }
