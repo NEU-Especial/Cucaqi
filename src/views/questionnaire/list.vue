@@ -100,6 +100,9 @@
 
       <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
+          <el-button type="info" v-show="row.state===1" size="mini" @click="handleGetLink(row)">
+            获取链接
+          </el-button>
           <el-button type="warning" v-show="row.state===1" size="mini" @click="handleUpdate(row)">
             提前结束
           </el-button>
@@ -208,6 +211,16 @@
       </div>
     </el-dialog>
 
+    <!--    获取已发布问卷的弹窗-->
+    <el-dialog :visible.sync="openLinkDialog" title="获取问卷链接">
+      <el-table :data="postData" border fit highlight-current-row style="width: 100%">
+        <el-table-column prop="postAddress" label="问卷地址"/>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="openLinkDialog=false">确认</el-button>
+      </span>
+    </el-dialog>
+
     <!--    公开问卷发布时的弹窗-->
     <el-dialog :visible.sync="postPublicDialog" title="发布问卷">
       <el-table :data="postData" border fit highlight-current-row style="width: 100%">
@@ -282,7 +295,7 @@
 
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="postPublicDialog = false">确认</el-button>
+        <el-button type="primary" @click="postPrivateDialog = false">确认</el-button>
       </span>
     </el-dialog>
   </div>
@@ -411,7 +424,8 @@ export default {
       ],
       postListLoading: false,
       postGroupData: [],
-      openRecoverDialog: false
+      openRecoverDialog: false,
+      openLinkDialog: false
     }
   },
   created() {
@@ -588,6 +602,9 @@ export default {
       this.$nextTick(() => {
         this.$refs.recover.getList()
       })
+    },
+    handleGetLink(row) {
+      this.openLinkDialog = true;
     }
   }
 }
