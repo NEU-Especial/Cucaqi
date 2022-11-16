@@ -122,82 +122,82 @@ public class LoginController {
     }
 
     //获取邮箱验证码
-    @GetMapping("/authCode/{role}")
-    @ResponseBody
-    public Result getAuthCodeByEmail(@Param("email") String email, @PathVariable int role, HttpSession session) {
-
-        int code = loginService.askAuthCodeByEmail(email, role);
-        if (code != SEND_FAIL && code != WRONG_EMAIL) {
-            //表示发送成功
-            session.setAttribute(email + role, code);
-            System.out.println("set  " + email + role);
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    //删除email
-                    System.out.println("remove");
-                    session.removeAttribute(email + role);
-                }
-            };
-            //实例化这个task任务
-            Timer timer = new Timer();
-            timer.schedule(task, 180000);//三分钟之后执行task任务
-            return new Result(HTTP.SUCCESS, "验证码发送成功");
-        } else if (code == WRONG_EMAIL) {
-            return new Result(HTTP.NOT_FOUND, "邮箱号码不存在");
-        }
-        return new Result(HTTP.SERVER_ERR, "发送失败");
-    }
-
-
-    //使用邮箱验证码登陆，只需要填写邮箱以及选择角色，找到以后会去找到对应的角色信息
-    @PostMapping("/email/{code}")
-    @ResponseBody
-    public Result LoginByEmail(@RequestBody BaseUser baseUser, @PathVariable int code, HttpSession session) {
-
-        Object o = session.getAttribute(baseUser.getEmail() + baseUser.getRole());
-
-
-        if (o == null) {
-            return new Result(HTTP.NOT_FOUND, "验证码无效");
-        }
-        Integer rightCode = (Integer) o;
-
-        if (code!=rightCode) {
-            return new Result(HTTP.NOT_FOUND, "验证码无效");
-        }
-        session.removeAttribute(baseUser.getEmail() + baseUser.getRole());
-        //此时需要查询用户
-        o = loginService.GetUserByEmail(baseUser.getEmail(), baseUser.getRole());
-        if (o == null) {
-            //说明查不到
-            return new Result(HTTP.NOT_FOUND, "登陆失败,未知错误", null);
-        }
-        switch (baseUser.getRole()) {
-            case ROLE.ADMIN:
-                Admin admin = (Admin) o;
-                admin.setPassword("");
-                admin.setSecurityAnswer("");
-                return new Result(HTTP.SUCCESS, admin);
-            case ROLE.LESSEE:
-                Lessee lessee = (Lessee) o;
-                lessee.setPassword("");
-                lessee.setSecurityAnswer("");
-
-                return new Result(HTTP.SUCCESS, lessee);
-            case ROLE.USER:
-                User user = (User) o;
-                user.setPassword("");
-                user.setSecurityAnswer("");
-                return new Result(HTTP.SUCCESS, user);
-            case ROLE.ANSWERER:
-                Answerer answerer = (Answerer) o;
-                answerer.setPassword("");
-                answerer.setSecurityAnswer("");
-                return new Result(HTTP.SUCCESS, answerer);
-        }
-        return new Result(HTTP.BAD_REQ, "登陆失败，未知角色");
-    }
+//    @GetMapping("/authCode/{role}")
+//    @ResponseBody
+//    public Result getAuthCodeByEmail(@Param("email") String email, @PathVariable int role, HttpSession session) {
+//
+//        int code = loginService.askAuthCodeByEmail(email, role);
+//        if (code != SEND_FAIL && code != WRONG_EMAIL) {
+//            //表示发送成功
+//            session.setAttribute(email + role, code);
+//            System.out.println("set  " + email + role);
+//            TimerTask task = new TimerTask() {
+//                @Override
+//                public void run() {
+//                    //删除email
+//                    System.out.println("remove");
+//                    session.removeAttribute(email + role);
+//                }
+//            };
+//            //实例化这个task任务
+//            Timer timer = new Timer();
+//            timer.schedule(task, 180000);//三分钟之后执行task任务
+//            return new Result(HTTP.SUCCESS, "验证码发送成功");
+//        } else if (code == WRONG_EMAIL) {
+//            return new Result(HTTP.NOT_FOUND, "邮箱号码不存在");
+//        }
+//        return new Result(HTTP.SERVER_ERR, "发送失败");
+//    }
+//
+//
+//    //使用邮箱验证码登陆，只需要填写邮箱以及选择角色，找到以后会去找到对应的角色信息
+//    @PostMapping("/email/{code}")
+//    @ResponseBody
+//    public Result LoginByEmail(@RequestBody BaseUser baseUser, @PathVariable int code, HttpSession session) {
+//
+//        Object o = session.getAttribute(baseUser.getEmail() + baseUser.getRole());
+//
+//
+//        if (o == null) {
+//            return new Result(HTTP.NOT_FOUND, "验证码无效");
+//        }
+//        Integer rightCode = (Integer) o;
+//
+//        if (code!=rightCode) {
+//            return new Result(HTTP.NOT_FOUND, "验证码无效");
+//        }
+//        session.removeAttribute(baseUser.getEmail() + baseUser.getRole());
+//        //此时需要查询用户
+//        o = loginService.GetUserByEmail(baseUser.getEmail(), baseUser.getRole());
+//        if (o == null) {
+//            //说明查不到
+//            return new Result(HTTP.NOT_FOUND, "登陆失败,未知错误", null);
+//        }
+//        switch (baseUser.getRole()) {
+//            case ROLE.ADMIN:
+//                Admin admin = (Admin) o;
+//                admin.setPassword("");
+//                admin.setSecurityAnswer("");
+//                return new Result(HTTP.SUCCESS, admin);
+//            case ROLE.LESSEE:
+//                Lessee lessee = (Lessee) o;
+//                lessee.setPassword("");
+//                lessee.setSecurityAnswer("");
+//
+//                return new Result(HTTP.SUCCESS, lessee);
+//            case ROLE.USER:
+//                User user = (User) o;
+//                user.setPassword("");
+//                user.setSecurityAnswer("");
+//                return new Result(HTTP.SUCCESS, user);
+//            case ROLE.ANSWERER:
+//                Answerer answerer = (Answerer) o;
+//                answerer.setPassword("");
+//                answerer.setSecurityAnswer("");
+//                return new Result(HTTP.SUCCESS, answerer);
+//        }
+//        return new Result(HTTP.BAD_REQ, "登陆失败，未知角色");
+//    }
 
     //获取短信验证码
     @GetMapping("/authCode/{role}")

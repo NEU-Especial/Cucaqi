@@ -281,7 +281,6 @@ public class LoginServiceImpl implements ILoginService {
     //检查是否有绑定该电话号，如果绑定了则发送短信，方法返回值为验证码
     @Override
     public int askAuthCodeByTelephone(String telephone, int role) {
-        System.out.println(telephone + " " + role);
         switch (role) {
             case ROLE.ADMIN:
                 QueryWrapper<Admin> sql = new QueryWrapper<Admin>().eq("telephone", telephone);
