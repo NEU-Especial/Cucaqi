@@ -23,19 +23,19 @@ export function logout() {
   })
 }
 
-export function getAuthCodeByEmail(email, role) {
+export function getAuthCodeByTelephone(telephone, role) {
   return request({
     url: `/cucaqi/login/authCode/${role}`,
     method: 'get',
     params: {
-      email: email
+      telephone: telephone
     }
   })
 }
 
-export function LoginByEmail(code, data) {
+export function LoginByTelephone(code, data) {
   return request({
-    url: `/cucaqi/login/email/${code}`,
+    url: `/cucaqi/login/telephone/${code}`,
     method: 'post',
     data
   })
