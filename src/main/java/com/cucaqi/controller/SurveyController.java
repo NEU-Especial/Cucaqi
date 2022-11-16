@@ -99,4 +99,11 @@ public class SurveyController {
         List<Survey> createdBy = commonMapper.findDeletedSurvey(id);
         return new Result(200, "", createdBy);
     }
+
+    @PutMapping("/recoverSurvey")
+    public Result RecoverSurvey(@Param("surveyId") Integer surveyId) {
+        int count=surveyMapper.recoverSurvey(surveyId);
+        return new Result(200, "恢复成功");
+    }
+
 }
