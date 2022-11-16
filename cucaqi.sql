@@ -11,7 +11,7 @@
  Target Server Version : 50719
  File Encoding         : 65001
 
- Date: 03/11/2022 18:58:56
+ Date: 10/11/2022 14:49:17
 */
 
 SET NAMES utf8mb4;
@@ -39,7 +39,7 @@ CREATE TABLE `t_admin`  (
 -- ----------------------------
 -- Records of t_admin
 -- ----------------------------
-INSERT INTO `t_admin` VALUES (1, 'admin', '123456', '11323414', 2, '2131', 1001, '114383', '3578379415@qq.com');
+INSERT INTO `t_admin` VALUES (1, 'admin', '123456', '11323414', 2, '2131', 1001, '123', 'shimaring@qq.com');
 INSERT INTO `t_admin` VALUES (2, '2', '22', '2222', 1, '213', 1001, '111345', '5615621');
 INSERT INTO `t_admin` VALUES (3, '3', '33', '3333', 1, '312', 1001, '1112', '41854141');
 INSERT INTO `t_admin` VALUES (4, '4', '44', '4444', 2, '123', 1001, '11143', '89652965');
@@ -135,13 +135,13 @@ INSERT INTO `t_group` VALUES (3, 'c', '呃呃', 1, '2022-11-02 20:37:18', 0);
 INSERT INTO `t_group` VALUES (4, 'd', '塔塔', 1, '2022-11-02 20:37:21', 0);
 INSERT INTO `t_group` VALUES (5, 'e', '已有', 1, '2022-11-02 20:37:24', 0);
 INSERT INTO `t_group` VALUES (6, 'f', '与i', 1, '2022-11-02 20:37:27', 0);
-INSERT INTO `t_group` VALUES (7, 'ggg', '库类', 1, '2022-11-02 20:37:29', 1);
+INSERT INTO `t_group` VALUES (7, 'ggg', '库类', 1, '2022-11-02 20:37:29', 0);
 INSERT INTO `t_group` VALUES (8, 'h', '和广泛的', 3, '2022-11-02 20:37:32', 0);
 INSERT INTO `t_group` VALUES (9, 'i', '肺结核', 3, '2022-11-02 20:37:35', 0);
 INSERT INTO `t_group` VALUES (10, 'j', '复活甲', 4, '2022-11-02 20:37:37', 0);
 INSERT INTO `t_group` VALUES (11, 'k', '吗v你', 4, '2022-11-02 20:37:41', 0);
 INSERT INTO `t_group` VALUES (12, 'l', '美女吧v', 2, '2022-11-02 20:37:43', 0);
-INSERT INTO `t_group` VALUES (13, 'f', '多个', 1, '2022-11-03 04:00:54', 1);
+INSERT INTO `t_group` VALUES (13, 'f', '多个', 1, '2022-11-03 04:00:54', 0);
 INSERT INTO `t_group` VALUES (14, 'f', '萨法', 1, '2022-11-03 04:01:08', 1);
 INSERT INTO `t_group` VALUES (15, NULL, NULL, 11, NULL, 0);
 
@@ -163,7 +163,6 @@ CREATE TABLE `t_group_answerer`  (
 -- ----------------------------
 INSERT INTO `t_group_answerer` VALUES (3, 1);
 INSERT INTO `t_group_answerer` VALUES (2, 2);
-INSERT INTO `t_group_answerer` VALUES (6, 2);
 INSERT INTO `t_group_answerer` VALUES (2, 3);
 INSERT INTO `t_group_answerer` VALUES (1, 4);
 INSERT INTO `t_group_answerer` VALUES (3, 4);
@@ -214,23 +213,26 @@ CREATE TABLE `t_lessee`  (
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
   CONSTRAINT `t_lessee_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_admin` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `t_lessee_ibfk_2` FOREIGN KEY (`securityQuestion`) REFERENCES `t_security_question` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_lessee
 -- ----------------------------
-INSERT INTO `t_lessee` VALUES (1, '1', '1', '1111', 1, '5486', 1002, NULL, 0, 1, '14', '51515');
-INSERT INTO `t_lessee` VALUES (2, 'admin1', '111111', '2222', 2, '789', 1002, NULL, 0, 1, '124', '5642');
-INSERT INTO `t_lessee` VALUES (3, 'admin2', '111111', '3333', 1, '8956', 1002, NULL, 0, 1, '1342', '54638');
-INSERT INTO `t_lessee` VALUES (4, '4d', '444d', '4444', 1, '875', 1002, NULL, 0, 2, '2414', '873278');
-INSERT INTO `t_lessee` VALUES (5, '5e', '555e', '5555', 1, '2356', 1002, NULL, 0, 2, '144', '38378');
-INSERT INTO `t_lessee` VALUES (6, '6f', '666f', '6666', 3, '78', 1002, NULL, 0, 2, '1341', '832785');
-INSERT INTO `t_lessee` VALUES (7, '7g', '777g', '7777', 2, '85', 1002, NULL, 0, 3, '134', '3878');
-INSERT INTO `t_lessee` VALUES (8, '8h', '888h', '8888', 3, '5689', 1002, NULL, 0, 3, '342423', '8378935');
-INSERT INTO `t_lessee` VALUES (9, '9i', '999i', '9999', 2, '856', 1002, NULL, 0, 3, '324', '7328');
-INSERT INTO `t_lessee` VALUES (10, '10k', '101010k', '101010', 2, '7856', 1002, NULL, 0, 4, '2342', '7245');
-INSERT INTO `t_lessee` VALUES (11, '11l', '111111l', '111111', 3, '78956', 1002, NULL, 0, 4, '1412', '37373');
-INSERT INTO `t_lessee` VALUES (12, '12m', '121212m', '121212', 1, NULL, 1002, NULL, 0, 4, '124342', '5278578');
+INSERT INTO `t_lessee` VALUES (1, 'test25', '1234588', '1111', 1, '123', 1002, 5.2, 0, 1, '8872599', '');
+INSERT INTO `t_lessee` VALUES (2, 'test1', '123456', '2222', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (3, 'test2', '123456', '3333', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (4, 'test3', '123456', '4444', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (5, 'test4', '123456', '5555', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (6, 'test5', '123456', '6666', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (7, 'test6', '123456', '7777', 1, '123', 1002, 6, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (8, 'test7', '123456', '8888', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (9, 'test8', '123456', '9999', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (10, 'test9', '123456', '101010', 1, '123', 1002, 0, 1, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (11, 'test0', '123456', '111111', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (12, 'test11', '123456', '121212', 1, '123', 1002, 0, 0, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (13, 'test12', '123456', NULL, 1, '123', 1002, 0, 1, 1, '887253', '');
+INSERT INTO `t_lessee` VALUES (15, 'test13', '111111', NULL, 1, '123', 1002, 0, 1, 1, NULL, '1150840779@qq.com');
+INSERT INTO `t_lessee` VALUES (16, 'a', 'a', 'aa', NULL, NULL, 1002, 0, 0, 1, 'a', 'aa');
 
 -- ----------------------------
 -- Table structure for t_security_question
@@ -308,17 +310,17 @@ CREATE TABLE `t_user`  (
 -- ----------------------------
 -- Records of t_user
 -- ----------------------------
-INSERT INTO `t_user` VALUES (1, '11111', '111111', NULL, 1, '121234', 1003, NULL, 0, 1, '23454', 0, '32545', NULL);
-INSERT INTO `t_user` VALUES (2, '2', '2', '22', 2, '14', 1003, NULL, 0, 1, '3245345', 0, '3452', NULL);
-INSERT INTO `t_user` VALUES (3, '3', '3', '33', 3, '44', 1003, NULL, 0, 2, '345543', 0, '6443', NULL);
-INSERT INTO `t_user` VALUES (4, '4', '4', '44', 1, '421', 1003, NULL, 0, 2, '214', 0, '6456', NULL);
-INSERT INTO `t_user` VALUES (5, '5', '5', '55', 3, '42423', 1003, NULL, 0, 3, '234', 0, '43', NULL);
-INSERT INTO `t_user` VALUES (6, '6', '6', '66', 2, '23234', 1003, NULL, 0, 3, '53453', 0, '345', NULL);
-INSERT INTO `t_user` VALUES (7, '7', '7', '77', 2, '43', 1003, NULL, 0, 4, '34545', 0, '345', NULL);
-INSERT INTO `t_user` VALUES (8, '8', '8', '88', 1, '342', 1003, NULL, 0, 4, '34534', 0, '34', NULL);
-INSERT INTO `t_user` VALUES (9, '9', '9', '99', 3, '34dsf', 1003, NULL, 0, 1, '34535', 0, '5', NULL);
-INSERT INTO `t_user` VALUES (10, '10', '10', '1010', 2, '42', 1003, NULL, 0, 1, '5', 0, '4', NULL);
-INSERT INTO `t_user` VALUES (11, '11', '11', '1111', 3, '2342', 1003, NULL, 0, 1, '45345', 0, '3', NULL);
-INSERT INTO `t_user` VALUES (12, '12', '12', '1212', 1, '234', 1003, NULL, 0, 2, '5345', 0, '34534', NULL);
+INSERT INTO `t_user` VALUES (1, 'admin', '123456', NULL, 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (2, 'admin1', '123456', '22', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (3, 'admin2', '123456', '33', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (4, 'admin3', '123456', '44', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (5, 'admin4', '123456', '55', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (6, 'admin5', '123456', '66', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (7, 'admin6', '123456', '77', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (8, 'admin7', '123456', '88', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (9, 'admin8', '123456', '99', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (10, 'admin9', '123456', '1010', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (11, 'admin0', '123456', '1111', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
+INSERT INTO `t_user` VALUES (12, 'admin00', '123456', '1212', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;

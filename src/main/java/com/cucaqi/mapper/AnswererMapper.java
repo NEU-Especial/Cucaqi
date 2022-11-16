@@ -3,13 +3,14 @@ package com.cucaqi.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.Answerer;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -33,6 +34,14 @@ public interface AnswererMapper extends BaseMapper<Answerer> {
             "t_answerer.id = t_group_answerer.answererId join t_group on " +
             "t_group_answerer.groupId = t_group.id where t_group.id = #{groupId}")
     public List<Answerer> getByGroupId(Integer groupId);
+
+    @Insert("insert into t_answerer_survey(surveyId, answererId, createdTime) value (#{surveyId},#{answerId},#{localDateTime})")
+    public Integer insertAnswerSurvey(Integer surveyId, Integer answerId, LocalDateTime localDateTime);
+
+
+    @Select("select count(*) from t_answerer_survey where surveyId=#{surveyId} " +
+            "and surveyId=#{surveyId} and answererId=#{answerId}")
+    int getCountByGroupIDAndAnswerId(Integer answerId, int surveyId);
     @Select("select * from t_answerer where createdBy =#{userId} and deleted = 1 ")
     List<Answerer> getDeleted(Integer userId);
     @Update("update t_answerer set deleted = 0 where id = #{answererId}")
