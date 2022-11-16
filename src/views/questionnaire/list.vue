@@ -286,9 +286,9 @@
         </el-table-column>
 
         <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
-          <template slot-scope="{row}">
-            <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handlePost(row)">
-              发布
+          <template slot-scope="{row,$index}">
+            <el-button size="mini" :type="row.type" @click="handlePost(row,$index)">
+              {{ row.type==='success'?'发布':'已发布' }}
             </el-button>
           </template>
         </el-table-column>
@@ -304,20 +304,20 @@
 <script>
 
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-import { Model, StylesManager } from 'survey-vue'
+import {parseTime} from '@/utils'
+import {Model, StylesManager} from 'survey-vue'
 import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
-import { getGroupPage } from '@/api/group'
+import {getGroupPage} from '@/api/group'
 import recover from '@/views/questionnaire/recover'
-import { findAllSurvey, PostToGroup, PostToPublic, softDeleteSurvey, updateSurveyState } from '@/api/survey'
-import { Message } from 'element-ui'
+import {findAllSurvey, PostToGroup, PostToPublic, softDeleteSurvey, updateSurveyState} from '@/api/survey'
+import {Message} from 'element-ui'
 
 const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
+  {key: 'CN', display_name: 'China'},
+  {key: 'US', display_name: 'USA'},
+  {key: 'JP', display_name: 'Japan'},
+  {key: 'EU', display_name: 'Eurozone'}
 ]
 
 StylesManager.applyTheme('defaultV2')
@@ -329,8 +329,8 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination, recover },
-  directives: { waves },
+  components: {Pagination, recover},
+  directives: {waves},
   filters: {
     limit(count) {
       if (count === 0) {
@@ -391,7 +391,7 @@ export default {
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
-      sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
+      sortOptions: [{label: 'ID 升序', key: '+id'}, {label: 'ID 降序', key: '-id'}],
       statusOptions: ['已发布', 'draft', '未发布'],
       showReviewer: false,
       temp: {}, // 临时问卷数据
@@ -406,9 +406,9 @@ export default {
       },
       dialogPvVisible: false,
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+        type: [{required: true, message: 'type is required', trigger: 'change'}],
+        timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
+        title: [{required: true, message: 'title is required', trigger: 'blur'}]
       },
       answerListData: answerListData,
       surveyJson: surveyJson,
@@ -425,7 +425,9 @@ export default {
       postListLoading: false,
       postGroupData: [],
       openRecoverDialog: false,
-      openLinkDialog: false
+      openLinkDialog: false,
+      postButtonIndex: '',
+
     }
   },
   created() {
@@ -441,20 +443,20 @@ export default {
         })
         return
       }
-      softDeleteSurvey({ surveyId: row.id }).then(
+      softDeleteSurvey({surveyId: row.id}).then(
         (res) => {
           Message({
             message: res.msg,
             type: 'success',
             duration: 2000
           })
-          updateSurveyState({ state: 3, surveyId: row.id })
+          updateSurveyState({state: 3, surveyId: row.id})
           this.list.splice(index, 1)
         }
       )
     },
     postToPublic() {
-      PostToPublic({ surveyId: this.temp.id, userId: this.$store.getters.user.id }).then(
+      PostToPublic({surveyId: this.temp.id, userId: this.$store.getters.user.id}).then(
         (res) => {
           Message({
             message: res.msg,
@@ -462,7 +464,7 @@ export default {
             duration: 2000
           })
           if (this.temp.state === 0) {
-            updateSurveyState({ state: 1, surveyId: this.temp.id })
+            updateSurveyState({state: 1, surveyId: this.temp.id})
           }
 
           this.temp.state = 1
@@ -474,7 +476,7 @@ export default {
       this.$router.push('/questionnaire/jump')
     },
     getList() {
-      findAllSurvey({ id: this.$store.getters.user.id }).then(
+      findAllSurvey({id: this.$store.getters.user.id}).then(
         (res) => {
           this.list = res.data
           this.total = res.data.length
@@ -498,7 +500,10 @@ export default {
         this.postListLoading = true
         getGroupPage(this.$store.getters.user.id).then(
           res => {
-            this.postGroupData = res.data
+            for (let i = 0; i < res.data.length; i++) {
+              res.data[i].type = 'success'
+              this.postGroupData.push(res.data[i])
+            }
             this.postListLoading = false
           }
         )
@@ -507,7 +512,7 @@ export default {
       this.postData[0].postAddress = 'http://localhost:9528/survey?surver=' + row.id
     },
     sortChange(data) {
-      const { prop, order } = data
+      const {prop, order} = data
       if (prop === 'id') {
         this.sortByID(order)
       }
@@ -543,7 +548,7 @@ export default {
       return
     },
     handleUpdate(row) {
-      updateSurveyState({ state: 2, surveyId: row.id })
+      updateSurveyState({state: 2, surveyId: row.id})
       row.state = 2
     },
     updateData() {
@@ -556,20 +561,23 @@ export default {
       })
       this.dialogFormVisible = false
     },
-    handlePost(row) {
-      PostToGroup({ surveyId: this.temp.id, groupId: row.id }).then(
+    handlePost(row, index) {
+      PostToGroup({surveyId: this.temp.id, groupId: row.id}).then(
         (res) => {
           Message({
             message: res.msg,
             type: 'success',
             duration: 2000
           })
+          row.type = "warning"
+          // this.postGroupData[index].type = 'warning'
           if (this.temp.state === 0) {
-            updateSurveyState({ state: 1, surveyId: this.temp.id })
+            updateSurveyState({state: 1, surveyId: this.temp.id})
           }
           this.temp.state = 1
           this.postPublicDialog = false
-        }
+          this.postButtonIndex = index
+        },
       )
     },
     handleAnswerList(row) {
@@ -593,7 +601,7 @@ export default {
         }
       }))
     },
-    getSortClass: function(key) {
+    getSortClass: function (key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
