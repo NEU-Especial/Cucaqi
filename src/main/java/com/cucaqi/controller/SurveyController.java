@@ -91,6 +91,9 @@ public class SurveyController {
     @DeleteMapping("/softDeleteSurvey")
     public Result softDeleteSurvey(@Param("surveyId") Integer surveyId) {
         surveyMapper.deleteById(surveyId);
+        //需要删除关系
+        int count = surveyMapper.deleteRelation(surveyId);
+        count = surveyMapper.updateCurCount(surveyId);
         return new Result(200, "删除成功");
     }
 
@@ -102,7 +105,10 @@ public class SurveyController {
 
     @PutMapping("/recoverSurvey")
     public Result RecoverSurvey(@Param("surveyId") Integer surveyId) {
-        int count=surveyMapper.recoverSurvey(surveyId);
+        Survey survey = commonMapper.selectSurveyById(surveyId);
+        survey.setId(null);
+        survey.setCurCount(0);
+        surveyMapper.insert(survey);//重新插入
         return new Result(200, "恢复成功");
     }
 
@@ -110,9 +116,50 @@ public class SurveyController {
     public Result allSurveyToAnswer(@Param("id") Integer id) {
         //根据答者id拿到所有代答问卷
         List<Survey> needToAnswer = surveyMapper.allSurveyToAnswer(id);
-        return new Result(200, "",needToAnswer);
+        return new Result(200, "", needToAnswer);
     }
 
+    @GetMapping("/getSurveyById")
+    public Result getSurveyById(@PathVariable("id") Integer id) {
+        //根据答者id拿到所有代答问卷
+        Survey survey = surveyMapper.selectById(id);
+        return new Result(200, "", survey);
+    }
+
+
+    @PostMapping("/saveAnswerResult")
+    public Result saveAnswerResult(@Param("answererId") Integer answererId, @Param("surveyId") Integer surveyId, @RequestBody String answer) {
+        //先判断以下当前的问卷状态
+        Survey survey = surveyMapper.selectById(surveyId);
+        if (survey == null) {
+            return new Result(400, "问卷已被删除");
+        }
+        //判断当前提交的人数
+        if (survey.getLimitCount() != 0 && survey.getCurCount() >= survey.getLimitCount()) {
+            return new Result(400, "问卷回答人数已满");
+        }
+        //判断时间是否合法
+        if (survey.getEndTime() != null) {
+            if (survey.getEndTime().isBefore(LocalDateTime.now())) {
+                return new Result(400, "问卷已到期");
+            }
+        }
+        //接下来需要判断用户用户ID，首先是用户为随机用户即可以插入
+        if (answererId == null) {
+            surveyMapper.insertRelationWithoutAnswer(surveyId, answer, LocalDateTime.now());
+            surveyMapper.updateCurCount(surveyId);
+            return new Result(200, "提交成功，感谢作答");
+        }
+
+        if (surveyMapper.getCountBySurveyIdAndAnswerId(surveyId, answererId) > 0) {
+            return new Result(400, "请勿重复提交");
+        }
+
+        surveyMapper.updateAnswer(surveyId, answererId, answer);
+        surveyMapper.updateCurCount(surveyId);
+        return new Result(400, "提交成功，感谢作答");
+
+    }
 
 
 }
