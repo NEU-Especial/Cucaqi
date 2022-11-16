@@ -2,8 +2,8 @@ package com.cucaqi.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.cucaqi.constants.REASON;
-import com.cucaqi.constants.ROLE;
+import com.cucaqi.controller.constants.REASON;
+import com.cucaqi.controller.constants.ROLE;
 import com.cucaqi.entity.Admin;
 import com.cucaqi.entity.Answerer;
 import com.cucaqi.entity.Lessee;
@@ -13,21 +13,21 @@ import com.cucaqi.mapper.AnswererMapper;
 import com.cucaqi.mapper.LesseeMapper;
 import com.cucaqi.mapper.UserMapper;
 import com.cucaqi.service.ILoginService;
+import com.cucaqi.utils.HttpUtils;
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.common.profile.ClientProfile;
 import com.tencentcloudapi.common.profile.HttpProfile;
 import com.tencentcloudapi.ses.v20201002.SesClient;
 import lombok.val;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.tencentcloudapi.ses.v20201002.models.*;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -272,6 +272,116 @@ public class LoginServiceImpl implements ILoginService {
         } catch (TencentCloudSDKException e) {
             System.out.println(e.toString());
             return false;
+        }
+        return true;
+    }
+
+
+
+    //检查是否有绑定该电话号，如果绑定了则发送短信，方法返回值为验证码
+    @Override
+    public int askAuthCodeByTelephone(String telephone, int role) {
+        System.out.println(telephone + " " + role);
+        switch (role) {
+            case ROLE.ADMIN:
+                QueryWrapper<Admin> sql = new QueryWrapper<Admin>().eq("telephone", telephone);
+                Admin admin = adminMapper.selectOne(sql);
+                if (admin == null) {
+                    return REASON.WRONG_EMAIL;
+                }
+                break;
+            case ROLE.LESSEE:
+                Lessee lessee = lesseeMapper.selectOne(new QueryWrapper<Lessee>().and(i -> {
+                    i.eq("telephone", telephone);
+                }));
+                if (lessee == null) {
+                    return REASON.WRONG_EMAIL;
+                }
+                break;
+            case ROLE.USER:
+                User user = userMapper.selectOne(new QueryWrapper<User>().and(i -> {
+                    i.eq("telephone", telephone);
+                }));
+                if (user == null) {
+                    return REASON.WRONG_EMAIL;
+                }
+                break;
+            case ROLE.ANSWERER:
+                Answerer answerer = answererMapper.selectOne(new QueryWrapper<Answerer>().and(i -> {
+                    i.eq("telephone", telephone);
+                }));
+                if (answerer == null) {
+                    return REASON.WRONG_EMAIL;
+                }
+                break;
+        }
+        int authCode = 100001 + new Random().nextInt(888888);
+        //否则就往该邮箱发送邮件验证码
+        boolean success = SenTelephone(telephone, authCode);
+        if (success) {
+            return authCode;
+        }
+        return REASON.SEND_FAIL;
+    }
+
+    @Override
+    public Object GetUserByTelephone(String telephone, int role) {
+        switch (role) {
+            case ROLE.ADMIN:
+                return adminMapper.selectOne(new QueryWrapper<Admin>().and(i -> {
+                    i.eq("telephone", telephone);
+                }));
+            case ROLE.LESSEE:
+                return lesseeMapper.selectOne(new QueryWrapper<Lessee>().and(i -> {
+                    i.eq("telephone", telephone);
+                }));
+            case ROLE.USER:
+                return userMapper.selectOne(new QueryWrapper<User>().and(i -> {
+                    i.eq("telephone", telephone);
+                }));
+            case ROLE.ANSWERER:
+                return answererMapper.selectOne(new QueryWrapper<Answerer>().and(i -> {
+                    i.eq("telephone", telephone);
+                }));
+            default:
+                return null;
+        }
+    }
+
+    //短信验证码发送方法
+    @Override
+    public boolean SenTelephone(String Telephone, int authCode){
+        String host = "https://gyytz.market.alicloudapi.com";
+        String path = "/sms/smsSend";
+        String method = "POST";
+        String appcode = "69b62881e9e244329018ab1d5056c0e9";
+        Map<String, String> headers = new HashMap<String, String>();
+        //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+        headers.put("Authorization", "APPCODE " + appcode);
+        Map<String, String> querys = new HashMap<String, String>();
+        querys.put("mobile", Telephone);
+        querys.put("param", "**code**:"+authCode);
+        querys.put("smsSignId", "4f94ee878bdf4a3db155ac9c78f4e816");
+        querys.put("templateId", "cd0602e40caa4f32bdf73d9491d487ea");
+        Map<String, String> bodys = new HashMap<String, String>();
+
+
+        try {
+            /**
+             * 重要提示如下:
+             * HttpUtils请从
+             * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/src/main/java/com/aliyun/api/gateway/demo/util/HttpUtils.java
+             * 下载
+             *
+             * 相应的依赖请参照
+             * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/pom.xml
+             */
+            HttpResponse response = HttpUtils.doPost(host, path, method, headers, querys, bodys);
+            System.out.println(response.toString());
+            //获取response的body
+            //System.out.println(EntityUtils.toString(response.getEntity()));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return true;
     }
