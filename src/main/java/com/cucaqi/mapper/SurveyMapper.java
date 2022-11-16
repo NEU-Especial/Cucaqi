@@ -3,7 +3,10 @@ package com.cucaqi.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cucaqi.entity.Survey;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
 
 /**
  * <p>
@@ -23,4 +26,13 @@ public interface SurveyMapper extends BaseMapper<Survey> {
 
     @Update("update t_survey  set state=0,deleted=0 where id=#{surveyId} and deleted=1 ")
     int recoverSurvey(Integer surveyId);
+
+
+
+    //找到所有需要回答得问卷，问卷的状态只能是已发布
+    @Select("select * from t_survey ")
+    List<Survey> allSurveyToAnswer(Integer id);
+
+
+
 }

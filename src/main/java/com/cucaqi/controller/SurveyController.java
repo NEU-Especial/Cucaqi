@@ -106,4 +106,13 @@ public class SurveyController {
         return new Result(200, "恢复成功");
     }
 
+    @GetMapping("/allSurveyToAnswer")
+    public Result allSurveyToAnswer(@Param("id") Integer id) {
+        //根据答者id拿到所有代答问卷
+        List<Survey> needToAnswer = surveyMapper.allSurveyToAnswer(id);
+        return new Result(200, "",needToAnswer);
+    }
+
+
+
 }
