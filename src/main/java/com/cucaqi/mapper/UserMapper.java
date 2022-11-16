@@ -47,4 +47,6 @@ public interface UserMapper extends BaseMapper<User> {
      */
     @Select("select * from t_user where username = #{username}")
     public User searchUser(String username);
+
+
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cucaqi.entity.Lessee;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -39,5 +40,8 @@ public interface ILesseeService extends IService<Lessee> {
      * @return
      */
     public boolean searchLessee(String username);
+
+    public List<Map<String,Object>> getMoneyList(int id);
+
 
 }

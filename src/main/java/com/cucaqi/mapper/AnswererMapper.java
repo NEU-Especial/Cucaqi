@@ -35,4 +35,6 @@ public interface AnswererMapper extends BaseMapper<Answerer> {
             "t_group_answerer.groupId = t_group.id where t_group.id = #{groupId}")
     public List<Answerer> getByGroupId(Integer groupId);
 
+    @Select("select count(*) from t_answerer where createdBy=#{id}")
+    public Integer getAnswererByUser(int id);
 }

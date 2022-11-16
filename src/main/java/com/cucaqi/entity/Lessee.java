@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -23,6 +24,88 @@ public class Lessee implements Serializable {
     private Integer id;
 
     private String username;
+
+    public Lessee() {
+    }
+
+    @Override
+    public String toString() {
+        return "Lessee{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", gender='" + gender + '\'' +
+                ", age='" + age + '\'' +
+                ", job='" + job + '\'' +
+                ", birth=" + birth +
+                ", password='" + password + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", securityQuestion=" + securityQuestion +
+                ", securityAnswer='" + securityAnswer + '\'' +
+                ", role=" + role +
+                ", payment=" + payment +
+                ", deleted=" + deleted +
+                ", createdBy=" + createdBy +
+                ", InviteCode='" + InviteCode + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
+    public Lessee(Integer id, String username, String gender, String age, String job, Date birth, String password, String telephone, Integer securityQuestion, String securityAnswer, Integer role, Float payment, Integer deleted, Integer createdBy, String inviteCode, String email) {
+        this.id = id;
+        this.username = username;
+        this.gender = gender;
+        this.age = age;
+        this.job = job;
+        this.birth = birth;
+        this.password = password;
+        this.telephone = telephone;
+        this.securityQuestion = securityQuestion;
+        this.securityAnswer = securityAnswer;
+        this.role = role;
+        this.payment = payment;
+        this.deleted = deleted;
+        this.createdBy = createdBy;
+        InviteCode = inviteCode;
+        this.email = email;
+    }
+
+    private String gender;
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getJob() {
+        return job;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
+    }
+
+    public Date getBirth() {
+        return birth;
+    }
+
+    public void setBirth(Date birth) {
+        this.birth = birth;
+    }
+
+    private String age;
+    private String job;
+    private Date birth;
 
     private String password;
 
@@ -142,19 +225,4 @@ public class Lessee implements Serializable {
         this.createdBy = createdBy;
     }
 
-    @Override
-    public String toString() {
-        return "Lessee{" +
-        "id=" + id +
-        ", username=" + username +
-        ", password=" + password +
-        ", telephone=" + telephone +
-        ", securityQuestion=" + securityQuestion +
-        ", securityAnswer=" + securityAnswer +
-        ", role=" + role +
-        ", payment=" + payment +
-        ", deleted=" + deleted +
-        ", createdBy=" + createdBy +
-        "}";
-    }
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -22,6 +23,92 @@ public class User implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+    private String gender;
+    private String age;
+
+    public User() {
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", gender='" + gender + '\'' +
+                ", age='" + age + '\'' +
+                ", job='" + job + '\'' +
+                ", birth=" + birth +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", securityQuestion=" + securityQuestion +
+                ", securityAnswer='" + securityAnswer + '\'' +
+                ", role=" + role +
+                ", payment=" + payment +
+                ", limitCount=" + limitCount +
+                ", curCount=" + curCount +
+                ", deleted=" + deleted +
+                ", createdBy=" + createdBy +
+                ", inviteCode='" + inviteCode + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
+    public User(Integer id, String gender, String age, String job, Date birth, String username, String password, String telephone, Integer securityQuestion, String securityAnswer, Integer role, Float payment, Integer limitCount, Integer curCount, Integer deleted, Integer createdBy, String inviteCode, String email) {
+        this.id = id;
+        this.gender = gender;
+        this.age = age;
+        this.job = job;
+        this.birth = birth;
+        this.username = username;
+        this.password = password;
+        this.telephone = telephone;
+        this.securityQuestion = securityQuestion;
+        this.securityAnswer = securityAnswer;
+        this.role = role;
+        this.payment = payment;
+        this.limitCount = limitCount;
+        this.curCount = curCount;
+        this.deleted = deleted;
+        this.createdBy = createdBy;
+        this.inviteCode = inviteCode;
+        this.email = email;
+    }
+
+    private String job;
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getJob() {
+        return job;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
+    }
+
+    public Date getBirth() {
+        return birth;
+    }
+
+    public void setBirth(Date birth) {
+        this.birth = birth;
+    }
+
+    private Date birth;
 
     private String username;
 
@@ -165,19 +252,4 @@ public class User implements Serializable {
         this.createdBy = createdBy;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username=" + username +
-                ", password=" + password +
-                ", telephone=" + telephone +
-                ", securityQuestion=" + securityQuestion +
-                ", securityAnswer=" + securityAnswer +
-                ", role=" + role +
-                ", payment=" + payment +
-                ", deleted=" + deleted +
-                ", createdBy=" + createdBy +
-                "}";
-    }
 }

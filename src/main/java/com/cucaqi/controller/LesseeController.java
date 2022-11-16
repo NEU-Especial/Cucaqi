@@ -5,10 +5,13 @@ import com.cucaqi.entity.Lessee;
 import com.cucaqi.entity.Result;
 import com.cucaqi.entity.User;
 import com.cucaqi.service.ILesseeService;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -148,6 +151,28 @@ public class LesseeController {
         }
 
         return  result;
+
+    }
+
+
+    /**
+     * 获取计费管理相关的list
+     * @param lessee
+     * @return
+     */
+    @GetMapping("/getMoneyList/{lesseeId}")
+    public Result getMoneyList(@PathVariable Integer lesseeId){
+        System.out.println(lesseeId+"fdsdfsdaf");
+        Result result= new Result();
+
+
+            List<Map<String, Object>> moneyList = iLesseeService.getMoneyList(lesseeId);
+
+            result.setData(moneyList);
+            result.setCode(HTTP.SUCCESS);
+            result.setMsg("查询成功！");
+
+        return result;
 
     }
 

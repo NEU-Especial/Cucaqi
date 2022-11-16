@@ -2,6 +2,7 @@ package com.cucaqi.service.impl;
 
 import com.cucaqi.entity.User;
 import com.cucaqi.mapper.AnswererMapper;
+import com.cucaqi.mapper.GroupMapper;
 import com.cucaqi.mapper.UserMapper;
 import com.cucaqi.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,6 +26,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private UserMapper userMapper;
     @Autowired
     private AnswererMapper answererMapper;
+    @Autowired
+    private GroupMapper groupMapper;
     @Override
     /**
      * 根据租户id查询用户
@@ -59,4 +62,5 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
             return true;
     }
+
 }

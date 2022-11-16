@@ -1,6 +1,9 @@
 package com.cucaqi.service.impl;
 
 import com.cucaqi.entity.Lessee;
+import com.cucaqi.entity.User;
+import com.cucaqi.mapper.AnswererMapper;
+import com.cucaqi.mapper.GroupMapper;
 import com.cucaqi.mapper.LesseeMapper;
 import com.cucaqi.mapper.UserMapper;
 import com.cucaqi.service.ILesseeService;
@@ -8,7 +11,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -24,6 +30,10 @@ public class LesseeServiceImpl extends ServiceImpl<LesseeMapper, Lessee> impleme
     private LesseeMapper lesseeMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private GroupMapper groupMapper;
+    @Autowired
+    private AnswererMapper answererMapper;
     @Override
     /**
      * 获取所有租户信息
@@ -70,5 +80,24 @@ public class LesseeServiceImpl extends ServiceImpl<LesseeMapper, Lessee> impleme
         return true;
 
     }
+    public List<Map<String,Object>> getMoneyList(int id){
+        List<User> userList = userMapper.getUserlist(id);//获取租户下所有用户
+        //System.out.println(userList);
+        List<Map<String,Object>> list= new ArrayList<>();
+
+        for(User u:userList){
+            Map<String,Object> map = new HashMap<>();
+            map.put("id",u.getId());
+            map.put("username",u.getUsername());
+            map.put("groupNum",groupMapper.getGroupByUser(u.getId()));
+            map.put("answerNum",answererMapper.getAnswererByUser(u.getId()));
+            map.put("surveyNum",1);
+            list.add(map);
+        }
+        return list;
+
+    }
+
+
 
 }

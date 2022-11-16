@@ -33,4 +33,6 @@ public interface GroupMapper extends BaseMapper<Group> {
     public Integer addRelationFromGroupAnswerer(Integer groupId, Integer answererId);
     @Select("select count(*) from t_group_answerer where groupId = #{groupId} and answererId = #{answererId}")
     public Integer hasRelation(Integer groupId,Integer answererId);
+    @Select("select count(*) from t_group where createdBy=#{id}")
+    public Integer getGroupByUser(int id);
 }
