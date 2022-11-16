@@ -30,3 +30,10 @@ export function deleteLessee(data) {
     data
   })
 }
+
+export function getMoneyList(lesseeId) {
+  return request({
+    url: `/cucaqi/lessee/getMoneyList/${lesseeId}`,
+    method: 'get',
+  })
+}

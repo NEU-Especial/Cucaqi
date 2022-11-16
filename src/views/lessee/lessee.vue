@@ -1,3 +1,4 @@
+
 <template>
   <div class="app-container">
     <div class="filter-container">
@@ -11,10 +12,6 @@
 <!--      id排序-->
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
-      </el-select>
-<!--      账单排序-->
-      <el-select v-model="paymentListQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in paymentSortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -52,19 +49,6 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="租户账单"
-        prop="payment"
-        sortable="custom"
-        align="center"
-        width="120"
-        :class-name="getPaymentClass('payment')"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column label="租户姓名" min-width="50px" width="80px">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
@@ -126,7 +110,9 @@
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除租户
           </el-button>
-
+          <el-button size="mini" type="info" @click="handleLook(row,$index)">
+            查看租户缴费
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -159,7 +145,7 @@
           <el-input v-model="temp.password"/>
         </el-form-item>
         <el-form-item label="租户性别" prop="gender">
-          <el-select v-model="genderType" placeholder="请选择" >
+          <el-select v-model="temp.gender" placeholder="请选择" >
             <el-option v-for="item in genderTypes" :key="item.id" :label="item.value" :value="item.value">
             </el-option>
           </el-select>
@@ -175,6 +161,7 @@
             <el-date-picker
               v-model="temp.birth"
               type="date"
+              value-format="yyyy-MM-dd"
               placeholder="选择日期">
             </el-date-picker>
           </div>
@@ -198,14 +185,56 @@
         </el-button>
       </div>
     </el-dialog>
+<!--    下面的表单弹框为计费管理-->
+    <el-dialog title="租户缴费详情" :visible.sync="dialogVisible" width="55%">
+      <template>
+        <el-table
+          :data="listOfCost"
+          border
+          fit
+          highlight-current-row
+          >
+          <el-table-column label="ID" min-width="150px" width="180px">
+            <template slot-scope="{row}">
+              <span class="link-type">{{ row.id }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户名" min-width="150px" width="180px">
+            <template slot-scope="{row}">
+              <span class="link-type">{{ row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="群组费用" min-width="150px" width="180px">
+            <template slot-scope="{row}">
+              <span class="link-type">{{ row.groupCost }}</span>
+            </template>
+          </el-table-column>
+            <el-table-column label="问卷费用" min-width="150px" width="180px">
+              <template slot-scope="{row}">
+                <span class="link-type">{{ row.questionnaireCost }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="答卷费用" min-width="150px" width="180px">
+              <template slot-scope="{row}">
+                <span class="link-type">{{ row.surveyCost }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="总费用" min-width="150px" width="180px">
+              <template slot-scope="{row}">
+                <span class="link-type">{{ row.totalCost }}</span>
+              </template>
+            </el-table-column>
+
+        </el-table>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import { addLessee, deleteLessee, getLesseeList, updateLessee } from '@/api/lessee'
+import {addLessee, deleteLessee, getLesseeList, getMoneyList, updateLessee} from '@/api/lessee'
 import { Message } from 'element-ui' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
@@ -241,6 +270,8 @@ export default {
   data() {
     return {
       tableKey: 0,
+     listOfCost:[],
+
       list: [{
         username: '刘德华',
         createdTime: Date.parse(new Date()),
@@ -296,6 +327,7 @@ export default {
       },
       value1:'',
       dialogFormVisible: false,
+      dialogVisible:false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -316,11 +348,35 @@ export default {
     this.getList()
   },
   methods: {
+    add(m) {
+      return m < 10 ? "0" + m : m;
+    },
+    format(shijianchuo) {
+      //shijianchuo是整数，否则要parseInt转换
+      var time = new Date(shijianchuo);
+      var y = time.getFullYear();
+      var m = time.getMonth() + 1;
+      var d = time.getDate();
+      var h = time.getHours();
+      var mm = time.getMinutes();
+      var s = time.getSeconds();
+      return (
+        y +
+        "-" +
+        this.add(m) +
+        "-" +
+        this.add(d)
+      );
+    },
+
     getList() {
       this.listLoading = true
       getLesseeList().then(
         res => {
           this.list = res.data
+          for (var i = 0; i < this.list.length; i++) {
+            this.list[i].birth = this.format(this.list[i].birth);
+          }
           this.totalList = res.data
           this.listLoading = false
           this.total = res.data.length
@@ -407,6 +463,34 @@ export default {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
     },
+    handleLook(row, index){
+
+      getMoneyList(row.id).then(
+
+        (res) => {
+          this.resetTemp()
+          console.log(this.listOfCost)
+          this.listOfCost=[]
+          for (var i = 0; i < res.data.length; i++) {
+            this.listOfCost.push(res.data[i])
+            this.listOfCost[i].id = res.data[i].id
+            this.listOfCost[i].name = res.data[i].username
+            this.listOfCost[i].groupCost =  res.data[i].groupNum*1+"元"
+            this.listOfCost[i].questionnaireCost = res.data[i].answerNum*0.5+"元"
+            this.listOfCost[i].surveyCost = res.data[i].surveyNum*0.1+"元"
+            this.listOfCost[i].totalCost=
+              res.data[i].groupNum*1+res.data[i].answerNum*0.5+res.data[i].surveyNum*0.1+"元"
+          }
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
+          })
+        }
+      )
+      this.dialogVisible = true
+
+    },
     updateData() {
       updateLessee(this.temp).then(
         (res) => {
@@ -432,6 +516,7 @@ export default {
         }
       )
     },
+
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'

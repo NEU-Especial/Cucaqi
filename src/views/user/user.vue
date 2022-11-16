@@ -150,7 +150,7 @@
           <el-input v-model="temp.password"/>
         </el-form-item>
         <el-form-item label="用户性别" prop="gender">
-          <el-select v-model="genderType" placeholder="请选择" >
+          <el-select v-model="temp.gender" placeholder="请选择" >
             <el-option v-for="item in genderTypes" :key="item.id" :label="item.value" :value="item.value">
             </el-option>
           </el-select>
@@ -166,6 +166,7 @@
             <el-date-picker
               v-model="temp.birth"
               type="date"
+              value-format="yyyy-MM-dd"
               placeholder="选择日期">
             </el-date-picker>
           </div>
@@ -275,11 +276,34 @@ export default {
     this.getList()
   },
   methods: {
+    add(m) {
+      return m < 10 ? "0" + m : m;
+    },
+    format(shijianchuo) {
+      //shijianchuo是整数，否则要parseInt转换
+      var time = new Date(shijianchuo);
+      var y = time.getFullYear();
+      var m = time.getMonth() + 1;
+      var d = time.getDate();
+      var h = time.getHours();
+      var mm = time.getMinutes();
+      var s = time.getSeconds();
+      return (
+        y +
+        "-" +
+        this.add(m) +
+        "-" +
+        this.add(d)
+      );
+    },
     getList() {
       this.listLoading = true
       listUser(this.$store.getters.user.id).then(
         res => {
           this.list = res.data
+          for (var i = 0; i < this.list.length; i++) {
+            this.list[i].birth = this.format(this.list[i].birth);
+          }
           this.totalList = res.data
           this.listLoading = false
           this.total = res.data.length
