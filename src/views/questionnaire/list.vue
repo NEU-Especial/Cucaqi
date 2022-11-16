@@ -22,15 +22,6 @@
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
-        添加问卷
-      </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
         icon="el-icon-delete"
         @click="handleRecover"
       >
@@ -109,10 +100,11 @@
 
       <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <!--          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            编辑问卷
-          </el-button>-->
+          <el-button type="warning" v-show="row.state===1" size="mini" @click="handleUpdate(row)">
+            提前结束
+          </el-button>
           <el-button
+            v-show="row.state===0"
             size="mini"
             type="success"
             @click="handleModifyStatus(row)"
@@ -164,7 +156,7 @@
 
     <!--恢复历史记录弹出框-->
     <el-dialog title="历史记录" :visible.sync="openRecoverDialog" width="1400px">
-      <recover ref="recover" @refresh="getNewList"/>
+      <recover ref="recover" :parent-list="list" @refresh="getNewList"/>
     </el-dialog>
 
     <!--编辑问卷弹出框-->
@@ -455,7 +447,7 @@ export default {
             type: 'success',
             duration: 2000
           })
-          if (this.temp.state == 0) {
+          if (this.temp.state === 0) {
             updateSurveyState({ state: 1, surveyId: this.temp.id })
           }
 
@@ -537,13 +529,8 @@ export default {
       return
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+      updateSurveyState({ state: 2, surveyId: row.id })
+      row.state = 2
     },
     updateData() {
       this.list[0].title = this.temp.title
@@ -563,7 +550,7 @@ export default {
             type: 'success',
             duration: 2000
           })
-          if (this.temp.state == 0) {
+          if (this.temp.state === 0) {
             updateSurveyState({ state: 1, surveyId: this.temp.id })
           }
           this.temp.state = 1

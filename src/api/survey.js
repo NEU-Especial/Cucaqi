@@ -89,3 +89,12 @@ export function updateSurveyState(params) {
     params: params
   })
 }
+
+// 更新问卷状态
+export function RecoverSurvey(params) {
+  return request({
+    url: `/cucaqi/survey/recoverSurvey`,
+    method: 'put',
+    params: params
+  })
+}

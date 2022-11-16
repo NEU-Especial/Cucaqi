@@ -9,7 +9,7 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -73,7 +73,7 @@
       <el-table-column label="问卷状态" class-name="status-col" width="100" align="center">
         <template slot-scope="{row}">
           <el-tag :type="row.state | statusFilter">
-            {{ row.status }}
+            {{ ['未发布', '已发布', '已截止', '已删除'][row.state] }}
           </el-tag>
         </template>
       </el-table-column>
@@ -85,39 +85,25 @@
 
       <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handleRecover(row,$index)">
+          <el-button size="mini" type="success" @click="handleRecover(row,$index)">
             恢复
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="getList"
-    />
   </div>
 </template>
 
 <script>
 
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-import { Model, StylesManager } from 'survey-vue'
 import 'survey-vue/defaultV2.css'
-import Pagination from '@/components/Pagination'
 import { getGroupPage } from '@/api/group'
-import { findAllSurvey, findDeletedSurvey } from '@/api/survey'
-
-StylesManager.applyTheme('defaultV2')
+import { findDeletedSurvey, RecoverSurvey } from '@/api/survey'
 // arr to obj, such as { CN : "China", US : "USA" }
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
   directives: { waves },
   filters: {
     limit(count) {
@@ -155,6 +141,9 @@ export default {
       }
     }
   },
+  props: {
+    parentList: []
+  },
   data() {
     return {
       tableKey: 0,
@@ -182,10 +171,6 @@ export default {
         type: '',
         status: 'published'
       },
-      dialogFormVisible2: false,
-      dialogFormVisible: false,
-      answerListTableVisible: false,
-      answerDetailTableVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -197,10 +182,6 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      answerListData: answerListData,
-      surveyJson: surveyJson,
-      answerJson: answerJson,
-      survey: survey,
       downloadLoading: false,
       postPublicDialog: false,
       postPrivateDialog: false,
@@ -242,7 +223,6 @@ export default {
       this.getList()
     },
     handleModifyStatus(row, status) {
-
       if (row.isPublic === '是') {
         this.$message({
           message: '操作Success',
@@ -294,12 +274,17 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     handleRecover(row, index) {
-      this.$message({
-        message: '恢复成功',
-        type: 'success'
-      })
-      this.list.splice(index, 1)
-      this.$emit('refresh')
+      RecoverSurvey({ surveyId: row.id }).then(
+        (res) => {
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+          row.state = 0
+          this.parentList.push(row)
+          this.list.splice(index, 1)
+        }
+      )
     }
   }
 }
