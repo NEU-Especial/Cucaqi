@@ -11,24 +11,29 @@
       <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
       </el-select>
-      <el-select v-model="listQuery.type" placeholder="问卷类型" clearable class="filter-item" style="width: 130px">
-        <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name+'('+item.key+')'"
-          :value="item.key"
-        />
-      </el-select>
+
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >
         添加问卷
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-delete" @click="handleRecover">
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-delete"
+        @click="handleRecover"
+      >
         恢复历史记录
       </el-button>
 
@@ -61,27 +66,27 @@
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="130px" align="center">
+      <el-table-column label="创建时间" width="180px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.createdTime| parse }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="开始时间" width="130px" align="center">
+      <el-table-column label="开始时间" width="180px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.startedTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.startTime| parse }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="结束时间" width="130px" align="center">
+      <el-table-column label="结束时间" width="180px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.endTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.endTime| parse }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="限制人数" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.limit }}</span>
+          <span>{{ row.limitCount|limit }}</span>
         </template>
       </el-table-column>
       <el-table-column label="答题人数" width="110px" align="center">
@@ -91,8 +96,8 @@
       </el-table-column>
       <el-table-column label="问卷状态" class-name="status-col" width="100" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
+          <el-tag :type="row.state | statusFilter">
+            {{ ['未发布', '已发布', '已截止', '已删除'][row.state] }}
           </el-tag>
         </template>
       </el-table-column>
@@ -101,32 +106,22 @@
           {{ row.isPublic }}
         </template>
       </el-table-column>
-      <el-table-column label="是否推荐" width="100px" align="center">
-        <template slot-scope="{row}">
-          {{ row.isRecommend }}
-        </template>
-      </el-table-column>
 
       <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <!--          <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑问卷
-          </el-button>
+          </el-button>-->
           <el-button
             size="mini"
             type="success"
-            @click="handleModifyStatus(row,'已发布')"
+            @click="handleModifyStatus(row)"
           >
             发布问卷
           </el-button>
-          <!--          <el-button v-if="row.status!=='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            恢复问卷
-          </el-button>-->
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除问卷
           </el-button>
-
-          <!--          答卷列表-->
           <el-button type="primary" size="mini" @click="handleAnswerList(row)">
             答卷列表
           </el-button>
@@ -168,12 +163,12 @@
     </el-dialog>
 
     <!--恢复历史记录弹出框-->
-    <el-dialog title="历史记录" :visible.sync="openRecoverDialog" width="1200px">
+    <el-dialog title="历史记录" :visible.sync="openRecoverDialog" width="1400px">
       <recover ref="recover" @refresh="getNewList"/>
     </el-dialog>
 
     <!--编辑问卷弹出框-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" >
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -182,26 +177,14 @@
         label-width="90px"
         style="width: 400px; margin-left:50px;"
       >
-<!--        <el-form-item label="类型" prop="type">-->
-<!--          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">-->
-<!--            <el-option-->
-<!--              v-for="item in calendarTypeOptions"-->
-<!--              :key="item.key"-->
-<!--              :label="item.display_name"-->
-<!--              :value="item.key"-->
-<!--            />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
         <el-form-item label="标题" prop="title">
           <el-input v-model="temp.title"/>
         </el-form-item>
         <el-form-item label="开始时间" prop="startedTime">
           <el-input v-model="temp.startedTime"/>
-<!--          <el-date-picker v-model="temp.startedTime" type="datetime" placeholder="Please pick a date"/>-->
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-input v-model="temp.endTime"/>
-<!--          <el-date-picker v-model="temp.endTime" type="datetime" placeholder="Please pick a date"/>-->
         </el-form-item>
 
         <el-form-item label="问卷状态">
@@ -209,23 +192,11 @@
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
           </el-select>
         </el-form-item>
-<!--        <el-form-item label="推荐指数">-->
-<!--          <el-rate-->
-<!--            v-model="temp.importance"-->
-<!--            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"-->
-<!--            :max="3"-->
-<!--            style="margin-top:8px;"-->
-<!--          />-->
-<!--        </el-form-item>-->
-        <el-form-item label="是否推荐">
-          <el-col :span="4">
-            <el-switch v-model="temp.isRecommon" style="right: 0px"/>
-          </el-col>
-        </el-form-item>
+
         <el-form-item label="备注">
           <el-input
-            readonly
             v-model="temp.remark"
+            readonly
             :autosize="{ minRows: 2, maxRows: 4}"
             type="textarea"
             placeholder="此问卷处于发布状态不允许修改！"
@@ -251,9 +222,13 @@
         <el-table-column prop="postAddress" label="问卷地址"/>
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="postPublicDialog = false">确认</el-button>
+        <el-button type="primary" @click="postToPublic">确认发布</el-button>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="postPublicDialog=false">取消</el-button>
       </span>
     </el-dialog>
+
     <!--    私有问卷发布时的弹窗-->
     <el-dialog :visible.sync="postPrivateDialog" title="发布问卷" width="1000px">
       <el-table
@@ -293,7 +268,7 @@
 
         <el-table-column label="创建时间" width="200px" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.createdTime }}</span>
+            <span>{{ row.createdTime |parse }}</span>
           </template>
         </el-table-column>
 
@@ -306,8 +281,8 @@
         </el-table-column>
 
         <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
-          <template slot-scope="{row,$index}">
-            <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handlePost(row,$index)">
+          <template slot-scope="{row}">
+            <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handlePost(row)">
               发布
             </el-button>
           </template>
@@ -329,8 +304,9 @@ import { Model, StylesManager } from 'survey-vue'
 import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
 import { getGroupPage } from '@/api/group'
-import recover from "@/views/questionnaire/recover";
-import {Random} from "mockjs";
+import recover from '@/views/questionnaire/recover'
+import { findAllSurvey, PostToGroup, PostToPublic, softDeleteSurvey, updateSurveyState } from '@/api/survey'
+import { Message } from 'element-ui'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -348,126 +324,56 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,recover },
+  components: { Pagination, recover },
   directives: { waves },
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: '未发布',
-        deleted: 'danger'
+    limit(count) {
+      if (count === 0) {
+        return '无限制'
       }
+      return count
+    },
+    statusFilter(status) {
+      const statusMap = [
+        'success',
+        'primary',
+        'danger'
+      ]
       return statusMap[status]
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type]
+    },
+    parse(date) {
+      var arr = date
+      if (arr == null || arr === '') {
+        return '-'
+      } else {
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i].length === 1) {
+            arr[i] = '0' + arr[i]
+          }
+        }
+        var getFormatTime
+        if (arr.length === 5) {
+          getFormatTime = arr[0] + '-' + arr[1] + '-' + arr[2] + '\t' + arr[3] + ':' + arr[4] + ':' + '00'
+        } else {
+          getFormatTime = arr[0] + '-' + arr[1] + '-' + arr[2] + '\t' + arr[3] + ':' + arr[4] + ':' + arr[5]
+        }
+        return getFormatTime
+      }
     }
   },
   data() {
-    const answerListData = [{
-      answererName: '小王',
-      answerTime: '2022-05-02'
-    }, {
-      answererName: '小李',
-      answerTime: '2016-05-06'
-    }, {
-      answererName: '大王',
-      answerTime: '2018-08-17'
-    }]
-    const surveyJson = {
-      'title': '计算机专业调查问卷',
-      'description': '调查计算机专业学生信息',
-      'logoPosition': 'right',
-      'pages': [
-        {
-          'name': '页面1',
-          'elements': [
-            {
-              'type': 'text',
-              'name': '问题1',
-              'title': '你的学校'
-            },
-            {
-              'type': 'boolean',
-              'name': '问题2',
-              'title': '你是否喜欢计算机'
-            },
-            {
-              'type': 'matrix',
-              'name': '问题3',
-              'title': '你对编程语言的熟悉程度',
-              'columns': [
-                {
-                  'value': 'Column 1',
-                  'text': '了解'
-                },
-                {
-                  'value': 'Column 2',
-                  'text': '熟练'
-                },
-                {
-                  'value': 'Column 3',
-                  'text': '擅长'
-                }
-              ],
-              'rows': [
-                {
-                  'value': 'Row 1',
-                  'text': 'Java'
-                },
-                {
-                  'value': 'Row 2',
-                  'text': 'C++'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-    const answerJson = {
-      '问题1': '东北大学',
-      '问题2': true,
-      '问题3': {
-        'Row 1': 'Column 1',
-        'Row 2': 'Column 3'
-      }
-    }
-
+    const answerListData = []
+    const surveyJson = ''
+    const answerJson = ''
     const survey = new Model(surveyJson)
     survey.data = answerJson
     survey.mode = 'display'
-    var Random = require('mockjs').Random
     return {
       tableKey: 0,
-      list: [
-        {
-          title: 'hello world',
-          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          status: '未发布',
-          type: '优质问卷',
-          limit: 43,
-          curCount: 3,
-          isPublic: '是',
-          isRecommend: '否',
-          id: 10
-        },
-        {
-          title: 'hello vue',
-          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          status: '未发布',
-          type: '优质问卷',
-          limit: 30,
-          curCount: 6,
-          isPublic: '否',
-          isRecommend: '是',
-          id: 11
-        }
-      ],
+      list: [],
       total: 1,
       listLoading: true,
       listQuery: {
@@ -483,18 +389,7 @@ export default {
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       statusOptions: ['已发布', 'draft', '未发布'],
       showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        startedTime:Random.date('yyyy-MM-dd-hh:mm:ss'),
-        endTime:Random.date('yyyy-MM-dd-hh:mm:ss'),
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published',
-        isRecommon:''
-      },
+      temp: {}, // 临时问卷数据
       dialogFormVisible2: false,
       dialogFormVisible: false,
       answerListTableVisible: false,
@@ -524,62 +419,74 @@ export default {
       ],
       postListLoading: false,
       postGroupData: [],
-      openRecoverDialog:false
+      openRecoverDialog: false
     }
   },
   created() {
     this.getList()
   },
   methods: {
-    parseTime(date) {
-      const Y = date.getFullYear() + '-'
-      const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
-      const D = date.getDate() + ' '
-      const h = date.getHours() + ':'
-      const m = date.getMinutes() + ':'
-      const s = date.getSeconds()
-      return Y + M + D + h + m + s
+    handleDelete(row, index) {
+      if (row.state === 1) {
+        Message({
+          message: '问卷进行中不允许删除',
+          type: 'error',
+          duration: 2000
+        })
+        return
+      }
+      softDeleteSurvey({ surveyId: row.id }).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 2000
+          })
+          updateSurveyState({ state: 3, surveyId: row.id })
+          this.list.splice(index, 1)
+        }
+      )
+    },
+    postToPublic() {
+      PostToPublic({ surveyId: this.temp.id, userId: this.$store.getters.user.id }).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 2000
+          })
+          if (this.temp.state == 0) {
+            updateSurveyState({ state: 1, surveyId: this.temp.id })
+          }
+
+          this.temp.state = 1
+          this.postPublicDialog = false
+        }
+      )
     },
     jump() {
       this.$router.push('/questionnaire/jump')
     },
     getList() {
+      findAllSurvey({ id: this.$store.getters.user.id }).then(
+        (res) => {
+          this.list = res.data
+          this.total = res.data.length
+        }
+      )
       this.listLoading = false
       return
     },
     getNewList() {
-      this.listLoading = false
-      let newList =
-          {
-            title: 'hello java',
-            createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-            startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-            endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-            status: '未发布',
-            type: '优质问卷',
-            limit: 20,
-            curCount: 6,
-            isPublic: '是',
-            isRecommend: '是',
-            id: 8
-          }
-      this.list.push(newList)
-      return
     },
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
-    handleModifyStatus(row, status) {
-      // postQuestionaire(row).then(()=>{
-      //
-      // })
-      if (row.isPublic === '是') {
-        this.$message({
-          message: '操作Success',
-          type: 'success'
-        })
-        row.status = status
+    handleModifyStatus(row) {
+      this.temp = row
+      if (row.isPublic === true) {
+        // 公开问卷发布，生成链接，发布给所有的已注册答者
         this.postPublicDialog = true
       } else {
         this.postListLoading = true
@@ -587,10 +494,8 @@ export default {
           res => {
             this.postGroupData = res.data
             this.postListLoading = false
-            this.total = res.data.length
           }
         )
-        row.status = status
         this.postPrivateDialog = true
       }
       this.postData[0].postAddress = 'http://localhost:9528/survey?surver=' + row.id
@@ -650,13 +555,21 @@ export default {
       })
       this.dialogFormVisible = false
     },
-    handlePost(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Post Successfully',
-        type: 'success',
-        duration: 2000
-      })
+    handlePost(row) {
+      PostToGroup({ surveyId: this.temp.id, groupId: row.id }).then(
+        (res) => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 2000
+          })
+          if (this.temp.state == 0) {
+            updateSurveyState({ state: 1, surveyId: this.temp.id })
+          }
+          this.temp.state = 1
+          this.postPublicDialog = false
+        }
+      )
     },
     handleAnswerList(row) {
       this.answerListTableVisible = true
@@ -683,11 +596,11 @@ export default {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
-    handleRecover(){
-      this.openRecoverDialog = true;
+    handleRecover() {
+      this.openRecoverDialog = true
       this.$nextTick(() => {
-        this.$refs.recover.getList();
-      });
+        this.$refs.recover.getList()
+      })
     }
   }
 }

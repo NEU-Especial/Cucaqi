@@ -2,79 +2,38 @@
   <!--  创建问卷表单-->
   <div>
     <transition name="fade">
-      <el-container v-show="!isEditing" style="height: 1200px">
-        <el-aside width="40%" style="height:800px;margin: 30px">
+      <el-container v-show="!isEditing" style="height: 1200px;margin-top: 5%">
+        <el-aside width="40%" style="height:800px;margin: 5% 30px 30px;">
           <el-form ref="form" :model="form" label-width="80px">
-            <el-form-item label="问卷标题" label-width="120px">
-              <el-input v-model="form.name" />
-            </el-form-item>
-            <el-form-item label="开始时间" label-width="120px">
-              <el-col :span="11">
-                <el-date-picker v-model="form.dateStart" type="date" placeholder="选择日期" style="width: 100%;" />
-              </el-col>
-              <el-col class="line" :span="2">-</el-col>
-              <el-col :span="11">
-                <el-time-picker v-model="form.timeStart" placeholder="选择时间" style="width: 100%;" />
-              </el-col>
-            </el-form-item>
 
-            <el-form-item label="结束时间(可选)" label-width="120px">
-              <el-col :span="11">
-                <el-date-picker v-model="form.dateEnd" type="date" placeholder="选择日期" style="width: 100%;" />
-              </el-col>
-              <el-col class="line" :span="2">-</el-col>
-              <el-col :span="11">
-                <el-time-picker v-model="form.timeEnd" placeholder="选择时间" style="width: 100%;" />
-              </el-col>
+            <el-form-item label="时间范围" label-width="120px">
+              <el-date-picker
+                v-model="timeRange"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              />
             </el-form-item>
 
             <el-form-item label="公开问卷" label-width="120px">
-              <el-switch v-model="form.open" />
+              <el-switch v-model="form.isPublic" />
             </el-form-item>
-
-            <el-form-item label="选择群组" label-width="120px" :disabled="form.open">
-              <el-col :span="24">
-                <el-select
-                  v-model="form.region"
-                  :disabled="form.open"
-                  placeholder="请选择群组"
-                  multiple
-                  style="width: 100%;height: 50px"
-                  :autosize="{ minRows: 2, maxRows: 4}"
-                  size="medium"
-                >
-                  <el-option label="群组一" value="群组一" />
-                  <el-option label="群组二" value="群组二" />
-                  <el-option label="群组三" value="群组三" />
-                  <el-option label="group4" value="group4" />
-                  <el-option label="群4" value="群4" />
-                </el-select>
-              </el-col>
-            </el-form-item>
-
             <el-form-item label="限制回答人数" label-width="120px">
               <el-col :span="4">
-                <el-switch v-model="form.limited" style="right: 0px" />
+                <el-switch v-model="form.isLimit" style="right: 0px" />
               </el-col>
 
               <el-col :span="20">
                 <el-input-number
-                  v-model="form.maxCount"
-                  :disabled="!form.limited"
-                  :min="1"
+                  v-model="form.limitCount"
+                  :disabled="!form.isLimit"
+                  :min="0"
                   label="回答人数"
                   style="float: right"
                 />
               </el-col>
             </el-form-item>
-
-            <el-form-item label="问卷类型" label-width="120px">
-              <el-radio-group v-model="form.resource">
-                <el-radio label="普通问卷" value="hello"  />
-                <el-radio label="优质问卷"  value="hi"/>
-              </el-radio-group>
-            </el-form-item>
-
             <el-form-item label="问卷编辑" label-width="120px">
               <el-button type="primary" style="margin-right: 20px" @click="startEdit">编辑问卷</el-button>
               <el-button type="primary" plain @click="preview">模拟答题</el-button>
@@ -118,6 +77,7 @@ import { localization } from 'survey-creator-core'
 import { SurveyCreator } from 'survey-creator-knockout'
 import { Model, StylesManager, Survey } from 'survey-vue'
 import { Message } from 'element-ui'
+import { addSurvey } from '@/api/survey'
 
 StylesManager.applyTheme('defaultV2')
 const creatorOptions = {
@@ -134,18 +94,17 @@ export default {
       isEditing: false, // 是否正在编辑
       survey: '', // 存放当前调查问卷对象
       saveNo: -1,
+      timeRange: [],
+      isLimit: false,
       form: {
-        name: '',
-        region: '',
-        dateStart: '',
-        timeStart: '',
-        dateEnd: '',
-        timeEnd: '',
-        limited: true,
-        open: true,
-        maxCount: 0,
-        resource: 'hello',
-        desc: ''
+        content: '',
+        createdBy: '',
+        startTime: '',
+        endTime: '',
+        limitCount: 0,
+        isPublic: false,
+        state: 0,
+        title: ''
       }
     }
   },
@@ -176,7 +135,30 @@ export default {
     },
     onSubmit() {
       this.isEditing = false
+      if (this.survey === '') {
+        Message({
+          message: '空问卷,请编辑问卷内容',
+          type: 'error',
+          duration: 1000
+        })
+        return
+      }
+      console.log(this.survey)
+      if (this.survey.title === undefined) {
+        Message({
+          message: '请填写问卷标题',
+          type: 'error',
+          duration: 1000
+        })
+        return
+      }
+      this.form.content = JSON.stringify(this.survey)
+      this.form.createdBy = this.$store.getters.user.id
+      this.form.startTime = this.timeRange[0]
+      this.form.endTime = this.timeRange[1]
+      this.form.title = this.survey.title
       // 提交问卷给后台
+      addSurvey(this.form)
       Message({
         message: '创建成功',
         type: 'success',

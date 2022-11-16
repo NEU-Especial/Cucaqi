@@ -8,26 +8,13 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
-      </el-select>
-      <el-select v-model="listQuery.type" placeholder="问卷类型" clearable class="filter-item" style="width: 130px">
-        <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name+'('+item.key+')'"
-          :value="item.key"
-        />
-      </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-
     </div>
-
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -57,25 +44,25 @@
       </el-table-column>
       <el-table-column label="创建时间" width="130px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.createdTime }}</span>
+          <span>{{ row.createdTime| parse }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="开始时间" width="130px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.startedTime }}</span>
+          <span>{{ row.startTime| parse }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="结束时间" width="130px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.endTime }}</span>
+          <span>{{ row.endTime| parse }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="限制人数" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.limit }}</span>
+          <span>{{ row.limitCount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="答题人数" width="110px" align="center">
@@ -85,7 +72,7 @@
       </el-table-column>
       <el-table-column label="问卷状态" class-name="status-col" width="100" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
+          <el-tag :type="row.state | statusFilter">
             {{ row.status }}
           </el-tag>
         </template>
@@ -93,11 +80,6 @@
       <el-table-column label="是否公开" width="100px" align="center">
         <template slot-scope="{row}">
           {{ row.isPublic }}
-        </template>
-      </el-table-column>
-      <el-table-column label="是否推荐" width="100px" align="center">
-        <template slot-scope="{row}">
-          {{ row.isRecommend }}
         </template>
       </el-table-column>
 
@@ -128,144 +110,55 @@ import { Model, StylesManager } from 'survey-vue'
 import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
 import { getGroupPage } from '@/api/group'
-import {Message} from "element-ui";
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
+import { findAllSurvey, findDeletedSurvey } from '@/api/survey'
 
 StylesManager.applyTheme('defaultV2')
 // arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
 
 export default {
   name: 'ComplexTable',
   components: { Pagination },
   directives: { waves },
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: '未发布',
-        deleted: 'danger'
+    limit(count) {
+      if (count === 0) {
+        return '无限制'
       }
+      return count
+    },
+    statusFilter(status) {
+      const statusMap = [
+        'primary',
+        'success',
+        'warning',
+        'danger'
+      ]
       return statusMap[status]
     },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
+    parse(date) {
+      var arr = date
+      if (arr == null || arr === '') {
+        return '-'
+      } else {
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i].length === 1) {
+            arr[i] = '0' + arr[i]
+          }
+        }
+        var getFormatTime
+        if (arr.length === 5) {
+          getFormatTime = arr[0] + '-' + arr[1] + '-' + arr[2] + '\t' + arr[3] + ':' + arr[4] + ':' + '00'
+        } else {
+          getFormatTime = arr[0] + '-' + arr[1] + '-' + arr[2] + '\t' + arr[3] + ':' + arr[4] + ':' + arr[5]
+        }
+        return getFormatTime
+      }
     }
   },
   data() {
-    const answerListData = [{
-      answererName: '小王',
-      answerTime: '2022-05-02'
-    }, {
-      answererName: '小李',
-      answerTime: '2016-05-06'
-    }, {
-      answererName: '大王',
-      answerTime: '2018-08-17'
-    }]
-    const surveyJson = {
-      'title': '计算机专业调查问卷',
-      'description': '调查计算机专业学生信息',
-      'logoPosition': 'right',
-      'pages': [
-        {
-          'name': '页面1',
-          'elements': [
-            {
-              'type': 'text',
-              'name': '问题1',
-              'title': '你的学校'
-            },
-            {
-              'type': 'boolean',
-              'name': '问题2',
-              'title': '你是否喜欢计算机'
-            },
-            {
-              'type': 'matrix',
-              'name': '问题3',
-              'title': '你对编程语言的熟悉程度',
-              'columns': [
-                {
-                  'value': 'Column 1',
-                  'text': '了解'
-                },
-                {
-                  'value': 'Column 2',
-                  'text': '熟练'
-                },
-                {
-                  'value': 'Column 3',
-                  'text': '擅长'
-                }
-              ],
-              'rows': [
-                {
-                  'value': 'Row 1',
-                  'text': 'Java'
-                },
-                {
-                  'value': 'Row 2',
-                  'text': 'C++'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-    const answerJson = {
-      '问题1': '东北大学',
-      '问题2': true,
-      '问题3': {
-        'Row 1': 'Column 1',
-        'Row 2': 'Column 3'
-      }
-    }
-
-    const survey = new Model(surveyJson)
-    survey.data = answerJson
-    survey.mode = 'display'
-    var Random = require('mockjs').Random
     return {
       tableKey: 0,
-      list: [
-        {
-          title: 'hello java',
-          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          status: '未发布',
-          type: '优质问卷',
-          limit: 20,
-          curCount: 6,
-          isPublic: '是',
-          isRecommend: '是',
-          id: 8
-        },
-        {
-          title: 'hello spring',
-          createdTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          startedTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          endTime: Random.date('yyyy-MM-dd-hh:mm:ss'),
-          status: '未发布',
-          type: '优质问卷',
-          limit: 30,
-          curCount: 6,
-          isPublic: '否',
-          isRecommend: '是',
-          id: 9
-        }
-      ],
+      list: [],
       total: 1,
       listLoading: true,
       listQuery: {
@@ -277,7 +170,6 @@ export default {
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       sortOptions: [{ label: 'ID 升序', key: '+id' }, { label: 'ID 降序', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
@@ -319,7 +211,7 @@ export default {
       ],
       postListLoading: false,
       postGroupData: [],
-      openRecoverDialog:false
+      openRecoverDialog: false
     }
   },
   created() {
@@ -335,21 +227,22 @@ export default {
       const s = date.getSeconds()
       return Y + M + D + h + m + s
     },
-    jump() {
-      this.$router.push('/questionnaire/jump')
-    },
     getList() {
       this.listLoading = false
-      return
+      findDeletedSurvey({ id: this.$store.getters.user.id }).then(
+        (res) => {
+          this.list = res.data
+          this.total = res.data.length
+        }
+      )
+      this.listLoading = false
     },
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
     },
     handleModifyStatus(row, status) {
-      // postQuestionaire(row).then(()=>{
-      //
-      // })
+
       if (row.isPublic === '是') {
         this.$message({
           message: '操作Success',
@@ -396,69 +289,17 @@ export default {
         type: ''
       }
     },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createData() {
-      return
-    },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    updateData() {
-      return
-    },
-    handlePost(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Post Successfully',
-        type: 'success',
-        duration: 2000
-      })
-    },
-    handleAnswerList(row) {
-      this.answerListTableVisible = true
-    },
-    handleAnswerDetail() {
-      this.answerListTableVisible = false
-      this.answerDetailTableVisible = true
-    },
-    handleAnswersDetail() {
-      this.answerListTableVisible = false
-      // this.answerDetailTableVisible = true
-      this.dialogFormVisible2 = true
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    },
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
-    handleRecover(row,index){
+    handleRecover(row, index) {
       this.$message({
         message: '恢复成功',
         type: 'success'
       })
       this.list.splice(index, 1)
-      this.$emit("refresh")
+      this.$emit('refresh')
     }
   }
 }
