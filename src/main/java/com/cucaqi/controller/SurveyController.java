@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import javax.websocket.server.PathParam;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -119,17 +120,19 @@ public class SurveyController {
         return new Result(200, "", needToAnswer);
     }
 
-    @GetMapping("/getSurveyById")
+    @GetMapping("/getSurveyById/{id}")
     public Result getSurveyById(@PathVariable("id") Integer id) {
-        //根据答者id拿到所有代答问卷
         Survey survey = surveyMapper.selectById(id);
         return new Result(200, "", survey);
     }
 
 
-    @PostMapping("/saveAnswerResult")
-    public Result saveAnswerResult(@Param("answererId") Integer answererId, @Param("surveyId") Integer surveyId, @RequestBody String answer) {
+    @PostMapping("/saveAnswerResult/{surveyId}/{answererId}")
+    public Result saveAnswerResult(@PathVariable("answererId") Integer answererId, @PathVariable("surveyId") Integer surveyId, @RequestBody String answer) {
         //先判断以下当前的问卷状态
+        if (answererId==-1){
+            answererId=null;
+        }
         Survey survey = surveyMapper.selectById(surveyId);
         if (survey == null) {
             return new Result(400, "问卷已被删除");
@@ -157,7 +160,8 @@ public class SurveyController {
 
         surveyMapper.updateAnswer(surveyId, answererId, answer);
         surveyMapper.updateCurCount(surveyId);
-        return new Result(400, "提交成功，感谢作答");
+
+        return new Result(200, "提交成功，感谢作答");
 
     }
 
