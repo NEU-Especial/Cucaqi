@@ -32,10 +32,10 @@
           <i class="el-icon-phone"/>
         </span>
         <el-input
-          ref="email"
-          v-model="loginForm.email"
-          placeholder="Email Address"
-          name="email"
+          ref="telephone"
+          v-model="loginForm.telephone"
+          placeholder="电话号码"
+          name="手机号"
           type="text"
           tabindex="1"
           auto-complete="on"
@@ -70,7 +70,7 @@
         :loading="loading"
         type="primary"
         style="width:48%;margin-bottom:30px;"
-        @click.native.prevent="loginByEmail"
+        @click.native.prevent="loginByTelephone"
       >验证码登陆
       </el-button>
       <el-button
@@ -93,15 +93,15 @@
 
 <script>
 import { Message } from 'element-ui'
-import { getAuthCodeByEmail, LoginByEmail } from '@/api/login'
+import {getAuthCodeByEmail, getAuthCodeByTelephone, LoginByEmail, LoginByTelephone} from '@/api/login'
 
 export default {
   name: 'Login',
   data() {
     // 校验电话号码
-    const validateEmail = (rule, value, callback) => {
+    const validateTelephone = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('邮箱号为空'))
+        callback(new Error('电话号为空'))
         return false
       } else {
         callback()
@@ -127,7 +127,7 @@ export default {
       count: 60,
       disable: false,
       loginRules: {
-        email: [{ required: true, trigger: 'blur', validator: validateEmail }],
+        telephone: [{ required: true, trigger: 'blur', validator: validateTelephone }],
         authCode: [{ required: true, trigger: 'blur', validator: validateAuthCode }]
       },
       loading: false,
@@ -173,8 +173,7 @@ export default {
     // 发送验证码
     sendAuthCode() {
       this.loading = true
-
-      getAuthCodeByEmail(this.loginForm.email, this.loginForm.role).then(
+      getAuthCodeByTelephone(this.loginForm.telephone, this.loginForm.role).then(
         res => {
           this.loading = false
           Message({
@@ -201,11 +200,11 @@ export default {
         this.content = '获取验证码'
       })
     },
-    loginByEmail() {
+    loginByTelephone() {
       this.$refs.loginForm.validate(valid => {
         if (valid) { // 校验成功登陆
           this.loading = true
-          LoginByEmail(this.loginForm.authCode, this.loginForm).then(res => {
+          LoginByTelephone(this.loginForm.authCode, this.loginForm).then(res => {
             this.loading = false
             // 需要把用户信息进行保存，之后随时取用
             this.$store.commit('user/SetUser', res.data)
