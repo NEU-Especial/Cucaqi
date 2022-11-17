@@ -60,11 +60,14 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button v-show="row.answer===undefined" type="primary" size="mini" @click="answerSurvey(row)">
+          <el-button :disabled="row.answer!==null" type="primary" size="mini" @click="answerSurvey(row)">
             开始答卷
           </el-button>
-          <el-button v-show="row.answer!==undefined" type="primary" size="mini" :disabled="true">
-            已作答
+          <el-button type="primary" size="mini" @click="viewAnalytical(row)">
+            查看答卷统计
+          </el-button>
+          <el-button v-show="row.answer!==undefined" type="success" size="mini">
+            回顾答题结果
           </el-button>
         </template>
       </el-table-column>
@@ -158,8 +161,11 @@ export default {
     getList() {
       allSurveyToAnswer({ id: this.$store.getters.user.id }).then(
         (res) => {
-          this.list = res.data
-          this.total = res.data.length
+          for (let i = 0; i < res.data.surveyList.length; i++) {
+            this.list.push(res.data.surveyList[i])
+            this.list[i].answer = res.data.answers[i]
+          }
+          this.total = res.data.surveyList.length
         }
       )
       this.listLoading = false
