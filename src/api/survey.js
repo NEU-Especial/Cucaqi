@@ -8,6 +8,15 @@ export function getSurveyById(id) {
   })
 }
 
+
+// 根据问卷ID查找所有答卷相关信息
+export function findAllAnswersBySurveyId(id) {
+  return request({
+    url: `/cucaqi/survey/findAllAnswersBySurveyId/${id}`,
+    method: 'get'
+  })
+}
+
 // 查找所有问卷
 export function findAllSurvey(params) {
   return request({

@@ -314,7 +314,7 @@
 <script>
 
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
+import {formatTime, parseTime} from '@/utils'
 import Pagination from '@/components/Pagination'
 import { StylesManager } from 'survey-vue'
 import { Model } from 'survey-core'
@@ -323,7 +323,14 @@ import 'survey-vue/defaultV2.css'
 import 'survey-analytics/survey.analytics.min.css'
 import { VisualizationPanel } from 'survey-analytics'
 import recover from '@/views/questionnaire/recover'
-import { findAllSurvey, PostToGroup, PostToPublic, softDeleteSurvey, updateSurveyState } from '@/api/survey'
+import {
+  findAllAnswersBySurveyId,
+  findAllSurvey, getSurveyById,
+  PostToGroup,
+  PostToPublic,
+  softDeleteSurvey,
+  updateSurveyState
+} from '@/api/survey'
 import { Message } from 'element-ui'
 import { getGroupPage } from '@/api/group'
 
@@ -384,100 +391,6 @@ export default {
     }
   },
   data() {
-    const answerListData = [{
-      answererName: '徐高高',
-      answerTime: '2022-05-02'
-    }, {
-      answererName: '徐矮矮',
-      answerTime: '2016-05-06'
-    }, {
-      answererName: '徐好好',
-      answerTime: '2018-08-17'
-    }]
-    const surveyJson = {
-      'title': '计算机专业调查问卷',
-      'description': '调查计算机专业学生信息',
-      'logoPosition': 'right',
-      'pages': [
-        {
-          'name': '页面1',
-          'elements': [
-            {
-              'type': 'text',
-              'name': '问题1',
-              'title': '你的学校'
-            },
-            {
-              'type': 'boolean',
-              'name': '问题2',
-              'title': '你是否喜欢计算机'
-            },
-            {
-              'type': 'matrix',
-              'name': '问题3',
-              'title': '你对编程语言的熟悉程度',
-              'columns': [
-                {
-                  'value': 'Column 1',
-                  'text': '了解'
-                },
-                {
-                  'value': 'Column 2',
-                  'text': '熟练'
-                },
-                {
-                  'value': 'Column 3',
-                  'text': '擅长'
-                }
-              ],
-              'rows': [
-                {
-                  'value': 'Row 1',
-                  'text': 'Java'
-                },
-                {
-                  'value': 'Row 2',
-                  'text': 'C++'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-    const answerJson = {
-      '问题1': '东北大学',
-      '问题2': true,
-      '问题3': {
-        'Row 1': 'Column 1',
-        'Row 2': 'Column 3'
-      }
-    }
-    const allAnswerJson = [
-      {
-        '问题1': '浑南大学',
-        '问题2': true,
-        '问题3': {
-          'Row 1': 'Column 1',
-          'Row 2': 'Column 3'
-        }
-      },
-      {
-        '问题1': '南湖大学',
-        '问题2': false,
-        '问题3': {
-          'Row 1': 'Column 1',
-          'Row 2': 'Column 3'
-        }
-      },
-      {
-        '问题1': '东北大学',
-        '问题2': true,
-        '问题3': {
-          'Row 1': 'Column 1',
-          'Row 2': 'Column 3'
-        }
-      }]
 
     return {
       tableKey: 0,
@@ -516,10 +429,10 @@ export default {
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false,
-      answerListData: answerListData,
-      surveyJson: surveyJson,
-      answerJson: answerJson,
-      allAnswerJson: allAnswerJson,
+      answerListData: null,
+      surveyJson: null,
+      answerJson: null,
+      allAnswerJson: null,
       survey: null,
       surveyVizPanel: null,
       postPublicDialog: false,
@@ -686,11 +599,45 @@ export default {
       )
     },
     handleAnswerList(row) {
+      // alert(JSON.stringify(row))
+      // console.log()
+      // console.log(row.id)
+
+      getSurveyById(row.id) .then(
+        (res) => {
+          this.surveyJson = JSON.parse(res.data.content.replaceAll('\'', '\"'))
+          // alert("ok")
+        }
+      )
+
+      findAllAnswersBySurveyId(row.id).then(
+        (res) => {
+          // console.log(JSON.stringify(res))
+
+          var answersData = res.data
+          this.answerListData = []
+          this.allAnswerJson = []
+          for (let i = 0; i < answersData.length; i++) {
+            var item = answersData[i]
+            item.answer = item.answer.replaceAll('\'', '\"')
+            // alert(item.answer);
+            this.answerListData.push({
+              answererName: item.answererId,
+              answerTime: item.createdTime,
+              answerJson: item.answer
+            })
+            this.allAnswerJson.push(JSON.parse(item.answer))
+          }
+        }
+      )
       this.answerListTableVisible = true
     },
-    handleAnswerDetail() {
+    handleAnswerDetail(row) {
+
+      console.log(row.answerJson)
+
       this.survey = new Model(this.surveyJson)
-      this.survey.data = this.answerJson
+      this.survey.data = JSON.parse(row.answerJson)
       this.survey.mode = 'display'
       this.answerListTableVisible = false
       this.answerDetailTableVisible = true
