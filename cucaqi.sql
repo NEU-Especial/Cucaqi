@@ -11,7 +11,7 @@
  Target Server Version : 50719
  File Encoding         : 65001
 
- Date: 10/11/2022 14:49:17
+ Date: 16/11/2022 20:23:36
 */
 
 SET NAMES utf8mb4;
@@ -39,18 +39,18 @@ CREATE TABLE `t_admin`  (
 -- ----------------------------
 -- Records of t_admin
 -- ----------------------------
-INSERT INTO `t_admin` VALUES (1, 'admin', '123456', '11323414', 2, '2131', 1001, '123', 'shimaring@qq.com');
-INSERT INTO `t_admin` VALUES (2, '2', '22', '2222', 1, '213', 1001, '111345', '5615621');
-INSERT INTO `t_admin` VALUES (3, '3', '33', '3333', 1, '312', 1001, '1112', '41854141');
-INSERT INTO `t_admin` VALUES (4, '4', '44', '4444', 2, '123', 1001, '11143', '89652965');
-INSERT INTO `t_admin` VALUES (5, '5', '55', '5555', 3, '569', 1001, '11145', '59652');
-INSERT INTO `t_admin` VALUES (6, '6', '66', '6666', 3, '48541', 1001, '11165', '9652541785');
-INSERT INTO `t_admin` VALUES (7, '7', '77', '7777', 3, '841', 1001, '1122', '85418541');
-INSERT INTO `t_admin` VALUES (8, '8', '88', '8888', 2, '8541', 1001, '1113', '59641');
-INSERT INTO `t_admin` VALUES (9, '9', '99', '9999', 1, '87541', 1001, '1212', '84124185');
-INSERT INTO `t_admin` VALUES (10, '10', '1010', '101010', 1, '596', 1001, '2345', '485415');
-INSERT INTO `t_admin` VALUES (11, '11', '1111', '111111', 2, '452', 1001, '3525', '986596');
-INSERT INTO `t_admin` VALUES (12, '12', '1212', '121212', 3, '56296', 1001, '2523', '856452141');
+INSERT INTO `t_admin` VALUES (1, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (2, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (3, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (4, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (5, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (6, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (7, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (8, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (9, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (10, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (11, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
+INSERT INTO `t_admin` VALUES (12, 'admin', '123456', '11323414', 2, '2131', 1001, '356931', 'shimaring@qq.com');
 
 -- ----------------------------
 -- Table structure for t_answerer
@@ -89,7 +89,7 @@ INSERT INTO `t_answerer` VALUES (8, '8', '88', '78257857', 3, '87373', 1004, NUL
 INSERT INTO `t_answerer` VALUES (9, '9', '99', '875785', 1, '2378327', 1004, NULL, 0, 4, '698');
 INSERT INTO `t_answerer` VALUES (10, '10', '1010', '7857852', 2, '837373', 1004, NULL, 0, 4, '546');
 INSERT INTO `t_answerer` VALUES (11, '11', '1111', '85', 2, '4525', 1004, NULL, 0, 4, NULL);
-INSERT INTO `t_answerer` VALUES (12, '1', '123456', '13940131469', NULL, NULL, 1004, 0, 0, 1, 'www204143090@163.com');
+INSERT INTO `t_answerer` VALUES (12, 'admin', '123456', '13940131469', NULL, NULL, 1004, 0, 0, 1, 'www204143090@163.com');
 INSERT INTO `t_answerer` VALUES (13, '骆桩波', '56+5', '13940131469', NULL, NULL, 1004, 0, 0, 1, 'www204143090@163.com');
 
 -- ----------------------------
@@ -98,18 +98,27 @@ INSERT INTO `t_answerer` VALUES (13, '骆桩波', '56+5', '13940131469', NULL, N
 DROP TABLE IF EXISTS `t_answerer_survey`;
 CREATE TABLE `t_answerer_survey`  (
   `surveyId` int(11) NOT NULL,
-  `answererId` int(11) NOT NULL,
+  `answererId` int(11) NULL DEFAULT NULL,
   `createdTime` datetime NULL DEFAULT NULL,
   `answer` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
-  PRIMARY KEY (`surveyId`, `answererId`) USING BTREE,
-  INDEX `answerId`(`answererId`) USING BTREE,
-  CONSTRAINT `answerId` FOREIGN KEY (`answererId`) REFERENCES `t_answerer` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `surveyId` FOREIGN KEY (`surveyId`) REFERENCES `t_survey` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  INDEX `answerId`(`answererId`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_answerer_survey
 -- ----------------------------
+INSERT INTO `t_answerer_survey` VALUES (4, 2, '2022-11-16 16:55:51', NULL);
+INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 16:55:51', NULL);
+INSERT INTO `t_answerer_survey` VALUES (4, 13, '2022-11-16 16:55:51', NULL);
+INSERT INTO `t_answerer_survey` VALUES (5, 2, '2022-11-16 16:50:23', NULL);
+INSERT INTO `t_answerer_survey` VALUES (5, 3, '2022-11-16 16:50:23', NULL);
+INSERT INTO `t_answerer_survey` VALUES (5, 4, '2022-11-16 16:50:24', NULL);
+INSERT INTO `t_answerer_survey` VALUES (5, 5, '2022-11-16 16:50:24', NULL);
+INSERT INTO `t_answerer_survey` VALUES (5, 7, '2022-11-16 16:50:24', NULL);
+INSERT INTO `t_answerer_survey` VALUES (5, 12, '2022-11-16 16:50:24', NULL);
+INSERT INTO `t_answerer_survey` VALUES (4, 2, '2022-11-16 19:48:42', NULL);
+INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 19:48:42', NULL);
+INSERT INTO `t_answerer_survey` VALUES (4, 13, '2022-11-16 19:48:42', NULL);
 
 -- ----------------------------
 -- Table structure for t_group
@@ -131,7 +140,7 @@ CREATE TABLE `t_group`  (
 -- ----------------------------
 INSERT INTO `t_group` VALUES (1, 'a', '啊啊啊', 1, '2022-11-02 20:37:12', 0);
 INSERT INTO `t_group` VALUES (2, 'b', '啊啊', 1, '2022-11-02 20:37:14', 0);
-INSERT INTO `t_group` VALUES (3, 'c', '呃呃', 1, '2022-11-02 20:37:18', 0);
+INSERT INTO `t_group` VALUES (3, 'c', '呃呃', 1, '2022-11-02 20:37:18', 1);
 INSERT INTO `t_group` VALUES (4, 'd', '塔塔', 1, '2022-11-02 20:37:21', 0);
 INSERT INTO `t_group` VALUES (5, 'e', '已有', 1, '2022-11-02 20:37:24', 0);
 INSERT INTO `t_group` VALUES (6, 'f', '与i', 1, '2022-11-02 20:37:27', 0);
@@ -142,7 +151,7 @@ INSERT INTO `t_group` VALUES (10, 'j', '复活甲', 4, '2022-11-02 20:37:37', 0)
 INSERT INTO `t_group` VALUES (11, 'k', '吗v你', 4, '2022-11-02 20:37:41', 0);
 INSERT INTO `t_group` VALUES (12, 'l', '美女吧v', 2, '2022-11-02 20:37:43', 0);
 INSERT INTO `t_group` VALUES (13, 'f', '多个', 1, '2022-11-03 04:00:54', 0);
-INSERT INTO `t_group` VALUES (14, 'f', '萨法', 1, '2022-11-03 04:01:08', 1);
+INSERT INTO `t_group` VALUES (14, 'f', '萨法', 1, '2022-11-03 04:01:08', 0);
 INSERT INTO `t_group` VALUES (15, NULL, NULL, 11, NULL, 0);
 
 -- ----------------------------
@@ -161,11 +170,9 @@ CREATE TABLE `t_group_answerer`  (
 -- ----------------------------
 -- Records of t_group_answerer
 -- ----------------------------
-INSERT INTO `t_group_answerer` VALUES (3, 1);
 INSERT INTO `t_group_answerer` VALUES (2, 2);
 INSERT INTO `t_group_answerer` VALUES (2, 3);
 INSERT INTO `t_group_answerer` VALUES (1, 4);
-INSERT INTO `t_group_answerer` VALUES (3, 4);
 INSERT INTO `t_group_answerer` VALUES (1, 5);
 INSERT INTO `t_group_answerer` VALUES (1, 7);
 INSERT INTO `t_group_answerer` VALUES (1, 12);
@@ -256,30 +263,32 @@ INSERT INTO `t_security_question` VALUES (3, '问题三');
 -- ----------------------------
 DROP TABLE IF EXISTS `t_survey`;
 CREATE TABLE `t_survey`  (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `content` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
   `createdBy` int(11) NULL DEFAULT NULL,
   `startTime` datetime NULL DEFAULT NULL,
   `endTime` datetime NULL DEFAULT NULL,
   `limitCount` int(11) NULL DEFAULT NULL,
-  `curCount` int(11) NULL DEFAULT NULL,
+  `curCount` int(11) NULL DEFAULT 0,
   `isPublic` tinyint(1) NULL DEFAULT NULL,
   `style` int(11) NULL DEFAULT NULL,
-  `isRecommon` tinyint(1) NULL DEFAULT NULL,
   `state` int(11) NULL DEFAULT NULL,
   `createdTime` datetime NULL DEFAULT NULL,
-  `deleted` int(11) NULL DEFAULT NULL,
+  `deleted` int(11) NULL DEFAULT 0,
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `createdBy`(`createdBy`) USING BTREE,
   CONSTRAINT `t_survey_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_survey
 -- ----------------------------
-INSERT INTO `t_survey` VALUES (1, 'aa', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_survey` VALUES (2, 'bb', 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `t_survey` VALUES (3, 'cc', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `t_survey` VALUES (1, 'aa', 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 'aa');
+INSERT INTO `t_survey` VALUES (2, 'bb', 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+INSERT INTO `t_survey` VALUES (3, 'cc', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+INSERT INTO `t_survey` VALUES (4, '{\"title\":\"eq\",\"logoPosition\":\"right\",\"pages\":[{\"name\":\"页面1\",\"elements\":[{\"type\":\"radiogroup\",\"name\":\"问题1\",\"choices\":[\"item1\",\"item2\",\"item3\"]}]}]}', 1, '2022-11-08 16:00:00', '2022-11-30 16:00:00', 4, 0, 1, NULL, 0, '2022-11-30 16:00:00', 0, 'eq');
+INSERT INTO `t_survey` VALUES (5, '{\"title\":\"point\",\"logoPosition\":\"right\",\"pages\":[{\"name\":\"页面1\",\"elements\":[{\"type\":\"rating\",\"name\":\"问题1\"}]}]}', 1, '2022-11-01 16:00:00', '2022-12-20 16:00:00', 0, 0, 0, NULL, 0, '2022-11-16 16:33:56', 0, 'point');
 
 -- ----------------------------
 -- Table structure for t_user
