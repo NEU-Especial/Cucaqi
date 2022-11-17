@@ -114,6 +114,8 @@
           <el-button v-if="row.status!=='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除问卷
           </el-button>
+
+<!--          答卷列表-->
           <el-button type="primary" size="mini" @click="handleAnswerList(row)">
             答卷列表
           </el-button>
@@ -130,28 +132,30 @@
       @pagination="getList"
     />
 
-    <!--答卷列表弹出框-->
-    <el-dialog
-      title="答卷列表"
-      :visible.sync="answerListTableVisible"
-    >
-      <el-row>
-        <el-button type="primary" round @click="jump">查看整体情况</el-button>
+    <!--答卷列表弹出框 @Author: cjs-->
+    <el-dialog title="答卷列表" :visible.sync="answerListTableVisible">
+
+      <el-row style="height: 55px">
+        <el-button type="primary" size="mini" icon="el-icon-view" @click="handleAnswerOverview">总览</el-button>
       </el-row>
-      <el-table :data="answerListData">
-        <el-table-column property="answererName" label="答卷人姓名"/>
-        <el-table-column property="answerTime" label="交卷时间"/>
-        <el-table-column property="operation" label="操作">
-          <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleAnswerDetail(scope.row)">查看</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+
+      <el-row>
+        <el-table :data="answerListData">
+          <el-table-column property="answererName" label="答卷人姓名"></el-table-column>
+          <el-table-column property="answerTime" label="交卷时间"></el-table-column>
+          <el-table-column property="operation" label="操作">
+            <template slot-scope="scope">
+              <el-button @click="handleAnswerDetail(scope.row)" type="text" size="small">查看</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-row>
+
     </el-dialog>
 
-    <!--答卷细节弹出框-->
+    <!--答卷细节弹出框 @Author: cjs-->
     <el-dialog title="答卷详情" :visible.sync="answerDetailTableVisible">
-      <survey :survey="survey"/>
+      <survey :survey="survey" />
     </el-dialog>
 
     <!--恢复历史记录弹出框-->
@@ -159,7 +163,14 @@
       <recover ref="recover"  @refresh="getNewList"/>
     </el-dialog>
 
-    <!--编辑问卷弹出框-->
+
+    <!--批量查看答卷弹出框 @Author: cjs-->
+    <el-dialog title="答卷总览" :visible.sync="answerOverviewTableVisible">
+      <div id="surveyResult" />
+    </el-dialog>
+
+<!--    <div id="surveyResult" />-->
+
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
@@ -292,13 +303,14 @@
 
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import { Model, StylesManager } from 'survey-vue'
-import 'survey-vue/defaultV2.css'
 import Pagination from '@/components/Pagination'
-import { getGroupPage } from '@/api/group'
-import recover from '@/views/questionnaire/recover'
-import { findAllSurvey, PostToGroup, PostToPublic, softDeleteSurvey, updateSurveyState } from '@/api/survey'
-import { Message } from 'element-ui'
+import { StylesManager } from "survey-vue";
+import { Model } from 'survey-core';
+import "survey-vue/defaultV2.css";
+
+import 'survey-analytics/survey.analytics.min.css';
+import { VisualizationPanel } from 'survey-analytics';
+
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -357,12 +369,102 @@ export default {
     }
   },
   data() {
-    const answerListData = []
-    const surveyJson = ''
-    const answerJson = ''
-    const survey = new Model(surveyJson)
-    survey.data = answerJson
-    survey.mode = 'display'
+    const answerListData = [{
+      answererName: '徐高高',
+      answerTime: '2022-05-02',
+    }, {
+      answererName: '徐矮矮',
+      answerTime: '2016-05-06',
+    }, {
+      answererName: '徐好好',
+      answerTime: '2018-08-17',
+    }]
+    const surveyJson =  {
+      "title": "计算机专业调查问卷",
+      "description": "调查计算机专业学生信息",
+      "logoPosition": "right",
+      "pages": [
+        {
+          "name": "页面1",
+          "elements": [
+            {
+              "type": "text",
+              "name": "问题1",
+              "title": "你的学校"
+            },
+            {
+              "type": "boolean",
+              "name": "问题2",
+              "title": "你是否喜欢计算机"
+            },
+            {
+              "type": "matrix",
+              "name": "问题3",
+              "title": "你对编程语言的熟悉程度",
+              "columns": [
+                {
+                  "value": "Column 1",
+                  "text": "了解"
+                },
+                {
+                  "value": "Column 2",
+                  "text": "熟练"
+                },
+                {
+                  "value": "Column 3",
+                  "text": "擅长"
+                }
+              ],
+              "rows": [
+                {
+                  "value": "Row 1",
+                  "text": "Java"
+                },
+                {
+                  "value": "Row 2",
+                  "text": "C++"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    const answerJson =  {
+      "问题1": "东北大学",
+      "问题2": true,
+      "问题3": {
+        "Row 1": "Column 1",
+        "Row 2": "Column 3"
+      }
+    }
+    const allAnswerJson = [
+      {
+      "问题1": "浑南大学",
+      "问题2": true,
+      "问题3": {
+        "Row 1": "Column 1",
+        "Row 2": "Column 3"
+      }
+    },
+      {
+      "问题1": "南湖大学",
+      "问题2": false,
+      "问题3": {
+        "Row 1": "Column 1",
+        "Row 2": "Column 3"
+      }
+    },
+      {
+      "问题1": "东北大学",
+      "问题2": true,
+      "问题3": {
+        "Row 1": "Column 1",
+        "Row 2": "Column 3"
+      }
+    }]
+
+
     return {
       tableKey: 0,
       list: [],
@@ -386,22 +488,26 @@ export default {
       dialogFormVisible: false,
       answerListTableVisible: false,
       answerDetailTableVisible: false,
+      answerOverviewTableVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
         create: 'Create'
       },
       dialogPvVisible: false,
+      pvData: [],
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
+      downloadLoading: false,
       answerListData: answerListData,
       surveyJson: surveyJson,
       answerJson: answerJson,
-      survey: survey,
-      downloadLoading: false,
+      allAnswerJson: allAnswerJson,
+      survey: null,
+      surveyVizPanel: null,
       postPublicDialog: false,
       postPrivateDialog: false,
       postData: [
@@ -455,9 +561,6 @@ export default {
           this.postPublicDialog = false
         }
       )
-    },
-    jump() {
-      this.$router.push('/questionnaire/jump')
     },
     getList() {
       findAllSurvey({ id: this.$store.getters.user.id }).then(
@@ -563,13 +666,37 @@ export default {
       this.answerListTableVisible = true
     },
     handleAnswerDetail() {
+      this.survey = new Model(this.surveyJson);
+      this.survey.data = this.answerJson
+      this.survey.mode = 'display';
       this.answerListTableVisible = false
       this.answerDetailTableVisible = true
     },
-    handleAnswersDetail() {
+    handleAnswerOverview() {
+
+      // 创建答卷分析用到的对象
+      this.survey = new Model(this.surveyJson);
+      const vizPanelOptions = {
+        allowHideQuestions: false,
+      };
+      this.surveyVizPanel = new VisualizationPanel(
+        this.survey.getAllQuestions(),
+        this.allAnswerJson,
+        vizPanelOptions,
+      );
+
+      // 拿不到el-dialog中的元素id，要使用$nextTick
+      this .$nextTick(() => {
+        //每次渲染之前要清除surveyResult中的内容，否则渲染会一直append到上一次的后面
+        document.getElementById("surveyResult").innerHTML="";
+        // 渲染到surveyResult这个div中
+        this.surveyVizPanel.render("surveyResult");
+      });
+      this.surveyVizPanel.showHeader = false;
+
+      // dialog可见性
       this.answerListTableVisible = false
-      // this.answerDetailTableVisible = true
-      this.dialogFormVisible2 = true
+      this.answerOverviewTableVisible = true
     },
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
