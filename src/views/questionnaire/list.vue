@@ -620,10 +620,24 @@ export default {
           for (let i = 0; i < answersData.length; i++) {
             var item = answersData[i]
             item.answer = item.answer.replaceAll('\'', '\"')
+
+            // 格式化时间
+            let s = "";
+            for(let j = 0; j< item.createdTime.length; j++){
+              s += item.createdTime[j];
+              if(j === 0 || j === 1){
+                s += '-';
+              } else if(j === 2){
+                s += ' ';s
+              }else if(j === 3 || j === 4){
+                s += ':';
+              }
+            }
+
             // alert(item.answer);
             this.answerListData.push({
-              answererName: item.answererId,
-              answerTime: item.createdTime,
+              answererName: item.username === null ? '匿名用户' : item.username,
+              answerTime: s,
               answerJson: item.answer
             })
             this.allAnswerJson.push(JSON.parse(item.answer))
