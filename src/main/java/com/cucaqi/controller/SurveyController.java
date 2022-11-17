@@ -54,6 +54,14 @@ public class SurveyController {
         }
         return new Result(200, "创建成功");
     }
+    @PutMapping("/updateSurvey")
+    public Result updateSurvey(@RequestBody Survey survey) {
+        int insert = surveyMapper.updateById(survey);
+        if (insert == 0) {
+            return new Result(500, "修改失败");
+        }
+        return new Result(200, "修改成功");
+    }
 
     @GetMapping("/findAllSurvey")
     public Result findAllSurvey(@Param("id") Integer id) {
