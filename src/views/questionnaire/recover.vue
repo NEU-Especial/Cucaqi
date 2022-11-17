@@ -280,7 +280,6 @@ export default {
             message: res.msg,
             type: 'success'
           })
-          row.state = 0
         }
       )
     }
