@@ -1,17 +1,17 @@
 /*
- Navicat Premium Data Transfer
+ Navicat MySQL Data Transfer
 
  Source Server         : localhost_3306
  Source Server Type    : MySQL
- Source Server Version : 50723
+ Source Server Version : 50719
  Source Host           : localhost:3306
  Source Schema         : cucaqi
 
  Target Server Type    : MySQL
- Target Server Version : 50723
+ Target Server Version : 50719
  File Encoding         : 65001
 
- Date: 16/11/2022 23:41:47
+ Date: 17/11/2022 14:14:20
 */
 
 SET NAMES utf8mb4;
@@ -34,7 +34,7 @@ CREATE TABLE `t_admin`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
   CONSTRAINT `t_admin_ibfk_1` FOREIGN KEY (`securityQuestion`) REFERENCES `t_security_question` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_admin
@@ -73,7 +73,7 @@ CREATE TABLE `t_answerer`  (
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
   CONSTRAINT `t_answerer_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `t_answerer_ibfk_2` FOREIGN KEY (`securityQuestion`) REFERENCES `t_security_question` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_answerer
@@ -99,50 +99,24 @@ DROP TABLE IF EXISTS `t_answerer_survey`;
 CREATE TABLE `t_answerer_survey`  (
   `surveyId` int(11) NOT NULL,
   `answererId` int(11) NULL DEFAULT NULL,
-  `createdTime` datetime(0) NULL DEFAULT NULL,
-  `answer` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `createdTime` datetime NULL DEFAULT NULL,
+  `answer` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
   INDEX `answerId`(`answererId`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_answerer_survey
 -- ----------------------------
-INSERT INTO `t_answerer_survey` VALUES (4, 2, '2022-11-16 16:55:51', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 16:55:51', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 13, '2022-11-16 16:55:51', NULL);
-INSERT INTO `t_answerer_survey` VALUES (5, 2, '2022-11-16 16:50:23', NULL);
-INSERT INTO `t_answerer_survey` VALUES (5, 3, '2022-11-16 16:50:23', NULL);
-INSERT INTO `t_answerer_survey` VALUES (5, 4, '2022-11-16 16:50:24', NULL);
-INSERT INTO `t_answerer_survey` VALUES (5, 5, '2022-11-16 16:50:24', NULL);
-INSERT INTO `t_answerer_survey` VALUES (5, 7, '2022-11-16 16:50:24', NULL);
-INSERT INTO `t_answerer_survey` VALUES (5, 12, '2022-11-16 16:50:24', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 2, '2022-11-16 19:48:42', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 19:48:42', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 13, '2022-11-16 19:48:42', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 2, '2022-11-16 20:27:15', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 20:27:15', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 13, '2022-11-16 20:27:15', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 2, '2022-11-16 20:36:41', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 20:36:41', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 13, '2022-11-16 20:36:41', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 2, '2022-11-16 20:38:17', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 20:38:17', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 13, '2022-11-16 20:38:17', NULL);
-INSERT INTO `t_answerer_survey` VALUES (1, 2, '2022-11-16 20:39:19', NULL);
-INSERT INTO `t_answerer_survey` VALUES (1, 3, '2022-11-16 20:39:19', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 2, '2022-11-16 20:43:10', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 20:43:10', NULL);
-INSERT INTO `t_answerer_survey` VALUES (4, 13, '2022-11-16 20:43:10', NULL);
-INSERT INTO `t_answerer_survey` VALUES (3, 2, '2022-11-16 21:25:31', NULL);
-INSERT INTO `t_answerer_survey` VALUES (3, 3, '2022-11-16 21:25:31', NULL);
-INSERT INTO `t_answerer_survey` VALUES (3, 4, '2022-11-16 21:30:03', NULL);
-INSERT INTO `t_answerer_survey` VALUES (3, 5, '2022-11-16 21:30:03', NULL);
-INSERT INTO `t_answerer_survey` VALUES (3, 7, '2022-11-16 21:30:03', NULL);
-INSERT INTO `t_answerer_survey` VALUES (3, 12, '2022-11-16 21:30:03', NULL);
-INSERT INTO `t_answerer_survey` VALUES (1, 4, '2022-11-16 23:18:26', NULL);
-INSERT INTO `t_answerer_survey` VALUES (1, 5, '2022-11-16 23:18:26', NULL);
-INSERT INTO `t_answerer_survey` VALUES (1, 7, '2022-11-16 23:18:26', NULL);
-INSERT INTO `t_answerer_survey` VALUES (1, 12, '2022-11-16 23:18:26', NULL);
+INSERT INTO `t_answerer_survey` VALUES (4, 12, '2022-11-16 20:39:00', '{\"问题1\":\"item1\"}');
+INSERT INTO `t_answerer_survey` VALUES (15, 4, '2022-11-17 12:59:36', NULL);
+INSERT INTO `t_answerer_survey` VALUES (15, 5, '2022-11-17 12:59:36', NULL);
+INSERT INTO `t_answerer_survey` VALUES (15, 7, '2022-11-17 12:59:36', NULL);
+INSERT INTO `t_answerer_survey` VALUES (15, 12, '2022-11-17 12:59:36', NULL);
+INSERT INTO `t_answerer_survey` VALUES (15, 2, '2022-11-17 12:59:36', NULL);
+INSERT INTO `t_answerer_survey` VALUES (15, 3, '2022-11-17 12:59:36', NULL);
+INSERT INTO `t_answerer_survey` VALUES (14, 2, '2022-11-17 12:59:50', NULL);
+INSERT INTO `t_answerer_survey` VALUES (14, 12, '2022-11-17 12:59:50', '{\"问题1\":\"item2\"}');
+INSERT INTO `t_answerer_survey` VALUES (14, 13, '2022-11-17 12:59:50', NULL);
 
 -- ----------------------------
 -- Table structure for t_group
@@ -153,11 +127,11 @@ CREATE TABLE `t_group`  (
   `groupName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `createdBy` int(11) NULL DEFAULT NULL,
-  `createdTime` datetime(0) NULL DEFAULT NULL,
+  `createdTime` datetime NULL DEFAULT NULL,
   `deleted` int(11) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `createdBy`(`createdBy`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_group
@@ -189,7 +163,7 @@ CREATE TABLE `t_group_answerer`  (
   INDEX `userId`(`answererId`) USING BTREE,
   CONSTRAINT `t_group_answerer_ibfk_2` FOREIGN KEY (`answererId`) REFERENCES `t_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `t_group_answerer_ibfk_3` FOREIGN KEY (`groupId`) REFERENCES `t_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_group_answerer
@@ -212,7 +186,7 @@ CREATE TABLE `t_group_user`  (
   INDEX `userId`(`userId`) USING BTREE,
   CONSTRAINT `t_group_user_ibfk_1` FOREIGN KEY (`groupId`) REFERENCES `t_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `t_group_user_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `t_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_group_user
@@ -244,7 +218,7 @@ CREATE TABLE `t_lessee`  (
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
   CONSTRAINT `t_lessee_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_admin` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `t_lessee_ibfk_2` FOREIGN KEY (`securityQuestion`) REFERENCES `t_security_question` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_lessee
@@ -273,7 +247,7 @@ CREATE TABLE `t_security_question`  (
   `id` int(11) NOT NULL,
   `content` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_security_question
@@ -290,48 +264,31 @@ CREATE TABLE `t_survey`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `content` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
   `createdBy` int(11) NULL DEFAULT NULL,
-  `startTime` datetime(0) NULL DEFAULT NULL,
-  `endTime` datetime(0) NULL DEFAULT NULL,
+  `startTime` datetime NULL DEFAULT NULL,
+  `endTime` datetime NULL DEFAULT NULL,
   `limitCount` int(11) NULL DEFAULT NULL,
   `curCount` int(11) NULL DEFAULT 0,
   `isPublic` tinyint(1) NULL DEFAULT NULL,
   `style` int(11) NULL DEFAULT NULL,
   `state` int(11) NULL DEFAULT NULL,
-  `createdTime` datetime(0) NULL DEFAULT NULL,
+  `createdTime` datetime NULL DEFAULT NULL,
   `deleted` int(11) NULL DEFAULT 0,
   `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `createdBy`(`createdBy`) USING BTREE,
   CONSTRAINT `t_survey_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_survey
 -- ----------------------------
-INSERT INTO `t_survey` VALUES (1, 'aa', 1, '2022-11-16 20:28:15', NULL, NULL, NULL, 0, NULL, 1, NULL, 0, 'aa');
-INSERT INTO `t_survey` VALUES (2, 'bb', 2, NULL, NULL, NULL, NULL, 1, NULL, 1, NULL, 0, NULL);
-INSERT INTO `t_survey` VALUES (3, 'cc', 1, '2022-11-16 20:28:09', NULL, NULL, NULL, 0, NULL, 3, NULL, 1, NULL);
-INSERT INTO `t_survey` VALUES (4, '{\"title\":\"eq\",\"logoPosition\":\"right\",\"pages\":[{\"name\":\"页面1\",\"elements\":[{\"type\":\"radiogroup\",\"name\":\"问题1\",\"choices\":[\"item1\",\"item2\",\"item3\"]}]}]}', 1, '2022-11-08 16:00:00', '2022-11-30 16:00:00', 4, 0, 1, NULL, 3, '2022-11-30 16:00:00', 1, 'eq');
-INSERT INTO `t_survey` VALUES (5, '{\"title\":\"point\",\"logoPosition\":\"right\",\"pages\":[{\"name\":\"页面1\",\"elements\":[{\"type\":\"rating\",\"name\":\"问题1\"}]}]}', 1, '2022-11-01 16:00:00', '2022-12-20 16:00:00', 0, 0, 0, NULL, 3, '2022-11-16 16:33:56', 1, 'point');
-
--- ----------------------------
--- Table structure for t_survey_group
--- ----------------------------
-DROP TABLE IF EXISTS `t_survey_group`;
-CREATE TABLE `t_survey_group`  (
-  `groupId` int(11) NOT NULL,
-  `surveyId` int(11) NOT NULL,
-  PRIMARY KEY (`groupId`, `surveyId`) USING BTREE,
-  INDEX `surveyId`(`surveyId`) USING BTREE,
-  CONSTRAINT `groupId` FOREIGN KEY (`groupId`) REFERENCES `t_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `surveyId` FOREIGN KEY (`surveyId`) REFERENCES `t_survey` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of t_survey_group
--- ----------------------------
-INSERT INTO `t_survey_group` VALUES (7, 1);
-INSERT INTO `t_survey_group` VALUES (13, 1);
+INSERT INTO `t_survey` VALUES (1, 'aa', 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 'aa');
+INSERT INTO `t_survey` VALUES (2, 'bb', 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+INSERT INTO `t_survey` VALUES (3, 'cc', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+INSERT INTO `t_survey` VALUES (4, '{\"title\":\"eq\",\"logoPosition\":\"right\",\"pages\":[{\"name\":\"页面1\",\"elements\":[{\"type\":\"radiogroup\",\"name\":\"问题1\",\"choices\":[\"item1\",\"item2\",\"item3\"]}]}]}', 1, '2022-11-08 16:00:00', '2022-11-30 16:00:00', 4, 4, 1, NULL, 3, '2022-11-30 16:00:00', 1, 'eq');
+INSERT INTO `t_survey` VALUES (5, '{\"title\":\"point\",\"logoPosition\":\"right\",\"pages\":[{\"name\":\"页面1\",\"elements\":[{\"type\":\"rating\",\"name\":\"问题1\"}]}]}', 1, '2022-11-01 16:00:00', '2022-12-20 16:00:00', 0, 5, 0, NULL, 3, '2022-11-16 16:33:56', 1, 'point');
+INSERT INTO `t_survey` VALUES (14, '{\"title\":\"eq\",\"logoPosition\":\"right\",\"pages\":[{\"name\":\"页面1\",\"elements\":[{\"type\":\"radiogroup\",\"name\":\"问题1\",\"choices\":[\"item1\",\"item2\",\"item3\"]}]}]}', 1, '2022-11-08 16:00:00', '2022-11-30 16:00:00', 4, 1, 1, NULL, 1, '2022-11-30 16:00:00', 0, 'eq');
+INSERT INTO `t_survey` VALUES (15, '{\"title\":\"point\",\"logoPosition\":\"right\",\"pages\":[{\"name\":\"页面1\",\"elements\":[{\"type\":\"rating\",\"name\":\"问题1\"}]}]}', 1, '2022-11-01 16:00:00', '2022-12-20 16:00:00', 0, 0, 0, NULL, 0, '2022-11-16 16:33:56', 0, 'point');
 
 -- ----------------------------
 -- Table structure for t_user
@@ -357,7 +314,7 @@ CREATE TABLE `t_user`  (
   INDEX `securityQuestion`(`securityQuestion`) USING BTREE,
   CONSTRAINT `t_user_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `t_lessee` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `t_user_ibfk_2` FOREIGN KEY (`securityQuestion`) REFERENCES `t_security_question` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of t_user
