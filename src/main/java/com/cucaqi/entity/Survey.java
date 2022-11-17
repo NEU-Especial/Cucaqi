@@ -45,7 +45,7 @@ public class Survey implements Serializable {
     private Integer state;
 
     private LocalDateTime createdTime;
-    private String title;
+//    private String title;
 
 
     public Boolean getPublic() {
@@ -70,18 +70,10 @@ public class Survey implements Serializable {
                 ", style=" + style +
                 ", state=" + state +
                 ", createdTime=" + createdTime +
-                ", title='" + title + '\'' +
                 ", deleted=" + deleted +
                 '}';
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     @TableLogic
     private Integer deleted;

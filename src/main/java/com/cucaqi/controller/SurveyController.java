@@ -130,7 +130,7 @@ public class SurveyController {
 
     @GetMapping("/getSurveyById/{id}")
     public Result getSurveyById(@PathVariable("id") Integer id) {
-        Survey survey = surveyMapper.selectById(id);
+        Survey survey = surveyMapper.findSurveyById(id);
         return new Result(200, "", survey);
     }
 

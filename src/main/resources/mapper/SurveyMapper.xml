@@ -41,7 +41,7 @@
     </update>
 
     <!--    根据id查询问卷-->
-    <select id="select" parameterType="int" resultType="com.cucaqi.entity.Survey">
+    <select id="findSurveyById" parameterType="int" resultType="com.cucaqi.entity.Survey">
         select * from t_survey where id=#{id}
     </select>
 
