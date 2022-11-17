@@ -56,6 +56,14 @@ export function getAllSecurityQuestion() {
   })
 }
 
+export function findbackByTel(code,data) {
+  return request({
+    url: `/cucaqi/login/findbackByTel/${code}`,
+    method: 'post',
+    data
+  })
+}
+
 export function findbackByQues(data) {
   return request({
     url: `/cucaqi/login/findbackByQues`,

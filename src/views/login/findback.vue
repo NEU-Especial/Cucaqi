@@ -130,6 +130,20 @@
           >发送验证码
           </el-button>
           <br>
+          <el-button
+            :loading="loading"
+            type="primary"
+            style="width:48%;margin-bottom:30px;"
+            @click.native.prevent="findBackByTel"
+          >找回密码
+          </el-button>
+          <el-button
+            :loading="loading"
+            type="default"
+            style="width:48%;margin-bottom:30px;"
+            @click.native.prevent="goBackLogin"
+          >返回登陆
+          </el-button>
         </div>
         <div v-show="!findByTelePhone">
           <el-form-item prop="question">
@@ -155,31 +169,29 @@
               auto-complete="on"
             />
           </el-form-item>
+          <el-button
+            :loading="loading"
+            type="primary"
+            style="width:48%;margin-bottom:30px;"
+            @click.native.prevent="findBackByQues"
+          >找回密码
+          </el-button>
+          <el-button
+            :loading="loading"
+            type="default"
+            style="width:48%;margin-bottom:30px;"
+            @click.native.prevent="goBackLogin"
+          >返回登陆
+          </el-button>
         </div>
-
       </div>
-      <el-button
-        :loading="loading"
-        type="primary"
-        style="width:48%;margin-bottom:30px;"
-        @click.native.prevent="register"
-      >找回密码
-      </el-button>
-      <el-button
-        :loading="loading"
-        type="default"
-        style="width:48%;margin-bottom:30px;"
-        @click.native.prevent="goBackLogin"
-      >返回登陆
-      </el-button>
-
     </el-form>
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
-import { findbackByQues, getAllSecurityQuestion } from '@/api/login'
+import {findbackByQues, findbackByTel, getAllSecurityQuestion, getAuthCodeByTelephone} from '@/api/login'
 import { Message } from 'element-ui'
 
 export default {
@@ -222,7 +234,8 @@ export default {
         telephone: '',
         securityQuestion: '',
         securityAnswer: '',
-        role: ''
+        role: '',
+        authCode:''
       },
       loginRules: {
         role: [{ required: true, trigger: 'blur', validator: validateRole }],
@@ -261,6 +274,36 @@ export default {
     )
   },
   methods: {
+    // 发送验证码
+    sendAuthCode() {
+      this.loading = true
+      getAuthCodeByTelephone(this.loginForm.telephone, this.loginForm.role).then(
+        res => {
+          this.loading = false
+          Message({
+            message: res.msg,
+            type: 'info',
+            duration: 3 * 1000
+          })
+          var countDown = setInterval(() => {
+            if (this.count < 1) {
+              this.disable = false
+              this.content = '获取验证码'
+              this.count = 60
+              clearInterval(countDown)
+            } else {
+              this.disable = true
+              this.content = this.count-- + 's后重发'
+            }
+          }, 1000)
+        }
+      ).catch(() => {
+        this.loading = false
+        this.disable = false
+        this.count = 0
+        this.content = '获取验证码'
+      })
+    },
     changeType(flag) {
       this.findByTelePhone = flag
       console.log(this.findByTelePhone)
@@ -278,7 +321,34 @@ export default {
     goBackLogin() {
       this.$router.push('/login/')
     },
-    register() {
+    findBackByTel() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          this.loading = true
+          findbackByTel(this.loginForm.authCode,this.loginForm).then((res) => {
+            Message({
+              message: res.msg,
+              type: 'success',
+              duration: 2000
+            })
+            this.loading = false
+            setTimeout(() => {
+              this.$router.push('/login')
+            }, 1000)
+          }).catch(() => {
+            this.loading = false
+          })
+        } else {
+          Message({
+            message: '请检查数据格式',
+            type: 'warning',
+            duration: 2000
+          })
+          return false
+        }
+      })
+    },
+    findBackByQues() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
