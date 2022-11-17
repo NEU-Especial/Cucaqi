@@ -100,6 +100,9 @@
 
       <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
+          <el-button v-show="row.state===0" type="primary" size="mini" @click="handleEdit(row)">
+            编辑问卷
+          </el-button>
           <el-button v-show="row.state===1" type="info" size="mini" @click="handleGetLink(row)">
             获取链接
           </el-button>
@@ -741,6 +744,9 @@ export default {
     },
     handleGetLink(row) {
       this.openLinkDialog = true
+    },
+    handleEdit(row){
+      this.$router.push({ path: '/questionnaire/edit', query:{survey:row}})
     }
   }
 }
