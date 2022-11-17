@@ -115,6 +115,8 @@ public class SurveyController {
         Survey survey = commonMapper.selectSurveyById(surveyId);
         survey.setId(null);
         survey.setCurCount(0);
+        survey.setDeleted(0);
+        survey.setState(0);
         surveyMapper.insert(survey);//重新插入
         return new Result(200, "恢复成功");
     }
