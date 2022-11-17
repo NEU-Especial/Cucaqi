@@ -23,6 +23,9 @@ public interface SurveyMapper extends BaseMapper<Survey> {
     //查找问卷
     Survey findSurveyById(Integer id);
 
+    //根据问卷id查询所有答卷
+    List<String> findAllAnswersBySurveyId(Integer id);
+
     //添加问卷
     int addSurvey(Survey survey);
 

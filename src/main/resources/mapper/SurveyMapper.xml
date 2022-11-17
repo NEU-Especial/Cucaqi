@@ -45,6 +45,11 @@
         select * from t_survey where id=#{id}
     </select>
 
+    <!--    根据问卷id查询所有答卷-->
+    <select id="findAllAnswersBySurveyId" parameterType="int" resultType="java.util.Map">
+        select * from t_answerer_survey where surveyId=#{id}
+    </select>
+
     <!--    查询所有问卷-->
     <select id="selectAll" resultType="com.cucaqi.entity.Survey">
         select * from t_survey

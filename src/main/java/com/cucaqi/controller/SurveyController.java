@@ -134,6 +134,12 @@ public class SurveyController {
         return new Result(200, "", survey);
     }
 
+    @GetMapping("/findAllAnswersBySurveyId/{id}")
+    public Result findAllAnswersBySurveyId(@PathVariable("id") Integer id) {
+        List<String> answers = surveyMapper.findAllAnswersBySurveyId(id);
+        return new Result(200, "", answers);
+    }
+
 
     @PostMapping("/saveAnswerResult/{surveyId}/{answererId}")
     public Result saveAnswerResult(@PathVariable("answererId") Integer answererId, @PathVariable("surveyId") Integer surveyId, @RequestBody String answer) throws UnsupportedEncodingException {
