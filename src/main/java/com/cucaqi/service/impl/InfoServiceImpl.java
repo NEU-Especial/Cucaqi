@@ -1,19 +1,15 @@
 package com.cucaqi.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.cucaqi.constants.REASON;
-import com.cucaqi.constants.ROLE;
+import com.cucaqi.controller.constants.REASON;
+import com.cucaqi.controller.constants.ROLE;
 import com.cucaqi.entity.*;
 import com.cucaqi.mapper.*;
 import com.cucaqi.service.IInfoService;
 import com.cucaqi.service.ILoginService;
-import lombok.val;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -90,12 +86,36 @@ public class InfoServiceImpl implements IInfoService {
 
     @Override
     public int BindTelephone(int id, int role, String Telephone) {
-        return 0;
+        switch (role) {
+            case ROLE.LESSEE:
+                Lessee lessee = lesseeMapper.selectById(id);
+                lessee.setTelephone(Telephone);
+                return lesseeMapper.updateById(lessee);
+            case ROLE.USER:
+                User user = new User();
+                user.setTelephone(Telephone);
+                return userMapper.updateById(user);
+            case ROLE.ANSWERER:
+                Answerer answerer = answererMapper.selectById(id);
+                answerer.setTelephone(Telephone);
+                return answererMapper.updateById(answerer);
+            case ROLE.ADMIN:
+                Admin admin = adminMapper.selectById(id);
+                admin.setTelephone(Telephone);
+                return adminMapper.updateById(admin);
+        }
+        return REASON.UNKNOWN_ROLE;
     }
 
     @Override
-    public String AskAuthCodeByTelephone(int id, String Telephone) {
-        return null;
+    public int AskAuthCodeByTelephone(int id, String Telephone) {
+        int authCode = 100001 + new Random().nextInt(888888);
+        //否则就往该邮箱发送邮件验证码
+        boolean success = loginService.SenTelephone(Telephone, authCode);
+        if (success) {
+            return authCode;
+        }
+        return REASON.SEND_FAIL;
     }
 
     //请求发送邮件

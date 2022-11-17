@@ -1,14 +1,13 @@
 package com.cucaqi.controller;
 
-import com.cucaqi.constants.HTTP;
-import com.cucaqi.entity.Lessee;
+import com.cucaqi.controller.constants.HTTP;
 import com.cucaqi.entity.Result;
 import com.cucaqi.entity.User;
 import com.cucaqi.service.ILesseeService;
 import com.cucaqi.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
+
 import java.util.List;
 
 import static com.cucaqi.controller.LesseeController.exist;

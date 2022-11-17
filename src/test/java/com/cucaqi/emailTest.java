@@ -8,7 +8,8 @@ public class emailTest {
     @Test
     public void TestSenEmail(){
         LoginServiceImpl loginService = new LoginServiceImpl();
-        loginService.SenEmail("1150840779@qq.com",123);
+        //loginService.SenEmail("1150840779@qq.com",123);
+        loginService.SenTelephone("18732038506",123);
     }
 
 }

@@ -14,7 +14,7 @@ public interface IInfoService {
     int BindTelephone(int id, int role, String Telephone);
 
     //请求发送手机验证码
-    String AskAuthCodeByTelephone(int id, String Telephone);
+    int AskAuthCodeByTelephone(int id, String Telephone);
 
     //请求发送邮箱验证码
     int AskAuthCodeByEmail(String email);

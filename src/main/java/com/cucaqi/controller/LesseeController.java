@@ -1,9 +1,8 @@
 package com.cucaqi.controller;
 
-import com.cucaqi.constants.HTTP;
+import com.cucaqi.controller.constants.HTTP;
 import com.cucaqi.entity.Lessee;
 import com.cucaqi.entity.Result;
-import com.cucaqi.entity.User;
 import com.cucaqi.service.ILesseeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

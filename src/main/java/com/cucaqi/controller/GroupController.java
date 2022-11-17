@@ -1,7 +1,7 @@
 package com.cucaqi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.cucaqi.constants.HTTP;
+import com.cucaqi.controller.constants.HTTP;
 import com.cucaqi.entity.Group;
 import com.cucaqi.entity.Result;
 import com.cucaqi.service.IGroupService;
