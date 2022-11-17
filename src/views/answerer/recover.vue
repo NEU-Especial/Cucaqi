@@ -1,94 +1,93 @@
 <template>
   <el-dialog :title="title" :visible.sync="openRecover" width="1200px" :close-on-click-modal="false" append-to-body>
-  <div class="app-container">
-    <div class="filter-container">
-      <el-input
-        v-model="listQuery.lessee_name"
-        placeholder="答者姓名"
-        style="width: 200px;"
-        class="filter-item"
-        @keyup.enter.native="handleFilter"
-      />
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        搜索
-      </el-button>
-    </div>
-    <br>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 90%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column
-        label="ID"
-        prop="id"
-        sortable="custom"
-        align="center"
-        width="80"
-        :class-name="getSortClass('id')"
+    <div class="app-container">
+      <div class="filter-container">
+        <el-input
+          v-model="listQuery.lessee_name"
+          placeholder="答者姓名"
+          style="width: 200px;"
+          class="filter-item"
+          @keyup.enter.native="handleFilter"
+        />
+        <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+          <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+        </el-select>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+          搜索
+        </el-button>
+      </div>
+      <br>
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 90%;"
+        @sort-change="sortChange"
       >
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="答者姓名" min-width="50px" width="80px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="答者密码" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.password }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column
+          label="ID"
+          prop="id"
+          sortable="custom"
+          align="center"
+          width="80"
+          :class-name="getSortClass('id')"
+        >
+          <template slot-scope="{row}">
+            <span>{{ row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="答者姓名" min-width="50px" width="80px">
+          <template slot-scope="{row}">
+            <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="答者密码" width="200px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.password }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column label="答者电话" min-width="150px" width="180px">
-        <template slot-scope="{row}">
-          <span class="link-type">{{ row.telephone }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column label="答者电话" min-width="150px" width="180px">
+          <template slot-scope="{row}">
+            <span class="link-type">{{ row.telephone }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column label="答者邮箱" min-width="150px" width="180px">
-        <template slot-scope="{row}">
-          <span class="link-type">{{ row.email }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column label="答者邮箱" min-width="150px" width="180px">
+          <template slot-scope="{row}">
+            <span class="link-type">{{ row.email }}</span>
+          </template>
+        </el-table-column>
 
-      <el-table-column label="创建人ID" min-width="150px" width="120px">
-        <template slot-scope="{row}">
-          <span class="link-type">{{ row.createdBy }}</span>
-        </template>
-      </el-table-column>
+        <el-table-column label="创建人ID" min-width="150px" width="120px">
+          <template slot-scope="{row}">
+            <span class="link-type">{{ row.createdBy }}</span>
+          </template>
+        </el-table-column>
 
+        <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+          <template slot-scope="{row,$index}">
 
-      <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
+            <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handleRecover(row,$index)">
+              恢复记录
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--使用所属群组组件-->
+      <belongGroup v-if="openBelongDialog" ref="belongGroup" title="所属群组" />
 
-          <el-button v-if="row.status!=='deleted'" size="mini" type="success" @click="handleRecover(row,$index)">
-            恢复记录
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!--使用所属群组组件-->
-    <belongGroup title="所属群组" v-if="openBelongDialog" ref="belongGroup" />
-
-    <pagination
-      v-show="total>0"
-      :limit.sync="listQuery.limit"
-      :page.sync="listQuery.page"
-      :total="total"
-      @pagination="pagination"
-    />
-  </div>
+      <pagination
+        v-show="total>0"
+        :limit.sync="listQuery.limit"
+        :page.sync="listQuery.page"
+        :total="total"
+        @pagination="pagination"
+      />
+    </div>
   </el-dialog>
 </template>
 
@@ -105,11 +104,11 @@ import {
   update, updateAnswererDeletedStatus,
   updateDeletedStatus
 } from '@/api/answerer' // secondary package based on el-pagination
-import belongGroup from "@/views/answerer/belongs/belongGroup";
+import belongGroup from '@/views/answerer/belongs/belongGroup'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,belongGroup },
+  components: { Pagination, belongGroup },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -145,7 +144,7 @@ export default {
         payment: 0,
         limitCount: 0
       },
-      openBelongDialog:false,
+      openBelongDialog: false,
       dialogFormVisible: false,
       dialogStatus: '',
       dialogPvVisible: false,
@@ -153,7 +152,7 @@ export default {
       downloadLoading: false,
       idx: -1,
       totalList: [],
-      openRecover:false
+      openRecover: false
     }
   },
   created() {
@@ -162,7 +161,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         getAllDeletedAnswererByUserId(this.$store.getters.user.id).then(
           res => {
             this.list = res.data
@@ -198,10 +197,10 @@ export default {
       this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
     },
     handleBelongGroup(row) {
-      this.openBelongDialog = true;
+      this.openBelongDialog = true
       this.$nextTick(() => {
-        this.$refs.belongGroup.getList(row.id);
-      });
+        this.$refs.belongGroup.getList(row.id)
+      })
       // this.$router.replace({ path: '/answerer/belongs', query:{id:row.id}})
     },
     pagination() {
@@ -251,7 +250,7 @@ export default {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
-    handleRecover(row,index){
+    handleRecover(row, index) {
       updateAnswererDeletedStatus(row.id).then(
         (res) => {
           Message({
@@ -260,7 +259,7 @@ export default {
             duration: 1000
           })
           this.list.splice(index, 1)
-          this.$emit("refresh")
+          this.$emit('refresh')
         }
       )
     }

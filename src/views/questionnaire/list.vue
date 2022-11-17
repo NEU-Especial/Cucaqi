@@ -9,11 +9,11 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select v-model="listQuery.importance" placeholder="状态" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
+        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
       </el-select>
 
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -100,7 +100,7 @@
 
       <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="warning" v-show="row.state===1" size="mini" @click="handleUpdate(row)">
+          <el-button v-show="row.state===1" type="warning" size="mini" @click="handleUpdate(row)">
             提前结束
           </el-button>
           <el-button
@@ -115,7 +115,7 @@
             删除问卷
           </el-button>
 
-<!--          答卷列表-->
+          <!--          答卷列表-->
           <el-button type="primary" size="mini" @click="handleAnswerList(row)">
             答卷列表
           </el-button>
@@ -141,11 +141,11 @@
 
       <el-row>
         <el-table :data="answerListData">
-          <el-table-column property="answererName" label="答卷人姓名"></el-table-column>
-          <el-table-column property="answerTime" label="交卷时间"></el-table-column>
+          <el-table-column property="answererName" label="答卷人姓名" />
+          <el-table-column property="answerTime" label="交卷时间" />
           <el-table-column property="operation" label="操作">
             <template slot-scope="scope">
-              <el-button @click="handleAnswerDetail(scope.row)" type="text" size="small">查看</el-button>
+              <el-button type="text" size="small" @click="handleAnswerDetail(scope.row)">查看</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -160,16 +160,15 @@
 
     <!--恢复历史记录弹出框-->
     <el-dialog title="历史记录" :visible.sync="openRecoverDialog" width="1400px">
-      <recover ref="recover"  @refresh="getNewList"/>
+      <recover ref="recover" @refresh="getNewList" />
     </el-dialog>
-
 
     <!--批量查看答卷弹出框 @Author: cjs-->
     <el-dialog title="答卷总览" :visible.sync="answerOverviewTableVisible">
       <div id="surveyResult" />
     </el-dialog>
 
-<!--    <div id="surveyResult" />-->
+    <!--    <div id="surveyResult" />-->
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
@@ -181,18 +180,18 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="标题" prop="title">
-          <el-input v-model="temp.title"/>
+          <el-input v-model="temp.title" />
         </el-form-item>
         <el-form-item label="开始时间" prop="startedTime">
-          <el-input v-model="temp.startedTime"/>
+          <el-input v-model="temp.startedTime" />
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
-          <el-input v-model="temp.endTime"/>
+          <el-input v-model="temp.endTime" />
         </el-form-item>
 
         <el-form-item label="问卷状态">
           <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
 
@@ -222,7 +221,7 @@
     <!--    公开问卷发布时的弹窗-->
     <el-dialog :visible.sync="postPublicDialog" title="发布问卷">
       <el-table :data="postData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="postAddress" label="问卷地址"/>
+        <el-table-column prop="postAddress" label="问卷地址" />
       </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="postToPublic">确认发布</el-button>
@@ -304,13 +303,16 @@
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { StylesManager } from "survey-vue";
-import { Model } from 'survey-core';
-import "survey-vue/defaultV2.css";
+import { StylesManager } from 'survey-vue'
+import { Model } from 'survey-core'
+import 'survey-vue/defaultV2.css'
 
-import 'survey-analytics/survey.analytics.min.css';
-import { VisualizationPanel } from 'survey-analytics';
-
+import 'survey-analytics/survey.analytics.min.css'
+import { VisualizationPanel } from 'survey-analytics'
+import recover from '@/views/questionnaire/recover'
+import { findAllSurvey, PostToGroup, PostToPublic, softDeleteSurvey, updateSurveyState } from '@/api/survey'
+import { Message } from 'element-ui'
+import { getGroupPage } from '@/api/group'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -371,58 +373,58 @@ export default {
   data() {
     const answerListData = [{
       answererName: '徐高高',
-      answerTime: '2022-05-02',
+      answerTime: '2022-05-02'
     }, {
       answererName: '徐矮矮',
-      answerTime: '2016-05-06',
+      answerTime: '2016-05-06'
     }, {
       answererName: '徐好好',
-      answerTime: '2018-08-17',
+      answerTime: '2018-08-17'
     }]
-    const surveyJson =  {
-      "title": "计算机专业调查问卷",
-      "description": "调查计算机专业学生信息",
-      "logoPosition": "right",
-      "pages": [
+    const surveyJson = {
+      'title': '计算机专业调查问卷',
+      'description': '调查计算机专业学生信息',
+      'logoPosition': 'right',
+      'pages': [
         {
-          "name": "页面1",
-          "elements": [
+          'name': '页面1',
+          'elements': [
             {
-              "type": "text",
-              "name": "问题1",
-              "title": "你的学校"
+              'type': 'text',
+              'name': '问题1',
+              'title': '你的学校'
             },
             {
-              "type": "boolean",
-              "name": "问题2",
-              "title": "你是否喜欢计算机"
+              'type': 'boolean',
+              'name': '问题2',
+              'title': '你是否喜欢计算机'
             },
             {
-              "type": "matrix",
-              "name": "问题3",
-              "title": "你对编程语言的熟悉程度",
-              "columns": [
+              'type': 'matrix',
+              'name': '问题3',
+              'title': '你对编程语言的熟悉程度',
+              'columns': [
                 {
-                  "value": "Column 1",
-                  "text": "了解"
+                  'value': 'Column 1',
+                  'text': '了解'
                 },
                 {
-                  "value": "Column 2",
-                  "text": "熟练"
+                  'value': 'Column 2',
+                  'text': '熟练'
                 },
                 {
-                  "value": "Column 3",
-                  "text": "擅长"
+                  'value': 'Column 3',
+                  'text': '擅长'
                 }
               ],
-              "rows": [
+              'rows': [
                 {
-                  "value": "Row 1",
-                  "text": "Java"
+                  'value': 'Row 1',
+                  'text': 'Java'
                 },
                 {
-                  "value": "Row 2",
-                  "text": "C++"
+                  'value': 'Row 2',
+                  'text': 'C++'
                 }
               ]
             }
@@ -430,40 +432,39 @@ export default {
         }
       ]
     }
-    const answerJson =  {
-      "问题1": "东北大学",
-      "问题2": true,
-      "问题3": {
-        "Row 1": "Column 1",
-        "Row 2": "Column 3"
+    const answerJson = {
+      '问题1': '东北大学',
+      '问题2': true,
+      '问题3': {
+        'Row 1': 'Column 1',
+        'Row 2': 'Column 3'
       }
     }
     const allAnswerJson = [
       {
-      "问题1": "浑南大学",
-      "问题2": true,
-      "问题3": {
-        "Row 1": "Column 1",
-        "Row 2": "Column 3"
-      }
-    },
+        '问题1': '浑南大学',
+        '问题2': true,
+        '问题3': {
+          'Row 1': 'Column 1',
+          'Row 2': 'Column 3'
+        }
+      },
       {
-      "问题1": "南湖大学",
-      "问题2": false,
-      "问题3": {
-        "Row 1": "Column 1",
-        "Row 2": "Column 3"
-      }
-    },
+        '问题1': '南湖大学',
+        '问题2': false,
+        '问题3': {
+          'Row 1': 'Column 1',
+          'Row 2': 'Column 3'
+        }
+      },
       {
-      "问题1": "东北大学",
-      "问题2": true,
-      "问题3": {
-        "Row 1": "Column 1",
-        "Row 2": "Column 3"
-      }
-    }]
-
+        '问题1': '东北大学',
+        '问题2': true,
+        '问题3': {
+          'Row 1': 'Column 1',
+          'Row 2': 'Column 3'
+        }
+      }]
 
     return {
       tableKey: 0,
@@ -666,33 +667,32 @@ export default {
       this.answerListTableVisible = true
     },
     handleAnswerDetail() {
-      this.survey = new Model(this.surveyJson);
+      this.survey = new Model(this.surveyJson)
       this.survey.data = this.answerJson
-      this.survey.mode = 'display';
+      this.survey.mode = 'display'
       this.answerListTableVisible = false
       this.answerDetailTableVisible = true
     },
     handleAnswerOverview() {
-
       // 创建答卷分析用到的对象
-      this.survey = new Model(this.surveyJson);
+      this.survey = new Model(this.surveyJson)
       const vizPanelOptions = {
-        allowHideQuestions: false,
-      };
+        allowHideQuestions: false
+      }
       this.surveyVizPanel = new VisualizationPanel(
         this.survey.getAllQuestions(),
         this.allAnswerJson,
-        vizPanelOptions,
-      );
+        vizPanelOptions
+      )
 
       // 拿不到el-dialog中的元素id，要使用$nextTick
-      this .$nextTick(() => {
-        //每次渲染之前要清除surveyResult中的内容，否则渲染会一直append到上一次的后面
-        document.getElementById("surveyResult").innerHTML="";
+      this.$nextTick(() => {
+        // 每次渲染之前要清除surveyResult中的内容，否则渲染会一直append到上一次的后面
+        document.getElementById('surveyResult').innerHTML = ''
         // 渲染到surveyResult这个div中
-        this.surveyVizPanel.render("surveyResult");
-      });
-      this.surveyVizPanel.showHeader = false;
+        this.surveyVizPanel.render('surveyResult')
+      })
+      this.surveyVizPanel.showHeader = false
 
       // dialog可见性
       this.answerListTableVisible = false
