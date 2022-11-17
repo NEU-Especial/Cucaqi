@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -120,7 +121,37 @@ public class LoginController {
             return new Result(HTTP.NOT_FOUND, "密保错误，找回失败");
         }
     }
+    //手机号找回密码，检查用户名密码
+    @PostMapping("/findbackByTel/{code}")
+    @ResponseBody
+    public Result findBackByTel(@RequestBody BaseUser baseUser,@PathVariable Integer code,HttpSession session) {
 
+        Object o = session.getAttribute(baseUser.getTelephone() + baseUser.getRole());
+        if (o == null) {
+            return new Result(HTTP.NOT_FOUND, "验证码无效");
+        }
+        Integer rightCode = (Integer) o;
+        if (!Objects.equals(code, rightCode)) {
+            return new Result(HTTP.NOT_FOUND, "验证码错误");
+        }
+        session.removeAttribute(baseUser.getTelephone() + baseUser.getRole());
+        //此时需要查询用户
+        o = loginService.GetUserByTelephone(baseUser.getTelephone(), baseUser.getRole());
+        if (o == null) {
+            //说明查不到该用户
+            return new Result(HTTP.NOT_FOUND, "找回失败,手机号不存在", null);
+        }
+
+        String username = baseUser.getUsername();
+        String password = baseUser.getPassword();
+        int role = baseUser.getRole();
+        int i = loginService.FindBackByTelephone(username, password, role, o);
+        if (i == UPDATE_SUCCESS) {
+            return new Result(HTTP.SUCCESS, "密码找回成功");
+        } else {
+            return new Result(HTTP.NOT_FOUND, "用户名或手机号错误，找回失败");
+        }
+    }
     //获取邮箱验证码
 //    @GetMapping("/authCode/{role}")
 //    @ResponseBody
@@ -234,8 +265,6 @@ public class LoginController {
     public Result LoginByTelephone(@RequestBody BaseUser baseUser, @PathVariable int code, HttpSession session) {
 
         Object o = session.getAttribute(baseUser.getTelephone() + baseUser.getRole());
-
-
         if (o == null) {
             return new Result(HTTP.NOT_FOUND, "验证码无效");
         }

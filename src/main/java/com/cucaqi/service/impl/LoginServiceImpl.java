@@ -2,12 +2,10 @@ package com.cucaqi.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cucaqi.controller.constants.HTTP;
 import com.cucaqi.controller.constants.REASON;
 import com.cucaqi.controller.constants.ROLE;
-import com.cucaqi.entity.Admin;
-import com.cucaqi.entity.Answerer;
-import com.cucaqi.entity.Lessee;
-import com.cucaqi.entity.User;
+import com.cucaqi.entity.*;
 import com.cucaqi.mapper.AdminMapper;
 import com.cucaqi.mapper.AnswererMapper;
 import com.cucaqi.mapper.LesseeMapper;
@@ -165,6 +163,38 @@ public class LoginServiceImpl implements ILoginService {
                 return answererMapper.updateById(answerer);
             default:
                 return REASON.UNKNOWN_ROLE;
+        }
+    }
+
+    @Override
+    public int FindBackByTelephone(String username, String password, int role, Object o) {
+        switch (role) {
+            case ROLE.ADMIN:
+                Admin admin = (Admin) o;
+                if(admin.getUsername().equals(username)){
+                    admin.setPassword(password);
+                    return adminMapper.updateById(admin);
+                }
+            case ROLE.LESSEE:
+                Lessee lessee = (Lessee) o;
+                if(lessee.getUsername().equals(username)){
+                    lessee.setPassword(password);
+                    return lesseeMapper.updateById(lessee);
+                }
+            case ROLE.USER:
+                User user = (User) o;
+                if(user.getUsername().equals(username)){
+                    user.setPassword(password);
+                    return userMapper.updateById(user);
+                }
+            case ROLE.ANSWERER:
+                Answerer answerer = (Answerer) o;
+                if(answerer.getUsername().equals(username)){
+                    answerer.setPassword(password);
+                    return answererMapper.updateById(answerer);
+                }
+            default:
+                return REASON.NOT_FOUNT;
         }
     }
 

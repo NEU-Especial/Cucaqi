@@ -333,3 +333,42 @@ INSERT INTO `t_user` VALUES (11, 'admin0', '123456', '1111', 1, '121234', 1003, 
 INSERT INTO `t_user` VALUES (12, 'admin00', '123456', '1212', 1, '121234', 1003, NULL, 0, 1, '23454', 0, '498584', NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : localhost_3306
+ Source Server Type    : MySQL
+ Source Server Version : 50723
+ Source Host           : localhost:3306
+ Source Schema         : cucaqi
+
+ Target Server Type    : MySQL
+ Target Server Version : 50723
+ File Encoding         : 65001
+
+ Date: 17/11/2022 14:22:28
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for t_survey_group
+-- ----------------------------
+DROP TABLE IF EXISTS `t_survey_group`;
+CREATE TABLE `t_survey_group`  (
+                                   `groupId` int(11) NOT NULL,
+                                   `surveyId` int(11) NOT NULL,
+                                   PRIMARY KEY (`groupId`, `surveyId`) USING BTREE,
+                                   INDEX `surveyId`(`surveyId`) USING BTREE,
+                                   CONSTRAINT `groupId` FOREIGN KEY (`groupId`) REFERENCES `t_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+                                   CONSTRAINT `surveyId` FOREIGN KEY (`surveyId`) REFERENCES `t_survey` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of t_survey_group
+-- ----------------------------
+INSERT INTO `t_survey_group` VALUES (7, 1);
+INSERT INTO `t_survey_group` VALUES (13, 1);
+
+SET FOREIGN_KEY_CHECKS = 1;

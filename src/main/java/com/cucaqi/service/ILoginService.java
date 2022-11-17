@@ -33,4 +33,6 @@ public interface ILoginService {
 
     //短信验证码发送方法
     boolean SenTelephone(String Telephone, int authCode);
+
+    int FindBackByTelephone(String username, String password, int role, Object o);
 }
