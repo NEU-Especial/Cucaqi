@@ -1,21 +1,18 @@
 package com.cucaqi.controller;
 
-import com.cucaqi.constants.HTTP;
-import com.cucaqi.constants.REASON;
-import com.cucaqi.constants.ROLE;
+import com.cucaqi.controller.constants.HTTP;
+import com.cucaqi.controller.constants.REASON;
 import com.cucaqi.entity.*;
 import com.cucaqi.service.IInfoService;
-import com.cucaqi.service.impl.InfoServiceImpl;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.cucaqi.constants.REASON.SEND_FAIL;
+import static com.cucaqi.controller.constants.REASON.SEND_FAIL;
 
 /**
  * 密保绑定，信息修改，手机号码绑定

@@ -1,15 +1,12 @@
 package com.cucaqi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.cucaqi.constants.HTTP;
+import com.cucaqi.controller.constants.HTTP;
 import com.cucaqi.entity.Answerer;
-import com.cucaqi.entity.Group;
 import com.cucaqi.entity.Result;
 import com.cucaqi.service.IAnswererService;
-import com.cucaqi.service.IGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 

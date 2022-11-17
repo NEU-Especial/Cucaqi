@@ -1,6 +1,7 @@
 package com.cucaqi.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.cucaqi.controller.constants.HTTP;
 import com.cucaqi.entity.Answerer;
 import com.cucaqi.entity.Lessee;
 import com.cucaqi.entity.Result;
@@ -79,6 +80,12 @@ public class SurveyController {
             }
             answererMapper.insertAnswerSurvey(surveyId, answerer.getId(), LocalDateTime.now());
         }
+        //发布在群组中的问卷 之前没有关系则在关系表中将他们联系起来
+        if(!(groupMapper.hasRelationInGroupSurvey(groupId,surveyId) > 0)) {
+            groupMapper.addRelationToGroupSurvey(groupId, surveyId);
+        }else{
+            return new Result(HTTP.BAD_REQ, "该群组中已发布过该问卷");
+        }
         return new Result(200, "发布成功");
     }
 
@@ -108,6 +115,8 @@ public class SurveyController {
         Survey survey = commonMapper.selectSurveyById(surveyId);
         survey.setId(null);
         survey.setCurCount(0);
+        survey.setDeleted(0);
+        survey.setState(0);
         surveyMapper.insert(survey);//重新插入
         return new Result(200, "恢复成功");
     }

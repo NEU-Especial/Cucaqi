@@ -24,6 +24,13 @@ public interface ILoginService {
 
      boolean SenEmail(String EmailAddress, int authCode);
 
+    //检查是否有绑定该邮箱号，如果绑定了则发送邮件，方法返回值为验证码
+    int askAuthCodeByTelephone(String telephone, int role);
+
     Object GetUserByEmail(String email, int role);
 
+    Object GetUserByTelephone(String telephone, int role);
+
+    //短信验证码发送方法
+    boolean SenTelephone(String Telephone, int authCode);
 }

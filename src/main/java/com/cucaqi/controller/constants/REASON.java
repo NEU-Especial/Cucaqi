@@ -1,4 +1,4 @@
-package com.cucaqi.constants;
+package com.cucaqi.controller.constants;
 
 
 public class REASON {

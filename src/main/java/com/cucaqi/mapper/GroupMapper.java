@@ -34,4 +34,12 @@ public interface GroupMapper extends BaseMapper<Group> {
     List<Group> getDeleted(Integer userId);
     @Update("update t_group set deleted = 0 where id = #{groupId}")
     Integer updateDeletedStatus(Integer groupId);
+
+    @Delete("delete from t_survey_group where groupId = #{groupId} and surveyId = #{surveyId}")
+    public Integer deleteRelationFromGroupSurvey(Integer groupId,Integer surveyId);
+    @Insert("insert into t_survey_group values(#{groupId},#{surveyId})")
+    public Integer addRelationToGroupSurvey(Integer groupId, Integer surveyId);
+
+    @Select("select count(*) from t_survey_group where groupId = #{groupId} and surveyId = #{surveyId}")
+    public Integer hasRelationInGroupSurvey(Integer groupId,Integer surveyId);
 }
