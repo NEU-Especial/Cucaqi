@@ -60,13 +60,10 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="625" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button :disabled="row.answer!==null" type="primary" size="mini" @click="answerSurvey(row)">
+          <el-button :disabled="row.answer!==null||row.disable" type="primary" size="mini" @click="answerSurvey(row)">
             开始答卷
           </el-button>
-          <el-button type="primary" size="mini" @click="viewAnalytical(row)">
-            查看答卷统计
-          </el-button>
-          <el-button v-show="row.answer!==undefined" type="success" size="mini">
+          <el-button v-show="row.answer!==undefined" type="success" size="mini" @click="reviewAnswer(row)">
             回顾答题结果
           </el-button>
         </template>
@@ -151,12 +148,18 @@ export default {
     this.getList()
   },
   methods: {
+    reviewAnswer(row) {
+
+
+
+    },
     answerSurvey(row) {
       const next = this.$router.resolve({
         path: '/survey',
         query: { surveyId: row.id, answererId: this.$store.getters.user.id }
       })
       window.open(next.href, '_blank')
+      row.disable = true
     },
     getList() {
       allSurveyToAnswer({ id: this.$store.getters.user.id }).then(

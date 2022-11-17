@@ -9,7 +9,7 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -73,7 +73,6 @@
         </template>
       </el-table-column>
 
-
       <el-table-column label="操作" align="center" width="400" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button
@@ -100,9 +99,9 @@
       </el-table-column>
     </el-table>
     <!--使用所属群组组件-->
-    <belongGroup title="所属群组" v-if="openBelongDialog" ref="belongGroup" />
+    <belongGroup v-if="openBelongDialog" ref="belongGroup" title="所属群组" />
 
-    <recover ref="recover" v-if="openRecoverDialog" @refresh="getList"/>
+    <recover v-if="openRecoverDialog" ref="recover" @refresh="getList" />
 
     <pagination
       v-show="total>0"
@@ -123,16 +122,16 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="答者姓名" prop="username">
-          <el-input v-model="temp.username"/>
+          <el-input v-model="temp.username" />
         </el-form-item>
         <el-form-item label="答者密码" prop="password">
-          <el-input v-model="temp.password"/>
+          <el-input v-model="temp.password" />
         </el-form-item>
         <el-form-item label="答者电话号码" prop="title">
-          <el-input v-model="temp.telephone"/>
+          <el-input v-model="temp.telephone" />
         </el-form-item>
         <el-form-item label="答者邮箱号码" prop="title">
-          <el-input v-model="temp.email"/>
+          <el-input v-model="temp.email" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -153,12 +152,12 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { Message } from 'element-ui'
 import { Delete, getAllAnswererByUserId, save, update } from '@/api/answerer' // secondary package based on el-pagination
-import belongGroup from "@/views/answerer/belongs/belongGroup";
-import recover from "@/views/answerer/recover";
+import belongGroup from '@/views/answerer/belongs/belongGroup'
+import recover from '@/views/answerer/recover'
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination,belongGroup,recover },
+  components: { Pagination, belongGroup, recover },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -194,7 +193,7 @@ export default {
         payment: 0,
         limitCount: 0
       },
-      openBelongDialog:false,
+      openBelongDialog: false,
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -210,7 +209,7 @@ export default {
       downloadLoading: false,
       idx: -1,
       totalList: [],
-      openRecoverDialog:false
+      openRecoverDialog: false
     }
   },
   created() {
@@ -252,10 +251,10 @@ export default {
       this.list = filterList.slice((page - 1) * limit, (page - 1) * limit + limit)
     },
     handleBelongGroup(row) {
-      this.openBelongDialog = true;
+      this.openBelongDialog = true
       this.$nextTick(() => {
-        this.$refs.belongGroup.getList(row.id);
-      });
+        this.$refs.belongGroup.getList(row.id)
+      })
       // this.$router.replace({ path: '/answerer/belongs', query:{id:row.id}})
     },
     pagination() {
@@ -342,11 +341,11 @@ export default {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
-    handleRecover(){
-      this.openRecoverDialog = true;
+    handleRecover() {
+      this.openRecoverDialog = true
       this.$nextTick(() => {
-        this.$refs.recover.getList();
-      });
+        this.$refs.recover.getList()
+      })
       this.getList()
     }
   }
