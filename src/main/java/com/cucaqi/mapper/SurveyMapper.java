@@ -46,4 +46,7 @@ public interface SurveyMapper extends BaseMapper<Survey> {
 
     @Update("update t_survey set curCount=(curCount+1) where id=#{surveyId}")
     int updateCurCount(Integer surveyId);
+
+    @Select("select t_answerer_survey.answer from t_answerer_survey where surveyId=#{surveyId} and answererId=#{answererId}")
+    String getAnswer(Integer surveyId, Integer answererId);
 }

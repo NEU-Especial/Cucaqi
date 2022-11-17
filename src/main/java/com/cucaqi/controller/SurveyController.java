@@ -9,17 +9,16 @@ import com.cucaqi.mapper.AnswererMapper;
 import com.cucaqi.mapper.CommonMapper;
 import com.cucaqi.mapper.GroupMapper;
 import com.cucaqi.mapper.SurveyMapper;
-import com.cucaqi.service.impl.SurveyServiceImpl;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.sun.mail.util.QEncoderStream;
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
-import javax.websocket.server.PathParam;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -117,7 +116,16 @@ public class SurveyController {
     public Result allSurveyToAnswer(@Param("id") Integer id) {
         //根据答者id拿到所有代答问卷
         List<Survey> needToAnswer = surveyMapper.allSurveyToAnswer(id);
-        return new Result(200, "", needToAnswer);
+        ArrayList<String> answers = new ArrayList<>();
+        for (Survey survey : needToAnswer) {
+            //填充答卷结果
+            String answer = surveyMapper.getAnswer(survey.getId(), id);
+            answers.add(answer);
+        }
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+        stringObjectHashMap.put("surveyList", needToAnswer);
+        stringObjectHashMap.put("answers", answers);
+        return new Result(200, "", stringObjectHashMap);
     }
 
     @GetMapping("/getSurveyById/{id}")
@@ -128,10 +136,16 @@ public class SurveyController {
 
 
     @PostMapping("/saveAnswerResult/{surveyId}/{answererId}")
-    public Result saveAnswerResult(@PathVariable("answererId") Integer answererId, @PathVariable("surveyId") Integer surveyId, @RequestBody String answer) {
+    public Result saveAnswerResult(@PathVariable("answererId") Integer answererId, @PathVariable("surveyId") Integer surveyId, @RequestBody String answer) throws UnsupportedEncodingException {
+        System.out.println(answer);
+        if (Strings.isBlank(answer)) {
+            return new Result(400, "请勿提交空白问卷");
+        }
+        answer = URLDecoder.decode(answer, "UTF-8");
+        answer = answer.substring(0, answer.length() - 1);
         //先判断以下当前的问卷状态
-        if (answererId==-1){
-            answererId=null;
+        if (answererId == -1) {
+            answererId = null;
         }
         Survey survey = surveyMapper.selectById(surveyId);
         if (survey == null) {
